@@ -1,8 +1,10 @@
-export const logger = {
-  info: (message: string) => {
-    console.log(`ℹ️  ${message}`);
-  },
-  error: (message: string) => {
-    console.error(`❌ ${message}`);
-  },
-};
+import winston from "winston";
+
+export const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [new winston.transports.Console()]
+});

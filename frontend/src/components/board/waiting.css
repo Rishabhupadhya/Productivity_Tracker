@@ -1,0 +1,18 @@
+.waiting {
+  width: 280px;
+  background: var(--bg-panel);
+  border-left: 1px solid var(--border);
+  padding: 16px;
+}
+
+.waiting-task {
+  background: var(--bg-card);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  border-left: 4px solid;
+}
+
+.waiting-task.blue { border-color: var(--blue); }
+.waiting-task.green { border-color: var(--green); }
+.waiting-task.purple { border-color: var(--purple); }

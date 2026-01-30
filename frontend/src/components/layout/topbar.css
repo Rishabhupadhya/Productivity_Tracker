@@ -1,0 +1,36 @@
+.topbar {
+  height: 60px;
+  padding: 0 20px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.primary {
+  background: var(--blue);
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+
+.date {
+  margin-left: 16px;
+  color: var(--text-secondary);
+}
+
+.avatar-group {
+  display: flex;
+  gap: 6px;
+}
+
+.avatar {
+  background: var(--purple);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}

@@ -1,0 +1,16 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(260px, 1fr));
+  gap: 16px;
+  min-height: calc(100vh - 100px);
+}
+
+.column {
+  background: var(--bg-panel);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.column h4 {
+  margin-bottom: 12px;
+}
