@@ -7,6 +7,7 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
   const [title, setTitle] = useState("");
   const [duration, setDuration] = useState("");
   const [day, setDay] = useState("Mon");
+  const [startTime, setStartTime] = useState("09:00");
 
   return (
     <div className="modal-backdrop">
@@ -33,12 +34,18 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
           <option>Fri</option>
         </select>
 
+        <input
+          type="time"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+        />
+
         <div className="actions">
           <button onClick={onClose}>Cancel</button>
           <button
             className="primary"
             onClick={async () => {
-              await addTask({ title, duration, day });
+              await addTask({ title, duration, day, startTime });
               onClose();
             }}
           >

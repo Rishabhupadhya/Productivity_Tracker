@@ -9,13 +9,14 @@ export const createTask = async (task: {
   title: string;
   duration: string;
   day: string;
+  startTime: string;
 }) => {
   const res = await api.post("/tasks", task);
   return res.data;
 };
 
-export const moveTask = async (taskId: string, day: string) => {
-  await api.put("/tasks/move", { taskId, day });
+export const moveTask = async (taskId: string, day: string, startTime?: string) => {
+  await api.patch(`/tasks/${taskId}`, { taskId, day, startTime });
 };
 
 export const deleteTask = async (taskId: string) => {

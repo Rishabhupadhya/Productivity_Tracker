@@ -23,3 +23,12 @@ body {
   color: var(--text-primary);
   font-family: Inter, system-ui, -apple-system, sans-serif;
 }
+
+.board::-webkit-scrollbar {
+  height: 8px;
+}
+
+.board::-webkit-scrollbar-thumb {
+  background: #1f2937;
+  border-radius: 10px;
+}

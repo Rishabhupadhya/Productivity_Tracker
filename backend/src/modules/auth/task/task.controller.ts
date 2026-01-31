@@ -1,11 +1,11 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../../middleware/auth.middleware";
-import { createTask, getTasksByUser, updateTaskDay, deleteTask } from "./task.service";
+import { createTask, getTasksByUser, updateTaskSlot, deleteTask } from "./task.service";
 
 export const addTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { title, duration, day } = req.body;
-    const task = await createTask(title, duration, day, req.user.id);
+    const { title, duration, day, startTime } = req.body;
+    const task = await createTask(title, duration, day, startTime, req.user.id);
     res.status(201).json(task);
   } catch (error) {
     next(error);
@@ -23,8 +23,8 @@ export const getTasks = async (req: AuthRequest, res: Response, next: NextFuncti
 
 export const moveTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { taskId, day } = req.body;
-    const task = await updateTaskDay(taskId, day, req.user.id);
+    const { taskId, day, startTime } = req.body;
+    const task = await updateTaskSlot(taskId, day, startTime, req.user.id);
     res.json(task);
   } catch (error) {
     next(error);

@@ -26,9 +26,6 @@ export default function Topbar() {
       {open && (
         <AddTaskModal
           onClose={() => setOpen(false)}
-          onAdd={(task) => {
-            console.log("New Task:", task);
-          }}
         />
       )}
     </>

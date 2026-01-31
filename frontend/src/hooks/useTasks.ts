@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   fetchTasks,
   createTask,
@@ -8,6 +8,8 @@ import {
 
 export function useTasks() {
   const [tasks, setTasks] = useState<any[]>([]);
+  const [undoTask, setUndoTask] = useState<any | null>(null);
+  const deleteTimer = useRef<any>(null);
 
   useEffect(() => {
     fetchTasks().then(setTasks);
@@ -18,17 +20,39 @@ export function useTasks() {
     setTasks((prev) => [...prev, newTask]);
   };
 
-  const moveTask = async (taskId: string, day: string) => {
-    await moveTaskApi(taskId, day);
+  const moveTask = async (taskId: string, day: string, startTime?: string) => {
+    await moveTaskApi(taskId, day, startTime);
     setTasks((prev) =>
-      prev.map((t) => (t._id === taskId ? { ...t, day } : t))
+      prev.map((t) => (t._id === taskId ? { ...t, day, ...(startTime && { startTime }) } : t))
     );
   };
 
-  const deleteTask = async (taskId: string) => {
-    await deleteTaskApi(taskId);
-    setTasks((prev) => prev.filter((t) => t._id !== taskId));
+  const deleteTask = (task: any) => {
+    // Remove immediately from UI
+    setTasks((prev) => prev.filter((t) => t._id !== task._id));
+    setUndoTask(task);
+
+    // Delay backend delete
+    deleteTimer.current = setTimeout(async () => {
+      await deleteTaskApi(task._id);
+      setUndoTask(null);
+    }, 5000);
   };
 
-  return { tasks, addTask, moveTask, deleteTask };
+  const undoDelete = () => {
+    if (!undoTask) return;
+
+    clearTimeout(deleteTimer.current);
+    setTasks((prev) => [...prev, undoTask]);
+    setUndoTask(null);
+  };
+
+  return {
+    tasks,
+    addTask,
+    moveTask,
+    deleteTask,
+    undoTask,
+    undoDelete
+  };
 }
