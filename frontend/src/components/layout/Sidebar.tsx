@@ -7,7 +7,11 @@ export default function Sidebar() {
   const Item = ({ label }: { label: string }) => (
     <a
       className={active === label ? "active" : ""}
-      onClick={() => setActive(label)}
+      onClick={() => {
+        setActive(label);
+        // Dispatch custom event to notify CalendarBoard
+        window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: label } }));
+      }}
     >
       {label}
     </a>

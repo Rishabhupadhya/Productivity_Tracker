@@ -10,6 +10,7 @@ export const createTask = async (task: {
   duration: string;
   day: string;
   startTime: string;
+  assignedTo?: string;
 }) => {
   const res = await api.post("/tasks", task);
   return res.data;

@@ -25,7 +25,14 @@ export default function TaskCard({
         </button>
       </div>
 
-      <span>{task.duration}</span>
+      <div className="task-footer">
+        <span className="duration">{task.duration}</span>
+        {task.assignedTo && (
+          <span className="assignee" title={task.assignedTo.name}>
+            {task.assignedTo.avatar || task.assignedTo.name.charAt(0).toUpperCase()}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

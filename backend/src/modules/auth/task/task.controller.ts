@@ -4,8 +4,8 @@ import { createTask, getTasksByUser, updateTaskSlot, deleteTask } from "./task.s
 
 export const addTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { title, duration, day, startTime } = req.body;
-    const task = await createTask(title, duration, day, startTime, req.user.id);
+    const { title, duration, day, startTime, assignedTo } = req.body;
+    const task = await createTask(title, duration, day, startTime, req.user.id, assignedTo);
     res.status(201).json(task);
   } catch (error) {
     next(error);

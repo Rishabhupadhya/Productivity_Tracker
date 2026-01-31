@@ -8,28 +8,76 @@ import {
 
 export function useTasks() {
   const [tasks, setTasks] = useState<any[]>([]);
+  const [allTasks, setAllTasks] = useState<any[]>([]);
+  const [currentView, setCurrentView] = useState("My Work");
   const [undoTask, setUndoTask] = useState<any | null>(null);
   const deleteTimer = useRef<any>(null);
 
   useEffect(() => {
-    fetchTasks().then(setTasks);
+    fetchTasks().then((fetchedTasks) => {
+      setAllTasks(fetchedTasks);
+      filterTasks(fetchedTasks, currentView);
+    });
   }, []);
+
+  useEffect(() => {
+    const handleViewChange = (e: any) => {
+      const view = e.detail.view;
+      setCurrentView(view);
+      filterTasks(allTasks, view);
+    };
+
+    window.addEventListener('viewChanged', handleViewChange);
+    return () => window.removeEventListener('viewChanged', handleViewChange);
+  }, [allTasks]);
+
+  const filterTasks = (taskList: any[], view: string) => {
+    if (view === "My Work") {
+      // Show only tasks assigned to current user or created by them
+      const userId = getCurrentUserId();
+      setTasks(taskList.filter(t => 
+        !t.assignedTo || t.assignedTo === userId || t.assignedTo._id === userId
+      ));
+    } else if (view === "Teams") {
+      // Show all workspace tasks
+      setTasks(taskList);
+    } else {
+      setTasks(taskList);
+    }
+  };
+
+  const getCurrentUserId = () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return null;
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      return payload.userId;
+    } catch {
+      return null;
+    }
+  };
 
   const addTask = async (task: any) => {
     const newTask = await createTask(task);
-    setTasks((prev) => [...prev, newTask]);
+    const updatedAllTasks = [...allTasks, newTask];
+    setAllTasks(updatedAllTasks);
+    filterTasks(updatedAllTasks, currentView);
   };
 
   const moveTask = async (taskId: string, day: string, startTime?: string) => {
     await moveTaskApi(taskId, day, startTime);
-    setTasks((prev) =>
-      prev.map((t) => (t._id === taskId ? { ...t, day, ...(startTime && { startTime }) } : t))
+    const updatedAllTasks = allTasks.map((t) => 
+      t._id === taskId ? { ...t, day, ...(startTime && { startTime }) } : t
     );
+    setAllTasks(updatedAllTasks);
+    filterTasks(updatedAllTasks, currentView);
   };
 
   const deleteTask = (task: any) => {
     // Remove immediately from UI
-    setTasks((prev) => prev.filter((t) => t._id !== task._id));
+    const updatedAllTasks = allTasks.filter((t) => t._id !== task._id);
+    setAllTasks(updatedAllTasks);
+    filterTasks(updatedAllTasks, currentView);
     setUndoTask(task);
 
     // Delay backend delete
@@ -43,7 +91,9 @@ export function useTasks() {
     if (!undoTask) return;
 
     clearTimeout(deleteTimer.current);
-    setTasks((prev) => [...prev, undoTask]);
+    const updatedAllTasks = [...allTasks, undoTask];
+    setAllTasks(updatedAllTasks);
+    filterTasks(updatedAllTasks, currentView);
     setUndoTask(null);
   };
 

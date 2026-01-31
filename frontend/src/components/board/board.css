@@ -78,3 +78,7 @@
   top: 4px;
   left: 6px;
 }
+
+.column-body {
+  position: relative;
+}

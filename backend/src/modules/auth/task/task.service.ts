@@ -1,18 +1,34 @@
 import { Task } from "./task.model";
+import { User } from "../auth.model";
 
 export const createTask = async (
   title: string,
   duration: string,
   day: string,
   startTime: string,
-  userId: string
+  userId: string,
+  assignedTo?: string
 ) => {
-  return Task.create({ title, duration, day, startTime, userId });
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  return Task.create({ 
+    title, 
+    duration, 
+    day, 
+    startTime, 
+    userId,
+    assignedTo: assignedTo || userId,
+    workspaceId: user.workspaceId 
+  });
 };
 
-
 export const getTasksByUser = async (userId: string) => {
-  return Task.find({ userId });
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  // Get all tasks in the user's workspace
+  return Task.find({ workspaceId: user.workspaceId }).populate('assignedTo', 'name email avatar');
 };
 
 export const updateTaskDay = async (
