@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { useCreditCards } from "../../hooks/useCreditCards";
 import AddCreditCardModal from "./AddCreditCardModal";
+import IntelligenceDashboard from "../../pages/IntelligenceDashboard";
+import CreditScoreManager from "../creditScore/CreditScoreManager";
 import type { CreditCard } from "../../services/creditCard.service";
 
 export default function CreditDashboard() {
   const { cards, overview, alerts, loading, addCard, updateCard, deleteCard } = useCreditCards();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCard, setEditingCard] = useState<CreditCard | null>(null);
+  const [activeTab, setActiveTab] = useState<'cards' | 'intelligence' | 'creditscore'>('cards');
 
   if (loading && !overview) {
     return (
@@ -76,34 +79,125 @@ export default function CreditDashboard() {
   return (
     <div style={{ padding: "24px", maxWidth: "1400px", margin: "0 auto" }}>
       {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
         <div>
-          <h1 style={{ fontSize: "28px", fontWeight: "600", color: "#2c3e50", margin: 0 }}>💳 Credit Card Intelligence</h1>
-          <p style={{ color: "#666", marginTop: "8px", fontSize: "14px" }}>
-            Manage your credit cards and track utilization across billing cycles
+          <h1 style={{ 
+            fontSize: "28px", 
+            fontWeight: "600", 
+            background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            margin: 0,
+            marginBottom: "8px"
+          }}>💳 Credit Card Management</h1>
+          <p style={{ 
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            margin: 0,
+            fontSize: "14px",
+            fontWeight: "500"
+          }}>
+            Manage your credit cards and track utilization with ML-driven insights
           </p>
         </div>
+        {activeTab === 'cards' && (
+          <button
+            onClick={() => setShowAddModal(true)}
+            style={{
+              padding: "12px 24px",
+              background: "#4CAF50",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              fontSize: "14px",
+              fontWeight: "600",
+              cursor: "pointer"
+            }}
+          >
+            + Add Credit Card
+          </button>
+        )}
+      </div>
+
+      {/* Tabs */}
+      <div style={{ 
+        display: "flex", 
+        gap: "8px", 
+        borderBottom: "2px solid #e5e7eb", 
+        marginBottom: "24px" 
+      }}>
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={() => setActiveTab('cards')}
           style={{
             padding: "12px 24px",
-            background: "#4CAF50",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
+            background: activeTab === 'cards' ? '#fff' : 'transparent',
+            color: activeTab === 'cards' ? '#2c3e50' : '#666',
+            border: 'none',
+            borderBottom: activeTab === 'cards' ? '3px solid #4CAF50' : '3px solid transparent',
             fontSize: "14px",
             fontWeight: "600",
-            cursor: "pointer"
+            cursor: "pointer",
+            marginBottom: "-2px",
+            transition: "all 0.2s"
           }}
         >
-          + Add Credit Card
+          💳 Credit Cards
+        </button>
+        <button
+          onClick={() => setActiveTab('intelligence')}
+          style={{
+            padding: "12px 24px",
+            background: activeTab === 'intelligence' ? '#fff' : 'transparent',
+            color: activeTab === 'intelligence' ? '#2c3e50' : '#666',
+            border: 'none',
+            borderBottom: activeTab === 'intelligence' ? '3px solid #4CAF50' : '3px solid transparent',
+            fontSize: "14px",
+            fontWeight: "600",
+            cursor: "pointer",
+            marginBottom: "-2px",
+            transition: "all 0.2s"
+          }}
+        >
+          🧠 Intelligence
+        </button>
+        <button
+          onClick={() => setActiveTab('creditscore')}
+          style={{
+            padding: "12px 24px",
+            background: activeTab === 'creditscore' ? '#fff' : 'transparent',
+            color: activeTab === 'creditscore' ? '#2c3e50' : '#666',
+            border: 'none',
+            borderBottom: activeTab === 'creditscore' ? '3px solid #4CAF50' : '3px solid transparent',
+            fontSize: "14px",
+            fontWeight: "600",
+            cursor: "pointer",
+            marginBottom: "-2px",
+            transition: "all 0.2s"
+          }}
+        >
+          📊 Credit Score
         </button>
       </div>
 
-      {/* Alerts Section */}
-      {alerts.length > 0 && (
+      {/* Cards Tab Content */}
+      {activeTab === 'cards' && (
+        <>
+          {/* Alerts Section */}
+          {alerts.length > 0 && (
         <div style={{ marginBottom: "24px" }}>
-          <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#2c3e50", marginBottom: "12px" }}>
+          <h3 style={{ 
+            fontSize: "16px", 
+            fontWeight: "600", 
+            background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            display: 'inline-block',
+            marginBottom: "12px" 
+          }}>
             🔔 Alerts & Insights
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
@@ -320,6 +414,18 @@ export default function CreditDashboard() {
           </div>
         )}
       </div>
+        </>
+      )}
+
+      {/* Intelligence Tab Content */}
+      {activeTab === 'intelligence' && (
+        <IntelligenceDashboard />
+      )}
+
+      {/* Credit Score Tab Content */}
+      {activeTab === 'creditscore' && (
+        <CreditScoreManager />
+      )}
 
       {/* Modals */}
       {showAddModal && (

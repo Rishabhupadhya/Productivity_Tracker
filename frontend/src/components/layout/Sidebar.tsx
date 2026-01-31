@@ -295,7 +295,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
               💰 Finance Tracker
             </a>
             <a
-              className={active === "Habits" ? "active" : ""}
+              className={active === "Intelligence" ? "active" : ""}
               onClick={() => {
                 setActive("Habits");
                 navigate("/habits");

@@ -2,6 +2,8 @@ import { Router } from "express";
 import { authMiddleware } from "../../../middleware/auth.middleware";
 import * as financeController from "./finance.controller";
 import creditCardRoutes from "./creditCard.routes";
+import smsRoutes from "./sms/sms.routes";
+import intelligenceRoutes from "./intelligence/intelligence.routes";
 
 const router = Router();
 
@@ -24,6 +26,12 @@ router.delete("/recurring/:recurringId", authMiddleware, financeController.delet
 
 // Credit card routes
 router.use("/credit-cards", creditCardRoutes);
+
+// SMS processing routes
+router.use("/sms", smsRoutes);
+
+// Intelligence routes
+router.use("/intelligence", intelligenceRoutes);
 
 // Summary and analytics
 router.get("/summary", authMiddleware, financeController.getMonthlySummary);

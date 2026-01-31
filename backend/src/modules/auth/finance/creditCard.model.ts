@@ -9,6 +9,7 @@ export interface ICreditCard extends Document {
   last4Digits: string;
   creditLimit: number;
   outstandingAmount: number; // Current outstanding balance
+  monthlyLimit?: number; // User-defined monthly spending limit
   billingCycleStartDay: number; // 1-31
   dueDateDay: number; // 1-31
   interestRate?: number; // Annual percentage rate
@@ -34,6 +35,7 @@ const CreditCardSchema = new Schema<ICreditCard>(
     },
     creditLimit: { type: Number, required: true, min: 0 },
     outstandingAmount: { type: Number, default: 0, min: 0 },
+    monthlyLimit: { type: Number, min: 0 }, // Optional monthly spending limit
     billingCycleStartDay: { 
       type: Number, 
       required: true, 
