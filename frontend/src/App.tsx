@@ -1,12 +1,21 @@
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import { useUser } from "./contexts/UserContext";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const token = localStorage.getItem("token");
-  return token ? <>{children}</> : <Navigate to="/login" />;
+  const { user, loading } = useUser();
+  
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0b0f14', color: '#00ffff' }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+  
+  return user ? <>{children}</> : <Navigate to="/login" />;
 }
 
 export default function App() {

@@ -7,10 +7,25 @@ import "./topbar.css";
 export default function Topbar() {
   const [open, setOpen] = useState(false);
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  });
 
   useEffect(() => {
     getTeamMembers().then(setTeamMembers).catch(console.error);
   }, []);
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = e.target.value;
+    console.log('Date changed to:', newDate);
+    setSelectedDate(newDate);
+    window.dispatchEvent(
+      new CustomEvent("date-change", {
+        detail: newDate
+      })
+    );
+  };
 
   return (
     <>
@@ -23,13 +38,8 @@ export default function Topbar() {
             <input
               type="date"
               className="date-input"
-              onChange={(e) => {
-                window.dispatchEvent(
-                  new CustomEvent("date-change", {
-                    detail: e.target.value
-                  })
-                );
-              }}
+              value={selectedDate}
+              onChange={handleDateChange}
             />
           </div>
         </div>

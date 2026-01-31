@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { getCurrentUser } from "../../services/team.service";
+import { useUser } from "../../contexts/UserContext";
 import { updateProfile, changePassword, uploadAvatar } from "../../services/profile.service";
 import "./profile.css";
 
 export default function ProfileModal({ onClose }: { onClose: () => void }) {
-  const [user, setUser] = useState<any>(null);
+  const { user, refreshUser } = useUser();
   const [name, setName] = useState("");
   const [timezone, setTimezone] = useState("UTC");
   const [workStartTime, setWorkStartTime] = useState("09:00");
@@ -23,18 +23,19 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    getCurrentUser().then((data) => {
-      setUser(data);
-      setName(data.name);
-      setTimezone(data.timezone || "UTC");
-      setWorkStartTime(data.workingHours?.start || "09:00");
-      setWorkEndTime(data.workingHours?.end || "18:00");
-      setDefaultDuration(data.defaultTaskDuration || "1h");
-      if (data.avatar) {
-        setAvatarPreview(`http://localhost:5001${data.avatar}`);
+    if (user) {
+      console.log('User data in ProfileModal:', user);
+      console.log('Team role:', (user as any).teamRole);
+      setName(user.name);
+      setTimezone((user as any).timezone || "UTC");
+      setWorkStartTime((user as any).workingHours?.start || "09:00");
+      setWorkEndTime((user as any).workingHours?.end || "18:00");
+      setDefaultDuration((user as any).defaultTaskDuration || "1h");
+      if (user.avatar) {
+        setAvatarPreview(`http://localhost:5001${user.avatar}`);
       }
-    });
-  }, []);
+    }
+  }, [user]);
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
@@ -67,8 +68,8 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     setUploading(true);
     setMessage("");
     try {
-      const updatedUser = await uploadAvatar(file);
-      setUser(updatedUser);
+      await uploadAvatar(file);
+      await refreshUser();
       setMessage("Avatar updated successfully!");
       
       // Dispatch event to update avatar across the app
@@ -78,7 +79,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     } catch (error: any) {
       setMessage(error.response?.data?.message || "Failed to upload avatar");
       // Revert preview on error
-      if (user.avatar) {
+      if (user?.avatar) {
         setAvatarPreview(`http://localhost:5001${user.avatar}`);
       } else {
         setAvatarPreview("");
@@ -92,15 +93,22 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     setSaving(true);
     setMessage("");
     try {
-      await updateProfile({
+      const profileData = {
         name,
         timezone,
         workingHours: { start: workStartTime, end: workEndTime },
         defaultTaskDuration: defaultDuration
-      });
+      };
+      console.log('Saving profile with data:', profileData);
+      
+      const result = await updateProfile(profileData);
+      console.log('Profile update result:', result);
+      
+      await refreshUser();
       setMessage("Profile updated successfully!");
       setTimeout(() => setMessage(""), 3000);
     } catch (error: any) {
+      console.error('Profile update error:', error);
       setMessage(error.response?.data?.message || "Failed to update profile");
     } finally {
       setSaving(false);
@@ -178,6 +186,11 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
               <div className="avatar-info">
                 <h3>{user?.name}</h3>
                 <p>{user?.email}</p>
+                {(user as any)?.teamRole && (
+                  <p className="user-role">
+                    {(user as any).teamRole === 'admin' ? '👑 Admin' : '👤 Member'}
+                  </p>
+                )}
                 <p className="avatar-hint">Click avatar to change photo</p>
               </div>
             </div>

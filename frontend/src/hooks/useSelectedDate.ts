@@ -5,7 +5,10 @@ export function useSelectedDate() {
 
   useEffect(() => {
     const handler = (e: any) => {
-      setDate(new Date(e.detail));
+      console.log('Date change event received:', e.detail);
+      const newDate = new Date(e.detail);
+      console.log('Setting date to:', newDate);
+      setDate(newDate);
     };
 
     window.addEventListener("date-change", handler);

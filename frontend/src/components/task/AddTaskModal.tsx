@@ -3,13 +3,15 @@ import { useTasks } from "../../hooks/useTasks";
 import { useSelectedDate } from "../../hooks/useSelectedDate";
 import { formatDate, getWeekDays } from "../../utils/date";
 import { TIME_SLOTS } from "../../constants/timeSlots";
-import { getTeamMembers } from "../../services/team.service";
+import { getTeamDetails } from "../../services/team.service";
+import { useTeam } from "../../contexts/TeamContext";
 import "./modal.css";
 
 export default function AddTaskModal({ onClose }: { onClose: () => void }) {
   const { addTask } = useTasks();
   const selectedDate = useSelectedDate();
   const weekDays = getWeekDays(selectedDate);
+  const { activeTeam } = useTeam();
   
   const [title, setTitle] = useState("");
   const [duration, setDuration] = useState("1h");
@@ -20,8 +22,15 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
 
   useEffect(() => {
-    getTeamMembers().then(setTeamMembers).catch(console.error);
-  }, []);
+    if (activeTeam) {
+      getTeamDetails(activeTeam._id)
+        .then(team => {
+          const members = team.members.map((m: any) => m.userId);
+          setTeamMembers(members);
+        })
+        .catch(console.error);
+    }
+  }, [activeTeam]);
 
   return (
     <div className="modal-backdrop">
@@ -67,14 +76,33 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
           <option value="other">Other</option>
         </select>
 
-        <select value={assignedTo} onChange={(e) => setAssignedTo(e.target.value)}>
-          <option value="">Assign to...</option>
-          {teamMembers.map((member) => (
-            <option key={member._id} value={member._id}>
-              {member.name} ({member.email})
-            </option>
-          ))}
-        </select>
+        {activeTeam && teamMembers.length > 0 && (
+          <div style={{ marginTop: '8px' }}>
+            <label style={{ display: 'block', marginBottom: '4px', color: '#00ffff', fontSize: '14px' }}>
+              👤 Assign to team member:
+            </label>
+            <select 
+              value={assignedTo} 
+              onChange={(e) => setAssignedTo(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px',
+                background: '#0a0a0a',
+                border: '1px solid #00ffff',
+                borderRadius: '4px',
+                color: '#00ffff',
+                fontSize: '14px'
+              }}
+            >
+              <option value="">Select member...</option>
+              {teamMembers.map((member) => (
+                <option key={member._id} value={member._id}>
+                  {member.name} - {member.email}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
         <div className="actions">
           <button onClick={onClose}>Cancel</button>

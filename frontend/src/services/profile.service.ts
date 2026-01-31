@@ -1,5 +1,10 @@
 import { api } from "./api";
 
+export const getUserProfile = async () => {
+  const res = await api.get("/team/me");
+  return res.data;
+};
+
 export const updateProfile = async (data: any) => {
   const res = await api.patch("/profile", data);
   return res.data;

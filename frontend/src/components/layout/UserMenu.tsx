@@ -1,31 +1,27 @@
 import { useState, useEffect, useRef } from "react";
-import { getCurrentUser } from "../../services/team.service";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../../contexts/UserContext";
 import ProfileModal from "../profile/ProfileModal";
 import SettingsModal from "../settings/SettingsModal";
 import "./userMenu.css";
 
 export default function UserMenu() {
-  const [user, setUser] = useState<any>(null);
   const [open, setOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getCurrentUser().then(setUser).catch(console.error);
-  }, []);
+  const { user, logout, refreshUser } = useUser();
 
   // Listen for avatar updates from ProfileModal
   useEffect(() => {
     const handleAvatarUpdate = () => {
-      getCurrentUser().then(setUser).catch(console.error);
+      refreshUser();
     };
     
     window.addEventListener('avatarUpdated', handleAvatarUpdate);
     return () => window.removeEventListener('avatarUpdated', handleAvatarUpdate);
-  }, []);
+  }, [refreshUser]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -39,7 +35,7 @@ export default function UserMenu() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    logout();
     navigate("/login");
   };
 

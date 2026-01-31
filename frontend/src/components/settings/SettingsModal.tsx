@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { getCurrentUser } from "../../services/team.service";
+import { useUser } from "../../contexts/UserContext";
 import { updateSettings } from "../../services/profile.service";
 import "./settings.css";
 
 export default function SettingsModal({ onClose }: { onClose: () => void }) {
+  const { user, refreshUser } = useUser();
   const [settings, setSettings] = useState<any>({
     weekStartDay: 1,
     timeFormat: "24h",
@@ -19,12 +20,10 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    getCurrentUser().then((data) => {
-      if (data.settings) {
-        setSettings(data.settings);
-      }
-    });
-  }, []);
+    if (user?.settings) {
+      setSettings(user.settings);
+    }
+  }, [user]);
 
   const handleToggle = (key: string) => {
     setSettings({ ...settings, [key]: !settings[key] });
@@ -39,6 +38,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
     setMessage("");
     try {
       await updateSettings(settings);
+      await refreshUser();
       setMessage("Settings saved successfully!");
       setTimeout(() => {
         setMessage("");

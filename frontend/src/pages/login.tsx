@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { loginUser } from "../services/auth.server";
+import { useUser } from "../contexts/UserContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -8,6 +8,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useUser();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,16 +16,10 @@ export default function Login() {
     setLoading(true);
 
     try {
-      console.log("Attempting login with:", email);
-      const data = await loginUser(email, password);
-      console.log("Login successful, token received:", data.token ? "Yes" : "No");
-      localStorage.setItem("token", data.token);
+      await login(email, password);
       navigate("/dashboard");
     } catch (err: any) {
-      console.error("Login error:", err);
-      const errorMessage = err.response?.data?.message || err.message || "Login failed. Please check your credentials.";
-      console.log("Error message:", errorMessage);
-      setError(errorMessage);
+      setError(err.message || "Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }

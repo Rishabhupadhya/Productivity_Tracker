@@ -13,11 +13,14 @@ export function useTasks() {
   const [undoTask, setUndoTask] = useState<any | null>(null);
   const deleteTimer = useRef<any>(null);
 
+  const loadTasks = async () => {
+    const fetchedTasks = await fetchTasks();
+    setAllTasks(fetchedTasks);
+    filterTasks(fetchedTasks, currentView);
+  };
+
   useEffect(() => {
-    fetchTasks().then((fetchedTasks) => {
-      setAllTasks(fetchedTasks);
-      filterTasks(fetchedTasks, currentView);
-    });
+    loadTasks();
   }, []);
 
   useEffect(() => {
@@ -27,20 +30,27 @@ export function useTasks() {
       filterTasks(allTasks, view);
     };
 
+    const handleTeamChange = () => {
+      loadTasks();
+    };
+
     window.addEventListener('viewChanged', handleViewChange);
-    return () => window.removeEventListener('viewChanged', handleViewChange);
+    window.addEventListener('teamChanged', handleTeamChange);
+    return () => {
+      window.removeEventListener('viewChanged', handleViewChange);
+      window.removeEventListener('teamChanged', handleTeamChange);
+    };
   }, [allTasks]);
 
   const filterTasks = (taskList: any[], view: string) => {
+    const userId = getCurrentUserId();
+    
     if (view === "My Work") {
-      // Show only tasks assigned to current user or created by them
-      const userId = getCurrentUserId();
-      setTasks(taskList.filter(t => 
-        !t.assignedTo || t.assignedTo === userId || t.assignedTo._id === userId
-      ));
+      // Show only personal tasks (no teamId)
+      setTasks(taskList.filter(t => !t.teamId));
     } else if (view === "Teams") {
-      // Show all workspace tasks
-      setTasks(taskList);
+      // Show only team tasks (with teamId)
+      setTasks(taskList.filter(t => t.teamId));
     } else {
       setTasks(taskList);
     }
