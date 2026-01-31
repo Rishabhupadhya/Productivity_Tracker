@@ -2,6 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Finance from "./pages/Finance";
+import Goals from "./pages/Goals";
+import Habits from "./pages/Habits";
+import CreditDashboard from "./components/finance/CreditDashboard";
 import { useUser } from "./contexts/UserContext";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -29,6 +33,38 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/finance"
+          element={
+            <ProtectedRoute>
+              <Finance />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/finance/credit-cards"
+          element={
+            <ProtectedRoute>
+              <CreditDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/goals"
+          element={
+            <ProtectedRoute>
+              <Goals />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/habits"
+          element={
+            <ProtectedRoute>
+              <Habits />
             </ProtectedRoute>
           }
         />

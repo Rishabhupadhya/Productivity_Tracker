@@ -12,11 +12,26 @@ export const updateProfile = async (
     defaultTaskDuration?: string;
   }
 ) => {
-  return User.findByIdAndUpdate(
+  console.log('updateProfile called with userId:', userId);
+  console.log('updateProfile data:', data);
+  
+  const updateData: any = {};
+  
+  if (data.name) updateData.name = data.name;
+  if (data.timezone) updateData.timezone = data.timezone;
+  if (data.workingHours) updateData.workingHours = data.workingHours;
+  if (data.defaultTaskDuration) updateData.defaultTaskDuration = data.defaultTaskDuration;
+  
+  console.log('Update data to save:', updateData);
+  
+  const updatedUser = await User.findByIdAndUpdate(
     userId,
-    { $set: data },
+    { $set: updateData },
     { new: true }
   ).select('-password');
+  
+  console.log('User after update:', updatedUser);
+  return updatedUser;
 };
 
 export const updateAvatar = async (userId: string, filename: string) => {
@@ -42,9 +57,18 @@ export const updateSettings = async (
   userId: string,
   settings: any
 ) => {
+  // Merge with existing settings to preserve any fields not being updated
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+  
+  const updatedSettings = {
+    ...user.settings,
+    ...settings
+  };
+  
   return User.findByIdAndUpdate(
     userId,
-    { $set: { settings } },
+    { $set: { settings: updatedSettings } },
     { new: true }
   ).select('-password');
 };

@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   workspaceId: string;
+  activeTeamId?: mongoose.Types.ObjectId;
   avatar?: string;
   timezone: string;
   workingHours: {
@@ -30,6 +31,7 @@ const UserSchema = new Schema<IUser>(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     workspaceId: { type: String, required: true, default: "default" },
+    activeTeamId: { type: Schema.Types.ObjectId, ref: "Team" },
     avatar: { type: String },
     timezone: { type: String, default: "UTC" },
     workingHours: {

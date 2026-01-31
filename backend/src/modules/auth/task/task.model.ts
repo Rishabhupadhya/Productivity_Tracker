@@ -7,6 +7,7 @@ export interface ITask extends Document {
   startTime: string;
   userId: Types.ObjectId;
   assignedTo?: Types.ObjectId;
+  teamId?: Types.ObjectId;
   workspaceId: string;
 }
 
@@ -18,6 +19,7 @@ const TaskSchema = new Schema<ITask>(
     startTime: { type: String, required: true },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
+    teamId: { type: Schema.Types.ObjectId, ref: "Team" },
     workspaceId: { type: String, required: true }
   },
   { timestamps: true }

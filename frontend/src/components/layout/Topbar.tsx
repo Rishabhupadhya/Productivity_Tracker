@@ -4,7 +4,7 @@ import UserMenu from "./UserMenu";
 import { getTeamMembers } from "../../services/team.service";
 import "./topbar.css";
 
-export default function Topbar() {
+export default function Topbar({ showTaskControls = true }: { showTaskControls?: boolean }) {
   const [open, setOpen] = useState(false);
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -31,17 +31,21 @@ export default function Topbar() {
     <>
       <header className="topbar">
         <div className="left">
-          <button className="primary" onClick={() => setOpen(true)}>
-            + Add Task
-          </button>
-          <div className="date-picker">
-            <input
-              type="date"
-              className="date-input"
-              value={selectedDate}
-              onChange={handleDateChange}
-            />
-          </div>
+          {showTaskControls && (
+            <>
+              <button className="primary" onClick={() => setOpen(true)}>
+                + Add Task
+              </button>
+              <div className="date-picker">
+                <input
+                  type="date"
+                  className="date-input"
+                  value={selectedDate}
+                  onChange={handleDateChange}
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <div className="right">
@@ -61,7 +65,7 @@ export default function Topbar() {
         </div>
       </header>
 
-      {open && (
+      {open && showTaskControls && (
         <AddTaskModal
           onClose={() => setOpen(false)}
         />

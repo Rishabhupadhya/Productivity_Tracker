@@ -4,8 +4,8 @@ exports.removeTask = exports.moveTask = exports.getTasks = exports.addTask = voi
 const task_service_1 = require("./task.service");
 const addTask = async (req, res, next) => {
     try {
-        const { title, duration, day } = req.body;
-        const task = await (0, task_service_1.createTask)(title, duration, day, req.user.id);
+        const { title, duration, day, startTime, assignedTo } = req.body;
+        const task = await (0, task_service_1.createTask)(title, duration, day, startTime, req.user.id, assignedTo);
         res.status(201).json(task);
     }
     catch (error) {
@@ -25,8 +25,8 @@ const getTasks = async (req, res, next) => {
 exports.getTasks = getTasks;
 const moveTask = async (req, res, next) => {
     try {
-        const { taskId, day } = req.body;
-        const task = await (0, task_service_1.updateTaskDay)(taskId, day, req.user.id);
+        const { taskId, day, startTime } = req.body;
+        const task = await (0, task_service_1.updateTaskSlot)(taskId, day, startTime, req.user.id);
         res.json(task);
     }
     catch (error) {

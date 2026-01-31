@@ -4,9 +4,13 @@ import { updateProfile, updateSettings, changePassword, updateAvatar } from "./p
 
 export const updateUserProfile = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    console.log('Updating profile for user:', req.user.id);
+    console.log('Profile update data:', req.body);
     const user = await updateProfile(req.user.id, req.body);
+    console.log('Updated user:', user);
     res.json(user);
   } catch (error) {
+    console.error('Profile update error:', error);
     next(error);
   }
 };

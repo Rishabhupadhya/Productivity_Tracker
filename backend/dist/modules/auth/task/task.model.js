@@ -39,6 +39,10 @@ const TaskSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     duration: { type: String, required: true },
     day: { type: String, required: true },
-    userId: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true }
+    startTime: { type: String, required: true },
+    userId: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
+    assignedTo: { type: mongoose_1.Schema.Types.ObjectId, ref: "User" },
+    teamId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Team" },
+    workspaceId: { type: String, required: true }
 }, { timestamps: true });
 exports.Task = mongoose_1.default.model("Task", TaskSchema);

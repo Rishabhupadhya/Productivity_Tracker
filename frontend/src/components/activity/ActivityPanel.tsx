@@ -46,7 +46,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
   };
 
   const getActionText = (activity: Activity) => {
-    const { action, details, userId } = activity;
+    const { action, details } = activity;
     
     switch (action) {
       case "team_created":

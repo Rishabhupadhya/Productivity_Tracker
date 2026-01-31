@@ -1,6 +1,8 @@
 import bcrypt from "bcrypt";
 import { User } from "./auth.model";
 import { signToken } from "../../utils/jwt";
+import { Team } from "./team/team.model";
+import { Types } from "mongoose";
 
 export const registerUser = async (
   name: string,
@@ -20,6 +22,37 @@ export const registerUser = async (
     workspaceId,
     avatar
   });
+
+  // Auto-accept any pending team invites for this email
+  const teamsWithInvites = await Team.find({
+    "invites.email": email,
+    "invites.status": "pending"
+  });
+
+  for (const team of teamsWithInvites) {
+    const invite = team.invites.find(
+      i => i.email === email && i.status === "pending"
+    );
+    
+    if (invite) {
+      // Add user to team members
+      team.members.push({
+        userId: new Types.ObjectId(user._id),
+        role: invite.role,
+        joinedAt: new Date()
+      });
+
+      // Update invite status
+      invite.status = "accepted";
+      await team.save();
+      
+      // Set first team as active if user doesn't have one
+      if (!user.activeTeamId) {
+        user.activeTeamId = team._id;
+        await user.save();
+      }
+    }
+  }
 
   return signToken({ id: user._id, email: user.email });
 };
