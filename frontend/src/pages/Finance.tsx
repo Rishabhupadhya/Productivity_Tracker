@@ -9,6 +9,8 @@ export default function Finance() {
   const navigate = useNavigate();
   const { cards } = useCreditCards();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [incomeVisibleCount, setIncomeVisibleCount] = useState(25);
+  const [expenseVisibleCount, setExpenseVisibleCount] = useState(25);
   const [summary, setSummary] = useState<MonthlySummary | null>(null);
   const [showAddIncome, setShowAddIncome] = useState(false);
   const [showAddExpense, setShowAddExpense] = useState(false);
@@ -40,6 +42,9 @@ export default function Finance() {
         financeService.getMonthlySummary()
       ]);
       console.log("Loaded transactions:", txns);
+      console.log("Transactions type:", typeof txns, Array.isArray(txns));
+      console.log("Transactions length:", txns?.length);
+      console.log("First transaction:", txns?.[0]);
       console.log("Loaded summary:", summaryData);
       console.log("Income transactions:", txns.filter(t => t.type === "income"));
       console.log("Expense transactions:", txns.filter(t => t.type === "expense"));
@@ -153,6 +158,9 @@ export default function Finance() {
 
   const incomeTransactions = transactions.filter(t => t.type === "income");
   const expenseTransactions = transactions.filter(t => t.type === "expense");
+
+  const incomeIsShowingAll = incomeVisibleCount >= incomeTransactions.length;
+  const expenseIsShowingAll = expenseVisibleCount >= expenseTransactions.length;
 
   // Calculate totals from transactions
   const totalIncome = incomeTransactions.reduce((sum, t) => sum + t.amount, 0);
@@ -457,7 +465,19 @@ export default function Finance() {
               <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#2c3e50", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
                 📋 Income
               </h3>
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <div style={{ fontSize: "12px", color: "#666" }}>
+                  Showing {Math.min(incomeVisibleCount, incomeTransactions.length)} of {incomeTransactions.length}
+                </div>
+                {incomeTransactions.length > 25 && (
+                  <button
+                    onClick={() => setIncomeVisibleCount(incomeIsShowingAll ? 25 : incomeTransactions.length)}
+                    style={{ padding: "6px 10px", background: "#f5f5f5", border: "1px solid #ddd", borderRadius: "6px", cursor: "pointer", fontSize: "12px" }}
+                    title={incomeIsShowingAll ? "Show fewer rows" : "Show all rows"}
+                  >
+                    {incomeIsShowingAll ? "Show less" : "Show all"}
+                  </button>
+                )}
                 <button style={{ padding: "4px 8px", background: "none", border: "1px solid #ddd", borderRadius: "4px", cursor: "pointer" }}>☰</button>
                 <button style={{ padding: "4px 8px", background: "none", border: "1px solid #ddd", borderRadius: "4px", cursor: "pointer" }}>⇅</button>
                 <button style={{ padding: "4px 8px", background: "none", border: "1px solid #ddd", borderRadius: "4px", cursor: "pointer" }}>🔍</button>
@@ -476,7 +496,7 @@ export default function Finance() {
                 </tr>
               </thead>
               <tbody>
-                {incomeTransactions.slice(0, 10).map((t, idx) => {
+                {incomeTransactions.slice(0, incomeVisibleCount).map((t, idx) => {
                   const descParts = t.description?.split(' - ') || [];
                   const subcategory = descParts[0] || '-';
                   const payment = descParts[1] || '-';
@@ -517,7 +537,19 @@ export default function Finance() {
               <h3 style={{ fontSize: "16px", fontWeight: "600", color: "#2c3e50", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
                 📋 Expenses
               </h3>
-              <div style={{ display: "flex", gap: "8px" }}>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <div style={{ fontSize: "12px", color: "#666" }}>
+                  Showing {Math.min(expenseVisibleCount, expenseTransactions.length)} of {expenseTransactions.length}
+                </div>
+                {expenseTransactions.length > 25 && (
+                  <button
+                    onClick={() => setExpenseVisibleCount(expenseIsShowingAll ? 25 : expenseTransactions.length)}
+                    style={{ padding: "6px 10px", background: "#f5f5f5", border: "1px solid #ddd", borderRadius: "6px", cursor: "pointer", fontSize: "12px" }}
+                    title={expenseIsShowingAll ? "Show fewer rows" : "Show all rows"}
+                  >
+                    {expenseIsShowingAll ? "Show less" : "Show all"}
+                  </button>
+                )}
                 <button style={{ padding: "4px 8px", background: "none", border: "1px solid #ddd", borderRadius: "4px", cursor: "pointer" }}>☰</button>
                 <button style={{ padding: "4px 8px", background: "none", border: "1px solid #ddd", borderRadius: "4px", cursor: "pointer" }}>⇅</button>
                 <button style={{ padding: "4px 8px", background: "none", border: "1px solid #ddd", borderRadius: "4px", cursor: "pointer" }}>🔍</button>
@@ -536,7 +568,7 @@ export default function Finance() {
                 </tr>
               </thead>
               <tbody>
-                {expenseTransactions.slice(0, 10).map((t, idx) => {
+                {expenseTransactions.slice(0, expenseVisibleCount).map((t, idx) => {
                   const descParts = t.description?.split(' - ') || [];
                   const subcategory = descParts[0] || '-';
                   const payment = descParts[1] || '-';
