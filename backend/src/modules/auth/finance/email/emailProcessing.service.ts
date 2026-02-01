@@ -98,6 +98,7 @@ export interface EmailProcessingResult {
     noMatchingCard: number;
     existingTransaction: number;
   };
+  transactionsWithoutCard?: number;
   parseFailures: number;
   limitBreachAlerts: number;
 }
@@ -129,6 +130,7 @@ export const processEmails = async (
   let skippedDuplicateContentHash = 0;
   let skippedNoMatchingCard = 0;
   let skippedExistingTransaction = 0;
+  let transactionsWithoutCard = 0;
 
   try {
     // Step 1: Fetch emails from provider
@@ -335,68 +337,61 @@ export const processEmails = async (
         );
 
         if (!card) {
-          logger.info(`No registered credit card found for ${parsed.bankName} ending ${parsed.maskedCardNumber}, skipping import`);
-          await markEmailAsProcessed(
-            userId,
-            email.messageId,
-            email.subject,
-            email.from,
-            email.receivedDate,
-            false,
-            parsed.bankName,
-            undefined,
-            "No matching credit card found (add card in app and re-import)",
-            email.body,
-            email.snippet
-          );
-          duplicatesSkipped++;
+          logger.warn(`No registered credit card found for ${parsed.bankName} ending ${parsed.maskedCardNumber}`);
+          logger.info(`Creating transaction without card link (you can add card later for tracking)`);
           skippedNoMatchingCard++;
-          continue;
-        }
+          transactionsWithoutCard++;
+        } else {
+          logger.info(`Matched card: ${card.cardName} (${card._id})`);
 
-        logger.info(`Matched card: ${card.cardName} (${card._id})`);
-
-        // Skip if user already has this transaction (manual or previously imported)
-        const existingTxn = await findExistingCardExpenseTransaction(
-          userId,
-          card._id,
-          parsed.amount,
-          parsed.transactionDate || parsed.emailDate,
-          parsed.merchantName
-        );
-
-        if (existingTxn) {
-          logger.info(`Existing credit-card transaction found in DB, skipping import: ${existingTxn._id}`);
-          await markEmailAsProcessed(
+          // Skip if user already has this transaction (manual or previously imported)
+          const existingTxn = await findExistingCardExpenseTransaction(
             userId,
-            email.messageId,
-            email.subject,
-            email.from,
-            email.receivedDate,
-            true,
-            parsed.bankName,
-            existingTxn._id.toString(),
-            "Transaction already exists (manual or previously created)",
-            email.body,
-            email.snippet
+            card._id,
+            parsed.amount,
+            parsed.transactionDate || parsed.emailDate,
+            parsed.merchantName
           );
-          await recordTransactionHash(userId, contentHash, email.messageId, existingTxn._id.toString());
-          duplicatesSkipped++;
-          skippedExistingTransaction++;
-          continue;
+
+          if (existingTxn) {
+            logger.info(`Existing credit-card transaction found in DB, skipping import: ${existingTxn._id}`);
+            await markEmailAsProcessed(
+              userId,
+              email.messageId,
+              email.subject,
+              email.from,
+              email.receivedDate,
+              true,
+              parsed.bankName,
+              existingTxn._id.toString(),
+              "Transaction already exists (manual or previously created)",
+              email.body,
+              email.snippet
+            );
+            await recordTransactionHash(userId, contentHash, email.messageId, existingTxn._id.toString());
+            duplicatesSkipped++;
+            skippedExistingTransaction++;
+            continue;
+          }
         }
 
-        // Create transaction record (linked to credit card)
+        // Create transaction record (with or without card link)
         const transactionData: any = {
           userId: new Types.ObjectId(userId),
           type: "expense",
           amount: parsed.amount,
           category: "shopping", // Default category, can be improved with ML
-          description: `${parsed.merchantName} - ${card.bankName} ${card.cardName}`,
+          description: card 
+            ? `${parsed.merchantName} - ${card.bankName} ${card.cardName}`
+            : `${parsed.merchantName} - ${parsed.bankName} Card ending ${parsed.maskedCardNumber || '****'}`,
           date: parsed.transactionDate || parsed.emailDate,
-          paymentType: "credit",
-          creditCardId: card._id
+          paymentType: card ? "credit" : "debit" // Use debit if no card matched
         };
+
+        // Add creditCardId only if card was found
+        if (card) {
+          transactionData.creditCardId = card._id;
+        }
 
         const transaction = await Transaction.create(transactionData);
 
@@ -483,6 +478,7 @@ export const processEmails = async (
         noMatchingCard: skippedNoMatchingCard,
         existingTransaction: skippedExistingTransaction
       },
+      transactionsWithoutCard,
       parseFailures,
       limitBreachAlerts
     };
@@ -503,6 +499,7 @@ export const processEmails = async (
         noMatchingCard: skippedNoMatchingCard,
         existingTransaction: skippedExistingTransaction
       },
+      transactionsWithoutCard,
       parseFailures,
       limitBreachAlerts
     };

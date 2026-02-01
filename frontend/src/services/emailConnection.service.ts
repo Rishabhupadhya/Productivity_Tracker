@@ -26,6 +26,7 @@ export interface EmailProcessingResult {
     noMatchingCard: number;
     existingTransaction: number;
   };
+  transactionsWithoutCard?: number;
   parseFailures: number;
   limitBreachAlerts: number;
 }

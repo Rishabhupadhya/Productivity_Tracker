@@ -433,6 +433,12 @@ export const EmailTransactionImport: React.FC = () => {
 
               <p className="results-message">{result.message || 'Import completed'}</p>
 
+              {(result.transactionsWithoutCard ?? 0) > 0 && (
+                <div className="alert-banner" style={{backgroundColor: '#fff3cd', color: '#856404', border: '1px solid #ffc107'}}>
+                  ⚠️ {result.transactionsWithoutCard} transaction(s) created without card link. Add your credit cards to enable tracking!
+                </div>
+              )}
+
               {(result.skipped?.total ?? 0) > 0 && (
                 <div className="info-box">
                   <p><strong>Skipped breakdown</strong></p>
