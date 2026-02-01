@@ -43,11 +43,30 @@ const TransactionSchema = new mongoose_1.Schema({
     category: { type: String, required: true },
     description: { type: String, default: "" },
     date: { type: Date, default: Date.now },
+    paymentType: {
+        type: String,
+        enum: ["cash", "debit", "credit"],
+        default: "cash"
+    },
+    creditCardId: {
+        type: mongoose_1.Schema.Types.ObjectId,
+        ref: "CreditCard",
+        validate: {
+            validator: function (value) {
+                // creditCardId required only if paymentType is credit
+                if (this.paymentType === "credit" && !value)
+                    return false;
+                return true;
+            },
+            message: "creditCardId is required when paymentType is credit"
+        }
+    },
     isRecurring: { type: Boolean, default: false },
     recurringId: { type: mongoose_1.Schema.Types.ObjectId, ref: "RecurringTransaction" }
 }, { timestamps: true });
 TransactionSchema.index({ userId: 1, date: -1 });
 TransactionSchema.index({ teamId: 1, date: -1 });
+TransactionSchema.index({ creditCardId: 1, date: -1 });
 exports.Transaction = mongoose_1.default.model("Transaction", TransactionSchema);
 const BudgetSchema = new mongoose_1.Schema({
     userId: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },

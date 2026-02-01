@@ -12,7 +12,7 @@ import type {
   PaymentHistoryEntry 
 } from "./creditScoreTypes";
 import { CreditCard } from "../creditCard.model";
-import { Transaction } from "../transaction.model";
+import { Transaction } from "../finance.model";
 
 class CreditScorePlannerService {
   

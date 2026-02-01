@@ -8,7 +8,7 @@
 import { Types } from "mongoose";
 import type { CashFlowAnalysis } from "./creditScoreTypes";
 import { CreditCard } from "../creditCard.model";
-import { Transaction } from "../transaction.model";
+import { Transaction } from "../finance.model";
 
 class CashFlowAnalysisService {
   

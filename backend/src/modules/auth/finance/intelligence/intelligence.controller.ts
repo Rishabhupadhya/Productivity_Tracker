@@ -4,7 +4,8 @@
  * HTTP handlers for ML/intelligence endpoints
  */
 
-import { Request, Response } from "express";
+import { Response } from "express";
+import { AuthRequest } from "../../../../middleware/auth.middleware";
 import { generateSpendingProfile } from "./spendingProfile.service";
 import { predictOverspending, predictOverspendingMultiple } from "./overspendingPrediction.service";
 import { 
@@ -36,7 +37,7 @@ import recoveryPlannerService from "./recoveryPlanner.service";
  * GET /intelligence/profile/:cardId
  * Get spending behavior profile for a card
  */
-export const getSpendingProfile = async (req: Request, res: Response) => {
+export const getSpendingProfile = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardId } = req.params;
@@ -63,7 +64,7 @@ export const getSpendingProfile = async (req: Request, res: Response) => {
  * GET /intelligence/prediction/:cardId
  * Get overspending prediction for a card
  */
-export const getOverspendingPrediction = async (req: Request, res: Response) => {
+export const getOverspendingPrediction = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardId } = req.params;
@@ -89,7 +90,7 @@ export const getOverspendingPrediction = async (req: Request, res: Response) => 
  * POST /intelligence/prediction/batch
  * Get predictions for multiple cards
  */
-export const getPredictionsBatch = async (req: Request, res: Response) => {
+export const getPredictionsBatch = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardIds } = req.body;
@@ -115,7 +116,7 @@ export const getPredictionsBatch = async (req: Request, res: Response) => {
  * GET /intelligence/utilization/:cardId
  * Get utilization analysis for a card
  */
-export const getUtilizationAnalysis = async (req: Request, res: Response) => {
+export const getUtilizationAnalysis = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardId } = req.params;
@@ -141,7 +142,7 @@ export const getUtilizationAnalysis = async (req: Request, res: Response) => {
  * GET /intelligence/utilization/summary
  * Get utilization summary across all cards
  */
-export const getUtilizationSummary = async (req: Request, res: Response) => {
+export const getUtilizationSummary = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     
@@ -162,7 +163,7 @@ export const getUtilizationSummary = async (req: Request, res: Response) => {
  * GET /intelligence/anomalies/:cardId
  * Get anomalies for a specific card
  */
-export const getCardAnomalies = async (req: Request, res: Response) => {
+export const getCardAnomalies = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardId } = req.params;
@@ -189,7 +190,7 @@ export const getCardAnomalies = async (req: Request, res: Response) => {
  * GET /intelligence/anomalies
  * Get anomalies across all cards
  */
-export const getAllAnomalies = async (req: Request, res: Response) => {
+export const getPredictions = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardIds, days = 30 } = req.query;
@@ -202,7 +203,7 @@ export const getAllAnomalies = async (req: Request, res: Response) => {
     if (typeof cardIds === "string") {
       cardIdArray = cardIds.split(",");
     } else if (Array.isArray(cardIds)) {
-      cardIdArray = cardIds;
+      cardIdArray = cardIds.filter((id): id is string => typeof id === "string");
     } else {
       return res.status(400).json({ error: "cardIds query parameter required" });
     }
@@ -224,7 +225,7 @@ export const getAllAnomalies = async (req: Request, res: Response) => {
  * GET /intelligence/anomalies/:cardId/stats
  * Get anomaly statistics for a card
  */
-export const getAnomalyStats = async (req: Request, res: Response) => {
+export const getAnomalyStats = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardId } = req.params;
@@ -251,7 +252,7 @@ export const getAnomalyStats = async (req: Request, res: Response) => {
  * POST /intelligence/anomalies/check
  * Check if a specific transaction is anomalous
  */
-export const checkTransactionAnomaly = async (req: Request, res: Response) => {
+export const checkTransactionAnomaly = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { transactionId, cardId } = req.body;
@@ -286,7 +287,7 @@ export const checkTransactionAnomaly = async (req: Request, res: Response) => {
  * GET /intelligence/insights/:cardId
  * Get comprehensive intelligence insights for a card
  */
-export const getCardInsights = async (req: Request, res: Response) => {
+export const getCashFlow = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardId } = req.params;
@@ -312,7 +313,7 @@ export const getCardInsights = async (req: Request, res: Response) => {
  * GET /intelligence/insights
  * Get insights for all user cards
  */
-export const getAllInsights = async (req: Request, res: Response) => {
+export const getAllInsights = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     
@@ -333,7 +334,7 @@ export const getAllInsights = async (req: Request, res: Response) => {
  * GET /intelligence/dashboard
  * Get aggregated intelligence dashboard
  */
-export const getIntelligenceDashboard = async (req: Request, res: Response) => {
+export const getIntelligenceDashboard = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     
@@ -354,7 +355,7 @@ export const getIntelligenceDashboard = async (req: Request, res: Response) => {
  * GET /intelligence/config
  * Get user's intelligence configuration
  */
-export const getIntelligenceConfig = async (req: Request, res: Response) => {
+export const getIntelligenceConfig = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardId } = req.query;
@@ -386,7 +387,7 @@ export const getIntelligenceConfig = async (req: Request, res: Response) => {
  * PUT /intelligence/config
  * Update intelligence configuration
  */
-export const updateIntelligenceConfig = async (req: Request, res: Response) => {
+export const updateIntelligenceConfig = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { cardId, ...updates } = req.body;
@@ -424,7 +425,7 @@ export const updateIntelligenceConfig = async (req: Request, res: Response) => {
  * GET /intelligence/credit-score/improvement-plan
  * Get personalized credit score improvement plan
  */
-export const getCreditScoreImprovementPlan = async (req: Request, res: Response) => {
+export const getCreditScoreImprovementPlan = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     
@@ -451,7 +452,7 @@ export const getCreditScoreImprovementPlan = async (req: Request, res: Response)
  * GET /intelligence/payment-priority
  * Get payment priority for all credit cards
  */
-export const getPaymentPriority = async (req: Request, res: Response) => {
+export const getPaymentPriority = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     
@@ -474,7 +475,7 @@ export const getPaymentPriority = async (req: Request, res: Response) => {
  * 
  * Body: { monthlyIncome, fixedExpenses, variableExpenses }
  */
-export const analyzeCashFlow = async (req: Request, res: Response) => {
+export const analyzeCashFlow = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { monthlyIncome, fixedExpenses, variableExpenses } = req.body;
@@ -515,7 +516,7 @@ export const analyzeCashFlow = async (req: Request, res: Response) => {
  * 
  * Body: { monthlyIncome, fixedExpenses, variableExpenses }
  */
-export const getRecoveryPlan = async (req: Request, res: Response) => {
+export const getRecoveryPlan = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     const { monthlyIncome, fixedExpenses, variableExpenses } = req.body;

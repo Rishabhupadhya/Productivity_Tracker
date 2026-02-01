@@ -1,8 +1,9 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+import { AuthRequest } from "../../../middleware/auth.middleware";
 import * as creditCardService from "./creditCard.service";
 import { logger } from "../../../utils/logger";
 
-export const createCreditCard = async (req: Request, res: Response) => {
+export const createCreditCard = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -48,7 +49,7 @@ export const createCreditCard = async (req: Request, res: Response) => {
   }
 };
 
-export const getCreditCards = async (req: Request, res: Response) => {
+export const getCreditCards = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -65,7 +66,7 @@ export const getCreditCards = async (req: Request, res: Response) => {
   }
 };
 
-export const getCreditCardById = async (req: Request, res: Response) => {
+export const getCreditCardById = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -86,7 +87,7 @@ export const getCreditCardById = async (req: Request, res: Response) => {
   }
 };
 
-export const updateCreditCard = async (req: Request, res: Response) => {
+export const updateCreditCard = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -116,7 +117,7 @@ export const updateCreditCard = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteCreditCard = async (req: Request, res: Response) => {
+export const deleteCreditCard = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -134,7 +135,7 @@ export const deleteCreditCard = async (req: Request, res: Response) => {
   }
 };
 
-export const getUtilizationOverview = async (req: Request, res: Response) => {
+export const getUtilizationOverview = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -151,7 +152,7 @@ export const getUtilizationOverview = async (req: Request, res: Response) => {
   }
 };
 
-export const getCardUtilization = async (req: Request, res: Response) => {
+export const getCardUtilization = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -173,7 +174,7 @@ export const getCardUtilization = async (req: Request, res: Response) => {
   }
 };
 
-export const getCreditAlerts = async (req: Request, res: Response) => {
+export const getCreditAlerts = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -190,7 +191,7 @@ export const getCreditAlerts = async (req: Request, res: Response) => {
   }
 };
 
-export const checkSpendingSpike = async (req: Request, res: Response) => {
+export const checkSpendingSpike = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {

@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useCreditCards } from "../../hooks/useCreditCards";
-import AddCreditCardModal from "./AddCreditCardModal";
-import IntelligenceDashboard from "../../pages/IntelligenceDashboard";
-import CreditScoreManager from "../creditScore/CreditScoreManager";
+import AddCreditCardModal from "./AddCreditCardModal.tsx";
+import IntelligenceDashboard from "../../pages/IntelligenceDashboard.tsx";
+import CreditScoreManager from "../creditScore/CreditScoreManager.tsx";
+import { EmailTransactionImport } from "./EmailTransactionImport.tsx";
 import type { CreditCard } from "../../services/creditCard.service";
 
 export default function CreditDashboard() {
   const { cards, overview, alerts, loading, addCard, updateCard, deleteCard } = useCreditCards();
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCard, setEditingCard] = useState<CreditCard | null>(null);
-  const [activeTab, setActiveTab] = useState<'cards' | 'intelligence' | 'creditscore'>('cards');
+  const [activeTab, setActiveTab] = useState<'cards' | 'intelligence' | 'creditscore' | 'emailimport'>('cards');
 
   if (loading && !overview) {
     return (
@@ -179,6 +180,23 @@ export default function CreditDashboard() {
           }}
         >
           📊 Credit Score
+        </button>
+        <button
+          onClick={() => setActiveTab('emailimport')}
+          style={{
+            padding: "12px 24px",
+            background: activeTab === 'emailimport' ? '#fff' : 'transparent',
+            color: activeTab === 'emailimport' ? '#2c3e50' : '#666',
+            border: 'none',
+            borderBottom: activeTab === 'emailimport' ? '3px solid #4CAF50' : '3px solid transparent',
+            fontSize: "14px",
+            fontWeight: "600",
+            cursor: "pointer",
+            marginBottom: "-2px",
+            transition: "all 0.2s"
+          }}
+        >
+          📧 Email Import
         </button>
       </div>
 
@@ -425,6 +443,11 @@ export default function CreditDashboard() {
       {/* Credit Score Tab Content */}
       {activeTab === 'creditscore' && (
         <CreditScoreManager />
+      )}
+
+      {/* Email Import Tab Content */}
+      {activeTab === 'emailimport' && (
+        <EmailTransactionImport />
       )}
 
       {/* Modals */}

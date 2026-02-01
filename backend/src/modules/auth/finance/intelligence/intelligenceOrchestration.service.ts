@@ -77,10 +77,9 @@ const generateAlerts = (
   if (prediction && prediction.probabilityOfBreach >= config.overspendingAlertThreshold) {
     alerts.push({
       type: "overspending_risk",
-      severity: prediction.riskLevel === "critical" ? "critical" : prediction.riskLevel === "high" ? "high" : "medium",
+      severity: prediction.riskLevel === "critical" ? "critical" : prediction.riskLevel === "high" ? "warning" : "info",
       message: prediction.explanation,
-      actionable: true,
-      createdAt: new Date()
+      actionable: true
     });
   }
   
@@ -91,16 +90,14 @@ const generateAlerts = (
         type: "high_utilization",
         severity: "critical",
         message: utilization.recommendation,
-        actionable: utilization.actionRequired,
-        createdAt: new Date()
+        actionable: utilization.actionRequired
       });
     } else if (utilization.riskCategory === "risky" && utilization.utilizationPercent >= config.utilizationWarningThreshold) {
       alerts.push({
         type: "high_utilization",
-        severity: "high",
+        severity: "warning",
         message: utilization.recommendation,
-        actionable: utilization.actionRequired,
-        createdAt: new Date()
+        actionable: utilization.actionRequired
       });
     }
   }
@@ -110,10 +107,9 @@ const generateAlerts = (
   if (highSeverityAnomalies.length > 0) {
     alerts.push({
       type: "anomaly_detected",
-      severity: "high",
+      severity: "warning",
       message: `Detected ${highSeverityAnomalies.length} unusual transaction${highSeverityAnomalies.length > 1 ? 's' : ''} in the last 30 days. Review them to ensure they're legitimate.`,
-      actionable: true,
-      createdAt: new Date()
+      actionable: true
     });
   }
   
@@ -121,18 +117,17 @@ const generateAlerts = (
   if (utilization && prediction) {
     if (utilization.trend === "worsening" && prediction.riskLevel !== "low") {
       alerts.push({
-        type: "budget_concern",
-        severity: "medium",
+        type: "anomaly_detected",
+        severity: "warning",
         message: "Your spending is trending upward and you may exceed your budget. Consider reviewing your expenses.",
-        actionable: true,
-        createdAt: new Date()
+        actionable: true
       });
     }
   }
   
-  // Sort by severity: critical > high > medium
-  const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-  return alerts.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+  // Sort by severity: critical > warning > info
+  const severityOrder: Record<string, number> = { critical: 0, warning: 1, info: 2 };
+  return alerts.sort((a, b) => (severityOrder[a.severity] || 999) - (severityOrder[b.severity] || 999));
 };
 
 /**
@@ -220,9 +215,9 @@ export const generateIntelligenceInsights = async (
     creditCardId,
     userId,
     spendingProfile: profile,
-    prediction: prediction || undefined,
-    utilization: utilization || undefined,
-    anomalies: anomalies.length > 0 ? anomalies : undefined,
+    overspendingPrediction: prediction || undefined,
+    utilizationAnalysis: utilization || undefined,
+    recentAnomalies: anomalies.length > 0 ? anomalies : [],
     healthScore,
     activeAlerts: alerts,
     generatedAt: new Date()
@@ -283,9 +278,9 @@ export const getAggregatedIntelligence = async (
     0
   );
   const cardsAtRisk = insights.filter(
-    i => i.utilization && (i.utilization.riskCategory === "risky" || i.utilization.riskCategory === "critical")
+    i => i.utilizationAnalysis && (i.utilizationAnalysis.riskCategory === "risky" || i.utilizationAnalysis.riskCategory === "critical")
   ).length;
-  const totalAnomalies = insights.reduce((sum, i) => sum + (i.anomalies?.length || 0), 0);
+  const totalAnomalies = insights.reduce((sum, i) => sum + (i.recentAnomalies?.length || 0), 0);
   
   const avgHealthScore = insights.length > 0
     ? Math.round(insights.reduce((sum, i) => sum + i.healthScore, 0) / insights.length)
@@ -295,9 +290,9 @@ export const getAggregatedIntelligence = async (
   let totalBalance = 0;
   let totalLimit = 0;
   insights.forEach(i => {
-    if (i.utilization) {
-      totalBalance += i.utilization.currentBalance;
-      totalLimit += i.utilization.creditLimit;
+    if (i.utilizationAnalysis) {
+      totalBalance += i.utilizationAnalysis.currentBalance;
+      totalLimit += i.utilizationAnalysis.creditLimit;
     }
   });
   

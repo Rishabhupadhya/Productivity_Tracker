@@ -33,10 +33,8 @@ import {
   getUtilizationAnalysis,
   getUtilizationSummary,
   getCardAnomalies,
-  getAllAnomalies,
   getAnomalyStats,
   checkTransactionAnomaly,
-  getCardInsights,
   getAllInsights,
   getIntelligenceDashboard,
   getIntelligenceConfig,
@@ -65,12 +63,10 @@ router.get("/utilization/summary", getUtilizationSummary);
 
 // === ANOMALY DETECTION ===
 router.get("/anomalies/:cardId", getCardAnomalies);
-router.get("/anomalies", getAllAnomalies);
 router.get("/anomalies/:cardId/stats", getAnomalyStats);
 router.post("/anomalies/check", checkTransactionAnomaly);
 
 // === COMPREHENSIVE INSIGHTS ===
-router.get("/insights/:cardId", getCardInsights);
 router.get("/insights", getAllInsights);
 router.get("/dashboard", getIntelligenceDashboard);
 

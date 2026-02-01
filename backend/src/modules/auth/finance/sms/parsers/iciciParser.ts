@@ -6,7 +6,7 @@
  * "Your Credit Card XX4567 has been used for INR 2,150.00 at SWIGGY on 31-Jan-2026. Available limit: 97,850.00"
  */
 
-import { ISmsParser, ParsedTransaction } from "./smsParser.interface";
+import { ISmsParser, ParsedTransaction } from "../smsParser.interface";
 
 export class IciciSmsParser implements ISmsParser {
   getBankName(): string {

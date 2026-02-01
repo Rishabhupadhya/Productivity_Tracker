@@ -4,6 +4,7 @@ import * as financeController from "./finance.controller";
 import creditCardRoutes from "./creditCard.routes";
 import smsRoutes from "./sms/sms.routes";
 import intelligenceRoutes from "./intelligence/intelligence.routes";
+import emailRoutes from "./email/email.routes";
 
 const router = Router();
 
@@ -29,6 +30,9 @@ router.use("/credit-cards", creditCardRoutes);
 
 // SMS processing routes
 router.use("/sms", smsRoutes);
+
+// Email processing routes
+router.use("/email", emailRoutes);
 
 // Intelligence routes
 router.use("/intelligence", intelligenceRoutes);

@@ -65,7 +65,7 @@ export const createTransaction = async (
 
 export const getUserTransactions = async (
   userId: string,
-  filters?: { startDate?: Date; endDate?: Date; type?: string; category?: string }
+  filters?: { startDate?: Date; endDate?: Date; type?: string; category?: string; paymentType?: string }
 ) => {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
@@ -89,8 +89,9 @@ export const getUserTransactions = async (
 
   if (filters?.type) query.type = filters.type;
   if (filters?.category) query.category = filters.category;
+  if (filters?.paymentType) query.paymentType = filters.paymentType;
 
-  return Transaction.find(query).sort({ date: -1 });
+  return Transaction.find(query).sort({ date: -1 }).populate('creditCardId');
 };
 
 export const updateTransaction = async (transactionId: string, userId: string, updates: any) => {

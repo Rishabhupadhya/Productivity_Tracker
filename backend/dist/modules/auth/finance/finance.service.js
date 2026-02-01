@@ -16,7 +16,7 @@ const createTransaction = async (userId, data) => {
         amount: data.amount,
         category: data.category,
         description: data.description || "",
-        date: data.date || new Date(),
+        date: data.date ? new Date(data.date) : new Date(),
         isRecurring: data.isRecurring || false
     };
     if (data.recurringId) {
@@ -28,7 +28,7 @@ const createTransaction = async (userId, data) => {
     const transaction = await finance_model_1.Transaction.create(transactionData);
     // Update budget spent amount
     if (data.type === "expense") {
-        await updateBudgetSpent(userId, data.category, data.amount, data.date || new Date());
+        await updateBudgetSpent(userId, data.category, data.amount, data.date ? new Date(data.date) : new Date());
     }
     // Log activity
     if (user.activeTeamId) {
@@ -72,7 +72,9 @@ const getUserTransactions = async (userId, filters) => {
         query.type = filters.type;
     if (filters?.category)
         query.category = filters.category;
-    return finance_model_1.Transaction.find(query).sort({ date: -1 });
+    if (filters?.paymentType)
+        query.paymentType = filters.paymentType;
+    return finance_model_1.Transaction.find(query).sort({ date: -1 }).populate('creditCardId');
 };
 exports.getUserTransactions = getUserTransactions;
 const updateTransaction = async (transactionId, userId, updates) => {

@@ -14,13 +14,14 @@ export const createTransaction = async (req: AuthRequest, res: Response, next: N
 
 export const getTransactions = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const { startDate, endDate, type, category } = req.query;
+    const { startDate, endDate, type, category, paymentType } = req.query;
     const filters: any = {};
     
     if (startDate) filters.startDate = new Date(startDate as string);
     if (endDate) filters.endDate = new Date(endDate as string);
     if (type) filters.type = type;
     if (category) filters.category = category;
+    if (paymentType) filters.paymentType = paymentType;
 
     const transactions = await financeService.getUserTransactions(req.user.id, filters);
     res.json(transactions);

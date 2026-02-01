@@ -22,7 +22,7 @@ import { logger } from "../../../../utils/logger";
  * - External merchant category database (MCC codes)
  * - User-defined categories
  */
-const categorizeMerchant = (merchantName: string): string => {
+export const categorizeMerchant = (merchantName: string): string => {
   const merchant = merchantName.toUpperCase();
   
   // Food & Dining

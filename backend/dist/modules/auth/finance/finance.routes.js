@@ -32,10 +32,17 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const auth_middleware_1 = require("../../../middleware/auth.middleware");
 const financeController = __importStar(require("./finance.controller"));
+const creditCard_routes_1 = __importDefault(require("./creditCard.routes"));
+const sms_routes_1 = __importDefault(require("./sms/sms.routes"));
+const intelligence_routes_1 = __importDefault(require("./intelligence/intelligence.routes"));
+const email_routes_1 = __importDefault(require("./email/email.routes"));
 const router = (0, express_1.Router)();
 // Transaction routes
 router.post("/transactions", auth_middleware_1.authMiddleware, financeController.createTransaction);
@@ -51,6 +58,14 @@ router.post("/recurring", auth_middleware_1.authMiddleware, financeController.cr
 router.get("/recurring", auth_middleware_1.authMiddleware, financeController.getRecurringTransactions);
 router.patch("/recurring/:recurringId", auth_middleware_1.authMiddleware, financeController.updateRecurringTransaction);
 router.delete("/recurring/:recurringId", auth_middleware_1.authMiddleware, financeController.deleteRecurringTransaction);
+// Credit card routes
+router.use("/credit-cards", creditCard_routes_1.default);
+// SMS processing routes
+router.use("/sms", sms_routes_1.default);
+// Email processing routes
+router.use("/email", email_routes_1.default);
+// Intelligence routes
+router.use("/intelligence", intelligence_routes_1.default);
 // Summary and analytics
 router.get("/summary", auth_middleware_1.authMiddleware, financeController.getMonthlySummary);
 router.get("/predictions", auth_middleware_1.authMiddleware, financeController.getPredictions);

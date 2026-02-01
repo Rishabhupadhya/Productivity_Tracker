@@ -73,13 +73,13 @@ export const detectTransactionAnomaly = async (
   // If insufficient data, return no anomaly
   if (historicalTransactions.length < 10) {
     return {
-      transaction: {
-        transactionId: transaction._id.toString(),
-        amount: transaction.amount,
-        merchantName: transaction.description,
-        category: categorizeMerchant(transaction.description),
-        date: transaction.date
-      },
+      creditCardId,
+      userId,
+      transactionId: transaction._id.toString(),
+      amount: transaction.amount,
+      merchantName: transaction.description,
+      category: categorizeMerchant(transaction.description),
+      transactionDate: transaction.date,
       isAnomaly: false,
       anomalyScore: 0,
       anomalyType: [],
@@ -178,13 +178,13 @@ export const detectTransactionAnomaly = async (
   }
   
   return {
-    transaction: {
-      transactionId: transaction._id.toString(),
-      amount: transaction.amount,
-      merchantName: transaction.description,
-      category: transactionCategory,
-      date: transaction.date
-    },
+    creditCardId,
+    userId,
+    transactionId: transaction._id.toString(),
+    amount: transaction.amount,
+    merchantName: transaction.description,
+    category: transactionCategory,
+    transactionDate: transaction.date,
     isAnomaly,
     anomalyScore: Math.round(anomalyScore * 1000) / 1000,
     anomalyType: anomalyTypes,

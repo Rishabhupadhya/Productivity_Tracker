@@ -5,6 +5,7 @@
  */
 
 import { Request, Response } from "express";
+import { AuthRequest } from "../../../../middleware/auth.middleware";
 import { processSms, testSmsParsing, getSupportedBanks } from "./smsProcessing.service";
 import { getUserMonthlySpending, getCurrentMonth } from "./monthlySpending.service";
 import { logger } from "../../../../utils/logger";
@@ -15,7 +16,7 @@ import { logger } from "../../../../utils/logger";
  * 
  * Body: { smsText: string, receivedAt?: string }
  */
-export const processSmsMessage = async (req: Request, res: Response) => {
+export const processSmsMessage = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {
@@ -54,7 +55,7 @@ export const processSmsMessage = async (req: Request, res: Response) => {
  * 
  * Body: { smsText: string }
  */
-export const testSmsParser = async (req: Request, res: Response) => {
+export const testSmsParser = async (req: AuthRequest, res: Response) => {
   try {
     const { smsText } = req.body;
 
@@ -90,7 +91,7 @@ export const testSmsParser = async (req: Request, res: Response) => {
  * GET /sms/supported-banks
  * Get list of supported banks
  */
-export const getSupportedBanksList = async (req: Request, res: Response) => {
+export const getSupportedBanksList = async (req: AuthRequest, res: Response) => {
   try {
     const banks = getSupportedBanks();
     return res.status(200).json({
@@ -114,7 +115,7 @@ export const getSupportedBanksList = async (req: Request, res: Response) => {
  * 
  * Query: { month?: string } (YYYY-MM format)
  */
-export const getMonthlySpendingOverview = async (req: Request, res: Response) => {
+export const getMonthlySpendingOverview = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
     if (!userId) {

@@ -170,18 +170,18 @@ export const analyzeUtilization = async (
   return {
     creditCardId,
     userId,
-    month,
     currentBalance: Math.round(currentBalance),
     creditLimit: card.creditLimit,
     utilizationPercent: Math.round(utilizationPercent * 100) / 100,
     riskCategory,
     trend,
+    changeFromLastMonth: 0, // Would need previous month data
     averageUtilization: Math.round(averageUtilization * 100) / 100,
     peakUtilization: Math.round(peakUtilization * 100) / 100,
     lowestUtilization: Math.round(lowestUtilization * 100) / 100,
     recommendation,
     actionRequired,
-    generatedAt: new Date()
+    analyzedAt: new Date()
   };
 };
 

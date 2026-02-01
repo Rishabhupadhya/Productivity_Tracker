@@ -48,7 +48,7 @@ const createTransaction = async (req, res, next) => {
 exports.createTransaction = createTransaction;
 const getTransactions = async (req, res, next) => {
     try {
-        const { startDate, endDate, type, category } = req.query;
+        const { startDate, endDate, type, category, paymentType } = req.query;
         const filters = {};
         if (startDate)
             filters.startDate = new Date(startDate);
@@ -58,6 +58,8 @@ const getTransactions = async (req, res, next) => {
             filters.type = type;
         if (category)
             filters.category = category;
+        if (paymentType)
+            filters.paymentType = paymentType;
         const transactions = await financeService.getUserTransactions(req.user.id, filters);
         res.json(transactions);
     }

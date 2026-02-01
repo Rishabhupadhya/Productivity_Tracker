@@ -129,7 +129,7 @@ export interface AnomalyDetection {
   // Anomaly metrics
   isAnomaly: boolean;
   anomalyScore: number; // 0-1 (higher = more anomalous)
-  anomalyType: "amount" | "category" | "frequency" | "merchant" | "multiple";
+  anomalyType: ("amount" | "category" | "frequency" | "merchant" | "multiple" | "velocity" | "time")[];
   
   // Statistical context
   expectedRange: {
@@ -152,6 +152,16 @@ export interface AnomalyDetection {
 }
 
 /**
+ * Intelligence Alert - Single alert for anomalies or risks
+ */
+export interface IntelligenceAlert {
+  type: "overspending_risk" | "high_utilization" | "anomaly_detected" | "limit_breach";
+  severity: "info" | "warning" | "critical";
+  message: string;
+  actionable: boolean;
+}
+
+/**
  * Intelligence Insights - Aggregated view of all intelligence modules
  */
 export interface IntelligenceInsights {
@@ -168,12 +178,7 @@ export interface IntelligenceInsights {
   healthScore: number; // 0-100 (100 = excellent financial health)
   
   // Actionable alerts
-  activeAlerts: {
-    type: "overspending_risk" | "high_utilization" | "anomaly_detected" | "limit_breach";
-    severity: "info" | "warning" | "critical";
-    message: string;
-    actionable: boolean;
-  }[];
+  activeAlerts: IntelligenceAlert[];
   
   generatedAt: Date;
 }
