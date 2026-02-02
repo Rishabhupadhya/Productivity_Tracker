@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import type { ReactNode } from "react";
 import { loginUser as loginService, registerUser as registerService } from "../services/auth.server";
 import { getUserProfile as getUserProfileService } from "../services/profile.service";
@@ -58,7 +58,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   }, []);
 
-  const fetchUserProfile = async () => {
+  const fetchUserProfile = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -74,7 +74,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const login = async (email: string, password: string) => {
     try {

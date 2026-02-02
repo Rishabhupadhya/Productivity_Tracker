@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import AddTaskModal from "../task/AddTaskModal";
 import UserMenu from "./UserMenu";
@@ -14,11 +15,16 @@ type TopbarProps = {
 };
 
 export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick, isMobile = false }: TopbarProps) {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split("T")[0];
   });
+
+  const handleLogoClick = () => {
+    navigate('/dashboard');
+  };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
@@ -53,7 +59,16 @@ export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick
             alignItems: 'center',
             gap: 'var(--space-lg)',
           }}>
-            <div className="app-title">
+            <div 
+              className="app-title" 
+              onClick={handleLogoClick}
+              style={{
+                cursor: 'pointer',
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+              onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+            >
               <h1 style={{
                 fontSize: 'var(--text-2xl)',
                 fontWeight: 'var(--font-bold)',
