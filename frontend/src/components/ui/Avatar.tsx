@@ -43,7 +43,7 @@ const Avatar: React.FC<AvatarProps> = ({
   const baseStyle: React.CSSProperties = {
     width: `${dimension}px`,
     height: `${dimension}px`,
-    borderradius: '50%',
+    borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

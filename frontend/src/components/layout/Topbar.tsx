@@ -107,7 +107,7 @@ export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick
                   padding: '10px 16px',
                   background: 'var(--bg-secondary)',
                   border: '1px solid var(--border-default)',
-                  borderradius: 'var(--radius-md)',
+                  borderRadius: 'var(--radius-md)',
                   color: 'var(--text-primary)',
                   fontSize: 'var(--text-sm)',
                   cursor: 'pointer',

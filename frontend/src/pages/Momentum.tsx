@@ -60,7 +60,7 @@ export default function MomentumDashboard() {
         <div style={{ 
           background: "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)", 
           padding: "32px", 
-          borderradius: "16px", 
+          borderRadius: "16px", 
           marginBottom: "24px",
           border: "2px solid #00ffff"
         }}>
@@ -81,7 +81,7 @@ export default function MomentumDashboard() {
               <span>Level {stats.level}</span>
               <span>{stats.levelProgress.toFixed(1)}% to Level {stats.level + 1}</span>
             </div>
-            <div style={{ background: "#0a0a0a", height: "16px", borderradius: "8px", overflow: "hidden" }}>
+            <div style={{ background: "#0a0a0a", height: "16px", borderRadius: "8px", overflow: "hidden" }}>
               <div style={{
                 background: "linear-gradient(90deg, #00ffff 0%, #00ff00 100%)",
                 height: "100%",
@@ -99,7 +99,7 @@ export default function MomentumDashboard() {
         {/* Momentum Cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "16px", marginBottom: "24px" }}>
           {/* Today's Momentum */}
-          <div style={{ background: "#1a1a1a", padding: "24px", borderradius: "12px", border: "1px solid #333" }}>
+          <div style={{ background: "#1a1a1a", padding: "24px", borderRadius: "12px", border: "1px solid #333" }}>
             <div style={{ fontSize: "14px", color: "#00ffff", marginBottom: "12px" }}>🔥 TODAY'S MOMENTUM</div>
             <div style={{ fontSize: "36px", fontWeight: "bold", color: "#fff", marginBottom: "8px" }}>
               {stats.momentumToday}
@@ -108,7 +108,7 @@ export default function MomentumDashboard() {
           </div>
 
           {/* Weekly Momentum */}
-          <div style={{ background: "#1a1a1a", padding: "24px", borderradius: "12px", border: "1px solid #333" }}>
+          <div style={{ background: "#1a1a1a", padding: "24px", borderRadius: "12px", border: "1px solid #333" }}>
             <div style={{ fontSize: "14px", color: "#00ffff", marginBottom: "12px" }}>📊 WEEK'S MOMENTUM</div>
             <div style={{ fontSize: "36px", fontWeight: "bold", color: "#fff", marginBottom: "8px" }}>
               {stats.momentumWeek}
@@ -117,7 +117,7 @@ export default function MomentumDashboard() {
           </div>
 
           {/* Habits Completed Today */}
-          <div style={{ background: "#1a1a1a", padding: "24px", borderradius: "12px", border: "1px solid #333" }}>
+          <div style={{ background: "#1a1a1a", padding: "24px", borderRadius: "12px", border: "1px solid #333" }}>
             <div style={{ fontSize: "14px", color: "#00ffff", marginBottom: "12px" }}>✅ COMPLETED TODAY</div>
             <div style={{ fontSize: "36px", fontWeight: "bold", color: "#fff", marginBottom: "8px" }}>
               {completedToday} / {habits.length}
@@ -126,7 +126,7 @@ export default function MomentumDashboard() {
           </div>
 
           {/* Active Streaks */}
-          <div style={{ background: "#1a1a1a", padding: "24px", borderradius: "12px", border: "1px solid #333" }}>
+          <div style={{ background: "#1a1a1a", padding: "24px", borderRadius: "12px", border: "1px solid #333" }}>
             <div style={{ fontSize: "14px", color: "#00ffff", marginBottom: "12px" }}>🔥 ACTIVE STREAKS</div>
             <div style={{ fontSize: "36px", fontWeight: "bold", color: "#fff", marginBottom: "8px" }}>
               {activeStreaks.length}
@@ -146,7 +146,7 @@ export default function MomentumDashboard() {
                   style={{ 
                     background: "#1a1a1a", 
                     padding: "20px", 
-                    borderradius: "12px",
+                    borderRadius: "12px",
                     border: "1px solid #333",
                     display: "flex",
                     alignItems: "center",
@@ -175,7 +175,7 @@ export default function MomentumDashboard() {
           marginTop: "32px", 
           padding: "24px", 
           background: "#1a1a1a", 
-          borderradius: "12px",
+          borderRadius: "12px",
           border: "1px solid #333"
         }}>
           <h3 style={{ color: "#00ffff", fontSize: "18px", marginBottom: "16px" }}>💡 How to Earn XP</h3>

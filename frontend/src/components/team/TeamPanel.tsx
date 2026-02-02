@@ -168,7 +168,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                       <div key={member.userId?._id} style={{
                         padding: "16px",
                         background: "var(--bg-tertiary)",
-                        borderradius: "var(--radius-md)",
+                        borderRadius: "var(--radius-md)",
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
@@ -178,7 +178,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                           <div style={{
                             width: "40px",
                             height: "40px",
-                            borderradius: "50%",
+                            borderRadius: "50%",
                             background: "var(--accent)",
                             display: "flex",
                             alignItems: "center",
@@ -203,7 +203,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                             padding: "4px 12px",
                             background: member.role === "admin" ? "var(--accent)" : "var(--bg-elevated)",
                             color: member.role === "admin" ? "var(--bg-app)" : "var(--text-secondary)",
-                            borderradius: "var(--radius-sm)",
+                            borderRadius: "var(--radius-sm)",
                             fontSize: "var(--text-xs)",
                             fontWeight: "var(--font-medium)"
                           }}>
@@ -217,7 +217,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                                 background: "var(--danger)",
                                 color: "white",
                                 border: "none",
-                                borderradius: "var(--radius-sm)",
+                                borderRadius: "var(--radius-sm)",
                                 cursor: "pointer",
                                 fontSize: "var(--text-xs)",
                                 fontWeight: "var(--font-medium)"
@@ -248,7 +248,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                       <div key={idx} style={{
                         padding: "16px",
                         background: "var(--bg-tertiary)",
-                        borderradius: "var(--radius-md)",
+                        borderRadius: "var(--radius-md)",
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
@@ -267,7 +267,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                             padding: "4px 12px",
                             background: "var(--bg-elevated)",
                             color: "var(--text-secondary)",
-                            borderradius: "var(--radius-sm)",
+                            borderRadius: "var(--radius-sm)",
                             fontSize: "var(--text-xs)"
                           }}>
                             {invite.role}
@@ -279,7 +279,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                               background: "var(--danger)",
                               color: "white",
                               border: "none",
-                              borderradius: "var(--radius-sm)",
+                              borderRadius: "var(--radius-sm)",
                               cursor: "pointer",
                               fontSize: "var(--text-xs)"
                             }}
@@ -309,7 +309,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                       padding: "12px",
                       background: "var(--bg-tertiary)",
                       border: "1px solid var(--border-default)",
-                      borderradius: "var(--radius-md)",
+                      borderRadius: "var(--radius-md)",
                       color: "var(--text-primary)",
                       fontSize: "var(--text-base)"
                     }}
@@ -323,7 +323,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                         padding: "12px",
                         background: "var(--bg-tertiary)",
                         border: "1px solid var(--border-default)",
-                        borderradius: "var(--radius-md)",
+                        borderRadius: "var(--radius-md)",
                         color: "var(--text-primary)",
                         fontSize: "var(--text-base)"
                       }}
@@ -339,7 +339,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                         background: "var(--accent)",
                         color: "var(--text-inverse)",
                         border: "none",
-                        borderradius: "var(--radius-md)",
+                        borderRadius: "var(--radius-md)",
                         cursor: inviting ? "not-allowed" : "pointer",
                         fontWeight: "var(--font-medium)",
                         fontSize: "var(--text-base)",

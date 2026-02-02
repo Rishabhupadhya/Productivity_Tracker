@@ -70,7 +70,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
               color: "var(--text-muted)", 
               padding: "60px 20px",
               background: "var(--bg-tertiary)",
-              borderradius: "var(--radius-lg)",
+              borderRadius: "var(--radius-lg)",
               border: "1px solid var(--border-default)"
             }}>
               <div style={{ fontSize: "48px", marginBottom: "16px" }}>📭</div>
@@ -106,7 +106,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                       top: "4px",
                       width: "18px",
                       height: "18px",
-                      borderradius: "50%",
+                      borderRadius: "50%",
                       background: "var(--bg-secondary)",
                       border: `2px solid ${getActivityColor(activity.action)}`,
                       display: "flex",
@@ -121,7 +121,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                     <div style={{
                       padding: "16px",
                       background: "var(--bg-tertiary)",
-                      borderradius: "var(--radius-md)",
+                      borderRadius: "var(--radius-md)",
                       border: "1px solid var(--border-default)"
                     }}>
                       <div style={{ 
@@ -144,7 +144,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                               padding: "2px 8px",
                               background: "var(--bg-elevated)",
                               color: "var(--text-muted)",
-                              borderradius: "var(--radius-sm)",
+                              borderRadius: "var(--radius-sm)",
                               fontSize: "var(--text-xs)",
                               fontWeight: "var(--font-medium)"
                             }}>

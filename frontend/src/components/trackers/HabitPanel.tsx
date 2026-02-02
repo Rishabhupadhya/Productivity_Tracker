@@ -66,22 +66,6 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const handleToggleComplete = async (habitId: string, completed: boolean) => {
-    try {
-      if (completed) {
-        await habitService.uncompleteHabit(habitId);
-      } else {
-        await habitService.completeHabit(habitId);
-      }
-      await loadHabits();
-      if (selectedHabit?._id === habitId) {
-        await loadHabitStats(habitId);
-      }
-    } catch (error) {
-      console.error("Failed to toggle habit:", error);
-    }
-  };
-
   const handleDeleteHabit = async (id: string) => {
     if (!confirm("Delete this habit?")) return;
     try {
@@ -132,6 +116,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
             </button>
 
             {habitStats ? (
+              <>
               <div className="detail-container">
               <div className="detail-header">
                 <div>
@@ -202,6 +187,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                 ))}
               </div>
             </div>
+            </>
             ) : (
               <div className="loading-state">Loading habit statistics...</div>
             )}
@@ -316,7 +302,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                         border: "none",
                         color: "#fff",
                         padding: "8px 16px",
-                        borderradius: "6px",
+                        borderRadius: "6px",
                         cursor: "pointer",
                         fontSize: "14px",
                         fontWeight: "600",

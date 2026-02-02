@@ -283,7 +283,7 @@ export default function Habits() {
                     height: "60px",
                     background: selectedHabit.completedToday ? "var(--success)" : "var(--bg-tertiary)",
                     border: selectedHabit.completedToday ? "none" : "3px solid var(--accent)",
-                    borderradius: "var(--radius-lg)",
+                    borderRadius: "var(--radius-lg)",
                     cursor: "pointer",
                     fontSize: "36px",
                     color: "#000",

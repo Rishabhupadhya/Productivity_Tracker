@@ -109,7 +109,7 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
                 padding: '10px',
                 background: '#0a0a0a',
                 border: '1px solid #00ffff',
-                borderradius: '4px',
+                borderRadius: '4px',
                 color: '#00ffff',
                 fontSize: '14px'
               }}

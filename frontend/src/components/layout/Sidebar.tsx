@@ -9,7 +9,7 @@ import { getPendingInvites, acceptTeamInvite } from "../../services/team.service
 import type { Project } from "../../services/project.service";
 import "./sidebar.css";
 
-export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
+export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [active, setActive] = useState("My Work");
@@ -22,11 +22,6 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
   const [pendingInvites, setPendingInvites] = useState<any[]>([]);
   const [showInvitesModal, setShowInvitesModal] = useState(false);
   const { teams, activeTeam, switchTeam, createTeam, refreshTeams } = useTeam();
-
-  const handleNavigation = (callback: () => void) => {
-    callback();
-    onNavigate?.();
-  };
 
   // Sync active state with current route
   useEffect(() => {
@@ -163,7 +158,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   border: "1px solid #00ffff", 
                   color: "#00ffff", 
                   padding: "2px 8px", 
-                  borderradius: "4px", 
+                  borderRadius: "4px", 
                   cursor: "pointer",
                   fontSize: "12px"
                 }}
@@ -180,7 +175,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   padding: "10px", 
                   background: "rgba(255, 100, 0, 0.1)", 
                   border: "1px solid #ff6400",
-                  borderradius: "6px", 
+                  borderRadius: "6px", 
                   fontSize: "13px",
                   marginBottom: "12px",
                   color: "#ff6400",
@@ -212,7 +207,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                 padding: "8px", 
                 background: "#1a1a1a", 
                 border: "1px solid #00ffff", 
-                borderradius: "4px", 
+                borderRadius: "4px", 
                 color: "#00ffff",
                 marginBottom: "16px",
                 cursor: "pointer"
@@ -231,7 +226,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                 <div style={{ 
                   padding: "8px", 
                   background: "rgba(0, 255, 255, 0.1)", 
-                  borderradius: "4px", 
+                  borderRadius: "4px", 
                   fontSize: "12px",
                   marginBottom: "8px",
                   color: "#00ffff",
@@ -247,7 +242,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                     border: "1px solid #00ffff",
                     color: "#00ffff",
                     padding: "8px",
-                    borderradius: "4px",
+                    borderRadius: "4px",
                     cursor: "pointer",
                     fontSize: "12px",
                     fontWeight: "500",
@@ -285,7 +280,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   fontSize: "9px",
                   fontWeight: "600",
                   padding: "2px 4px",
-                  borderradius: "8px",
+                  borderRadius: "8px",
                   minWidth: "16px",
                   textAlign: "center",
                   lineHeight: "1"
@@ -336,7 +331,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   fontSize: "10px",
                   fontWeight: "600",
                   padding: "2px 6px",
-                  borderradius: "10px",
+                  borderRadius: "10px",
                   minWidth: "18px",
                   textAlign: "center"
                 }}>
@@ -354,7 +349,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                 border: "1px solid rgba(0, 255, 255, 0.3)",
                 color: "#00ffff",
                 padding: "8px 16px",
-                borderradius: "4px",
+                borderRadius: "4px",
                 cursor: "pointer",
                 fontSize: "13px",
                 fontWeight: "500",
@@ -385,7 +380,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   border: "1px solid #00ffff",
                   color: "#00ffff",
                   padding: "2px 8px",
-                  borderradius: "4px",
+                  borderRadius: "4px",
                   cursor: "pointer",
                   fontSize: "12px"
                 }}
@@ -468,7 +463,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
             style={{ 
               background: "#1a1a1a", 
               padding: "24px", 
-              borderradius: "8px", 
+              borderRadius: "8px", 
               border: "1px solid #00ffff",
               maxWidth: "400px",
               width: "90%"
@@ -488,7 +483,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   marginBottom: "16px", 
                   background: "#0a0a0a", 
                   border: "1px solid #00ffff", 
-                  borderradius: "4px", 
+                  borderRadius: "4px", 
                   color: "#00ffff"
                 }}
               />
@@ -500,7 +495,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                     padding: "8px 16px", 
                     background: "transparent", 
                     border: "1px solid #666", 
-                    borderradius: "4px", 
+                    borderRadius: "4px", 
                     color: "#666",
                     cursor: "pointer"
                   }}
@@ -513,7 +508,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                     padding: "8px 16px", 
                     background: "#00ffff", 
                     border: "none", 
-                    borderradius: "4px", 
+                    borderRadius: "4px", 
                     color: "#000",
                     cursor: "pointer",
                     fontWeight: "bold"
@@ -545,7 +540,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
             style={{ 
               background: "var(--bg-primary)", 
               padding: "24px", 
-              borderradius: "12px", 
+              borderRadius: "12px", 
               border: "1px solid var(--border)",
               maxWidth: "500px",
               width: "90%",
@@ -581,7 +576,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderradius: "4px",
+                  borderRadius: "4px",
                   transition: "all 0.2s"
                 }}
                 onMouseEnter={(e) => {
@@ -615,7 +610,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                       padding: "16px",
                       background: "var(--bg-secondary)",
                       border: "1px solid var(--border)",
-                      borderradius: "8px",
+                      borderRadius: "8px",
                       display: "flex",
                       flexDirection: "column",
                       gap: "12px"
@@ -626,7 +621,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                         width: "40px",
                         height: "40px",
                         background: "var(--accent)",
-                        borderradius: "8px",
+                        borderRadius: "8px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -674,7 +669,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                           padding: "10px 16px",
                           background: "var(--accent)",
                           border: "none",
-                          borderradius: "6px",
+                          borderRadius: "6px",
                           color: "var(--bg-app)",
                           cursor: "pointer",
                           fontWeight: "600",
