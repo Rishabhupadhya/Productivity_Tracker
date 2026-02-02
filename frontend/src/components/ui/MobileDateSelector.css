@@ -6,8 +6,6 @@
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border);
   gap: 12px;
-  position: sticky;
-  top: 48px;
   z-index: 90;
 }
 
@@ -78,7 +76,6 @@
 @media (max-width: 480px) {
   .mobile-date-selector {
     padding: 10px 12px;
-    top: 44px;
   }
 
   .date-nav-btn {

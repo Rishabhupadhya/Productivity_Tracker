@@ -8,13 +8,13 @@ interface MobileDateSelectorProps {
 
 export default function MobileDateSelector({ value, onChange }: MobileDateSelectorProps) {
   const [selectedDate, setSelectedDate] = useState(() => {
-    if (value) return value;
+    if (value && typeof value === 'string') return value;
     const today = new Date();
     return today.toISOString().split("T")[0];
   });
 
   useEffect(() => {
-    if (value) {
+    if (value && typeof value === 'string') {
       setSelectedDate(value);
     }
   }, [value]);
@@ -51,12 +51,22 @@ export default function MobileDateSelector({ value, onChange }: MobileDateSelect
     );
   };
 
-  const formatDisplayDate = (dateStr: string) => {
-    const date = new Date(dateStr + "T00:00:00");
+  const formatDisplayDate = (dateStr: string | undefined) => {
+    if (!dateStr || typeof dateStr !== 'string' || dateStr === 'Invalid Date') {
+      const today = new Date();
+      dateStr = today.toISOString().split("T")[0];
+    }
+    
+    const [year, month, day] = dateStr.split('-').map(Number);
+    if (!year || !month || !day) {
+      return 'Today';
+    }
+    
+    const date = new Date(year, month - 1, day);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
-    const selected = new Date(date);
+    const selected = new Date(year, month - 1, day);
     selected.setHours(0, 0, 0, 0);
 
     if (selected.getTime() === today.getTime()) {

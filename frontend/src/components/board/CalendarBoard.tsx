@@ -32,14 +32,22 @@ export default function CalendarBoard() {
   }, [selectedDate, weekStartDay]);
   
   const today = formatDate(new Date());
+  
+  // Convert selectedDate to string format for MobileDateSelector
+  const selectedDateString = selectedDate instanceof Date 
+    ? formatDate(selectedDate) 
+    : typeof selectedDate === 'string' 
+    ? selectedDate 
+    : formatDate(new Date());
 
   return (
     <>
       {/* Mobile Date Selector - shows only on mobile/tablet */}
-      <MobileDateSelector value={selectedDate} />
+      <MobileDateSelector value={selectedDateString} />
 
       <div style={{ display: "flex", gap: "16px" }}>
-        <div className="board">{week.map((dateObj) => {
+        <div className="board">
+          {week.map((dateObj) => {
             const dateStr = formatDate(dateObj);
             const isToday = today === dateStr;
             
