@@ -30,5 +30,5 @@ body {
 
 .board::-webkit-scrollbar-thumb {
   background: #1f2937;
-  border-radius: 10px;
+  borderradius: 10px;
 }

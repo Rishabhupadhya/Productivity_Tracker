@@ -15,7 +15,7 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   const baseStyles: React.CSSProperties = {
     border: 'none',
-    borderRadius: 'var(--radius-md)',
+    borderradius: 'var(--radius-md)',
     fontWeight: 'var(--font-medium)',
     cursor: 'pointer',
     transition: 'all 0.2s ease',

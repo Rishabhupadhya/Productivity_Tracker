@@ -115,7 +115,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
         style={{ 
           background: "#1a1a1a", 
           padding: "24px", 
-          borderRadius: "8px", 
+          borderradius: "8px", 
           border: "1px solid #00ffff",
           maxWidth: "900px",
           width: "90%",
@@ -152,7 +152,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                 background: "#333",
                 color: "#fff",
                 border: "none",
-                borderRadius: "4px",
+                borderradius: "4px",
                 cursor: "pointer",
                 marginBottom: "16px"
               }}
@@ -160,7 +160,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
               ← Back to Habits
             </button>
 
-            <div style={{ padding: "20px", background: "#0a0a0a", borderRadius: "8px", marginBottom: "20px" }}>
+            <div style={{ padding: "20px", background: "#0a0a0a", borderradius: "8px", marginBottom: "20px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
                 <div>
                   <h3 style={{ color: "#00ffff", margin: 0, marginBottom: "4px" }}>{selectedHabit.name}</h3>
@@ -172,37 +172,37 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px" }}>
-                <div style={{ padding: "12px", background: "#1a1a1a", borderRadius: "8px" }}>
+                <div style={{ padding: "12px", background: "#1a1a1a", borderradius: "8px" }}>
                   <div style={{ fontSize: "12px", color: "#666" }}>Current Streak</div>
                   <div style={{ fontSize: "20px", color: getStreakColor(habitStats.currentStreak), marginTop: "4px" }}>
                     {habitStats.currentStreak} days
                   </div>
                 </div>
-                <div style={{ padding: "12px", background: "#1a1a1a", borderRadius: "8px" }}>
+                <div style={{ padding: "12px", background: "#1a1a1a", borderradius: "8px" }}>
                   <div style={{ fontSize: "12px", color: "#666" }}>Longest Streak</div>
                   <div style={{ fontSize: "20px", color: "#00ffff", marginTop: "4px" }}>
                     {habitStats.longestStreak} days
                   </div>
                 </div>
-                <div style={{ padding: "12px", background: "#1a1a1a", borderRadius: "8px" }}>
+                <div style={{ padding: "12px", background: "#1a1a1a", borderradius: "8px" }}>
                   <div style={{ fontSize: "12px", color: "#666" }}>Total Completions</div>
                   <div style={{ fontSize: "20px", color: "#00ffff", marginTop: "4px" }}>
                     {habitStats.totalCompletions}
                   </div>
                 </div>
-                <div style={{ padding: "12px", background: "#1a1a1a", borderRadius: "8px" }}>
+                <div style={{ padding: "12px", background: "#1a1a1a", borderradius: "8px" }}>
                   <div style={{ fontSize: "12px", color: "#666" }}>Success Rate</div>
                   <div style={{ fontSize: "20px", color: getSuccessRateColor(habitStats.successRate), marginTop: "4px" }}>
                     {habitStats.successRate.toFixed(1)}%
                   </div>
                 </div>
-                <div style={{ padding: "12px", background: "#1a1a1a", borderRadius: "8px" }}>
+                <div style={{ padding: "12px", background: "#1a1a1a", borderradius: "8px" }}>
                   <div style={{ fontSize: "12px", color: "#666" }}>Last 7 Days</div>
                   <div style={{ fontSize: "20px", color: "#00ffff", marginTop: "4px" }}>
                     {habitStats.last7DaysCount} / 7
                   </div>
                 </div>
-                <div style={{ padding: "12px", background: "#1a1a1a", borderRadius: "8px" }}>
+                <div style={{ padding: "12px", background: "#1a1a1a", borderradius: "8px" }}>
                   <div style={{ fontSize: "12px", color: "#666" }}>Last 30 Days</div>
                   <div style={{ fontSize: "20px", color: "#00ffff", marginTop: "4px" }}>
                     {habitStats.last30DaysCount} / 30
@@ -218,7 +218,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                   <div key={idx} style={{ 
                     padding: "10px", 
                     background: completion.completed ? "#0a3020" : "#0a0a0a", 
-                    borderRadius: "6px",
+                    borderradius: "6px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
@@ -245,7 +245,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                 background: "#00ffff",
                 color: "#000",
                 border: "none",
-                borderRadius: "4px",
+                borderradius: "4px",
                 cursor: "pointer",
                 marginBottom: "16px",
                 fontWeight: "bold"
@@ -255,26 +255,26 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
             </button>
 
             {showAddForm && (
-              <form onSubmit={handleAddHabit} style={{ marginBottom: "20px", padding: "16px", background: "#0a0a0a", borderRadius: "8px" }}>
+              <form onSubmit={handleAddHabit} style={{ marginBottom: "20px", padding: "16px", background: "#0a0a0a", borderradius: "8px" }}>
                 <input
                   type="text"
                   placeholder="Habit Name"
                   value={newHabit.name}
                   onChange={(e) => setNewHabit({ ...newHabit, name: e.target.value })}
-                  style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px" }}
+                  style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff", marginBottom: "12px" }}
                   required
                 />
                 <textarea
                   placeholder="Description (optional)"
                   value={newHabit.description}
                   onChange={(e) => setNewHabit({ ...newHabit, description: e.target.value })}
-                  style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px", minHeight: "60px" }}
+                  style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff", marginBottom: "12px", minHeight: "60px" }}
                 />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
                   <select
                     value={newHabit.frequency}
                     onChange={(e) => setNewHabit({ ...newHabit, frequency: e.target.value as HabitFrequency })}
-                    style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff" }}
+                    style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff" }}
                   >
                     <option value="daily">Daily</option>
                     <option value="weekly">Weekly</option>
@@ -285,7 +285,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                     placeholder="Times/Week"
                     value={newHabit.timesPerWeek}
                     onChange={(e) => setNewHabit({ ...newHabit, timesPerWeek: e.target.value })}
-                    style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff" }}
+                    style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff" }}
                     min="1"
                     max="7"
                   />
@@ -294,16 +294,16 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                     placeholder="Grace Days"
                     value={newHabit.graceDays}
                     onChange={(e) => setNewHabit({ ...newHabit, graceDays: e.target.value })}
-                    style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff" }}
+                    style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff" }}
                     min="0"
                     max="3"
                   />
                 </div>
                 <div style={{ display: "flex", gap: "8px" }}>
-                  <button type="submit" style={{ padding: "8px 16px", background: "#00ffff", color: "#000", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>
+                  <button type="submit" style={{ padding: "8px 16px", background: "#00ffff", color: "#000", border: "none", borderradius: "4px", cursor: "pointer", fontWeight: "bold" }}>
                     Create Habit
                   </button>
-                  <button type="button" onClick={() => setShowAddForm(false)} style={{ padding: "8px 16px", background: "#333", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+                  <button type="button" onClick={() => setShowAddForm(false)} style={{ padding: "8px 16px", background: "#333", color: "#fff", border: "none", borderradius: "4px", cursor: "pointer" }}>
                     Cancel
                   </button>
                 </div>
@@ -320,7 +320,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                     style={{ 
                       padding: "16px", 
                       background: "#0a0a0a", 
-                      borderRadius: "8px", 
+                      borderradius: "8px", 
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
@@ -338,7 +338,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                           height: "40px",
                           background: habit.completedToday ? "#00ff00" : "#1a1a1a",
                           border: habit.completedToday ? "none" : "2px solid #00ffff",
-                          borderRadius: "8px",
+                          borderradius: "8px",
                           cursor: "pointer",
                           fontSize: "20px",
                           display: "flex",

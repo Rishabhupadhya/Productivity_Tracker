@@ -4,7 +4,7 @@
   max-width: 220px;
   background: var(--bg-panel);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  borderradius: 8px;
   padding: 12px;
   flex-shrink: 0;
   max-height: calc(100vh - 140px);
@@ -23,7 +23,7 @@
 
 .waiting::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 2px;
+  borderradius: 2px;
 }
 
 .waiting h4 {
@@ -37,7 +37,7 @@
 .waiting-task {
   background: var(--bg-card);
   padding: 10px;
-  border-radius: 6px;
+  borderradius: 6px;
   margin-bottom: 10px;
   border-left: 3px solid;
   cursor: move;

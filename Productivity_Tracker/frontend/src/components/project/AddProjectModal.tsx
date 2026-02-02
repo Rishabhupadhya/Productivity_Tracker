@@ -28,7 +28,7 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
         style={{ 
           background: "#1a1a1a", 
           padding: "24px", 
-          borderRadius: "8px", 
+          borderradius: "8px", 
           border: "1px solid #00ffff",
           maxWidth: "450px",
           width: "90%"
@@ -51,7 +51,7 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
                 padding: "10px", 
                 background: "#0a0a0a", 
                 border: "1px solid #00ffff", 
-                borderRadius: "4px", 
+                borderradius: "4px", 
                 color: "#00ffff"
               }}
             />
@@ -72,7 +72,7 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
                     fontSize: "20px",
                     background: selectedIcon === icon ? "#00ffff" : "#0a0a0a",
                     border: `1px solid ${selectedIcon === icon ? "#00ffff" : "#333"}`,
-                    borderRadius: "4px",
+                    borderradius: "4px",
                     cursor: "pointer"
                   }}
                 >
@@ -97,7 +97,7 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
                     height: "36px",
                     background: color,
                     border: selectedColor === color ? "3px solid white" : "1px solid #333",
-                    borderRadius: "50%",
+                    borderradius: "50%",
                     cursor: "pointer"
                   }}
                 />
@@ -113,7 +113,7 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
                 padding: "8px 16px", 
                 background: "transparent", 
                 border: "1px solid #666", 
-                borderRadius: "4px", 
+                borderradius: "4px", 
                 color: "#666",
                 cursor: "pointer"
               }}
@@ -127,7 +127,7 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
                 padding: "8px 16px", 
                 background: name.trim() ? "#00ffff" : "#333", 
                 border: "none", 
-                borderRadius: "4px", 
+                borderradius: "4px", 
                 color: name.trim() ? "#000" : "#666",
                 cursor: name.trim() ? "pointer" : "not-allowed",
                 fontWeight: "bold"

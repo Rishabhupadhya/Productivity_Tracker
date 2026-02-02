@@ -121,7 +121,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                   border: "1px solid #00ffff", 
                   color: "#00ffff", 
                   padding: "2px 8px", 
-                  borderRadius: "4px", 
+                  borderradius: "4px", 
                   cursor: "pointer",
                   fontSize: "12px"
                 }}
@@ -138,7 +138,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 padding: "8px", 
                 background: "#1a1a1a", 
                 border: "1px solid #00ffff", 
-                borderRadius: "4px", 
+                borderradius: "4px", 
                 color: "#00ffff",
                 marginBottom: "16px",
                 cursor: "pointer"
@@ -156,7 +156,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
               <div style={{ 
                 padding: "8px", 
                 background: "rgba(0, 255, 255, 0.1)", 
-                borderRadius: "4px", 
+                borderradius: "4px", 
                 fontSize: "12px",
                 marginBottom: "16px",
                 color: "#00ffff",
@@ -174,7 +174,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                       border: "1px solid #00ffff",
                       color: "#00ffff",
                       padding: "2px 6px",
-                      borderRadius: "4px",
+                      borderradius: "4px",
                       cursor: "pointer",
                       fontSize: "10px"
                     }}
@@ -189,7 +189,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                       border: "1px solid #00ffff",
                       color: "#00ffff",
                       padding: "2px 6px",
-                      borderRadius: "4px",
+                      borderradius: "4px",
                       cursor: "pointer",
                       fontSize: "10px"
                     }}
@@ -230,7 +230,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                   border: "1px solid #00ffff",
                   color: "#00ffff",
                   padding: "2px 8px",
-                  borderRadius: "4px",
+                  borderradius: "4px",
                   cursor: "pointer",
                   fontSize: "12px"
                 }}
@@ -313,7 +313,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
             style={{ 
               background: "#1a1a1a", 
               padding: "24px", 
-              borderRadius: "8px", 
+              borderradius: "8px", 
               border: "1px solid #00ffff",
               maxWidth: "400px",
               width: "90%"
@@ -333,7 +333,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                   marginBottom: "16px", 
                   background: "#0a0a0a", 
                   border: "1px solid #00ffff", 
-                  borderRadius: "4px", 
+                  borderradius: "4px", 
                   color: "#00ffff"
                 }}
               />
@@ -345,7 +345,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                     padding: "8px 16px", 
                     background: "transparent", 
                     border: "1px solid #666", 
-                    borderRadius: "4px", 
+                    borderradius: "4px", 
                     color: "#666",
                     cursor: "pointer"
                   }}
@@ -358,7 +358,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                     padding: "8px 16px", 
                     background: "#00ffff", 
                     border: "none", 
-                    borderRadius: "4px", 
+                    borderradius: "4px", 
                     color: "#000",
                     cursor: "pointer",
                     fontWeight: "bold"

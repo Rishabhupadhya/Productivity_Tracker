@@ -6,7 +6,7 @@
   background: var(--purple);
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  borderradius: 50%;
   display: grid;
   place-items: center;
   font-size: 14px;
@@ -26,7 +26,7 @@
   right: 0;
   background: var(--bg-panel);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  borderradius: 8px;
   width: 240px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   z-index: 1000;
@@ -44,7 +44,7 @@
   background: var(--purple);
   width: 48px;
   height: 48px;
-  border-radius: 50%;
+  borderradius: 50%;
   display: grid;
   place-items: center;
   font-size: 18px;

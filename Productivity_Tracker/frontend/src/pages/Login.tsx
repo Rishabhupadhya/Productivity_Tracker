@@ -27,7 +27,7 @@ export default function Login() {
 
   return (
     <div style={{ padding: '50px', background: '#0b0f14', minHeight: '100vh' }}>
-      <div className="auth-container" style={{ background: '#1a1a1a', padding: '2rem', maxWidth: '400px', margin: '100px auto', borderRadius: '8px', border: '1px solid #00ffff' }}>
+      <div className="auth-container" style={{ background: '#1a1a1a', padding: '2rem', maxWidth: '400px', margin: '100px auto', borderradius: '8px', border: '1px solid #00ffff' }}>
         <h2 style={{ color: '#00ffff', marginBottom: '20px', textAlign: 'center' }}>Login to Productivity Tracker</h2>
 
         {error && <p style={{ color: '#ff4444', marginBottom: '16px', textAlign: 'center' }}>{error}</p>}
@@ -39,7 +39,7 @@ export default function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            style={{ width: '100%', padding: '10px', marginBottom: '12px', border: '1px solid #00ffff', borderRadius: '4px', background: '#0a0a0a', color: '#00ffff', fontSize: '16px' }}
+            style={{ width: '100%', padding: '10px', marginBottom: '12px', border: '1px solid #00ffff', borderradius: '4px', background: '#0a0a0a', color: '#00ffff', fontSize: '16px' }}
           />
           <input
             placeholder="Password"
@@ -47,9 +47,9 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            style={{ width: '100%', padding: '10px', marginBottom: '12px', border: '1px solid #00ffff', borderRadius: '4px', background: '#0a0a0a', color: '#00ffff', fontSize: '16px' }}
+            style={{ width: '100%', padding: '10px', marginBottom: '12px', border: '1px solid #00ffff', borderradius: '4px', background: '#0a0a0a', color: '#00ffff', fontSize: '16px' }}
           />
-          <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px', background: loading ? '#666' : '#00ffff', color: '#000', border: 'none', borderRadius: '4px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '16px' }}>
+          <button type="submit" disabled={loading} style={{ width: '100%', padding: '12px', background: loading ? '#666' : '#00ffff', color: '#000', border: 'none', borderradius: '4px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '16px' }}>
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>

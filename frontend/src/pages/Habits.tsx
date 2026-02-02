@@ -149,11 +149,25 @@ export default function Habits() {
   const handleDeleteHabit = async (id: string) => {
     if (!confirm("Delete this habit?")) return;
     try {
+      // Immediately remove from state for instant UI feedback
+      setHabits(prevHabits => prevHabits.filter(h => h._id !== id));
+      
+      // Clear selection if the deleted habit was selected
+      if (selectedHabit?._id === id) {
+        setSelectedHabit(null);
+        setHabitStats(null);
+      }
+      
+      // Delete from backend
       await habitService.deleteHabit(id);
-      setSelectedHabit(null);
+      
+      // Reload to ensure consistency
       await loadHabits();
     } catch (error) {
       console.error("Failed to delete habit:", error);
+      // Reload on error to restore correct state
+      await loadHabits();
+      alert("Failed to delete habit. Please try again.");
     }
   };
 
@@ -269,7 +283,7 @@ export default function Habits() {
                     height: "60px",
                     background: selectedHabit.completedToday ? "var(--success)" : "var(--bg-tertiary)",
                     border: selectedHabit.completedToday ? "none" : "3px solid var(--accent)",
-                    borderRadius: "var(--radius-lg)",
+                    borderradius: "var(--radius-lg)",
                     cursor: "pointer",
                     fontSize: "36px",
                     color: "#000",
@@ -427,37 +441,23 @@ export default function Habits() {
                     style={{ 
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "space-between"
+                      justifyContent: "space-between",
+                      gap: "var(--space-lg)"
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-lg)", flex: 1 }}>
-                      <button
-                        onClick={() => handleToggleComplete(habit._id, habit.completedToday || false)}
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          background: habit.completedToday ? "var(--success)" : "var(--bg-tertiary)",
-                          border: habit.completedToday ? "none" : "3px solid var(--accent)",
-                          borderRadius: "var(--radius-md)",
-                          cursor: "pointer",
-                          fontSize: "28px",
-                          color: "#000",
-                          fontWeight: "bold",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          transition: "all 0.2s",
-                          position: "relative",
-                          zIndex: 10,
-                          flexShrink: 0
-                        }}
-                      >
-                        {habit.completedToday ? "✔" : ""}
-                      </button>
+                    <div 
+                      style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "var(--space-lg)", 
+                        flex: 1,
+                        cursor: "pointer"
+                      }}
+                      onClick={() => setSelectedHabit(habit)}
+                    >
                       <div style={{ flex: 1 }}>
                         <div 
-                          style={{ color: "var(--text-primary)", fontSize: "var(--text-lg)", cursor: "pointer", fontWeight: "var(--font-medium)", marginBottom: "var(--space-xs)" }}
-                          onClick={() => setSelectedHabit(habit)}
+                          style={{ color: "var(--text-primary)", fontSize: "var(--text-lg)", fontWeight: "var(--font-medium)", marginBottom: "var(--space-xs)" }}
                         >
                           {habit.name}
                         </div>
@@ -477,6 +477,20 @@ export default function Habits() {
                         </div>
                       </div>
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteHabit(habit._id);
+                      }}
+                      className="btn-danger"
+                      style={{
+                        padding: "8px 16px",
+                        fontSize: "var(--text-sm)",
+                        flexShrink: 0
+                      }}
+                    >
+                      🗑️ Delete
+                    </button>
                   </div>
                 ))}
               </div>

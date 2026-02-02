@@ -45,7 +45,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             top: "20px",
             width: "30px",
             height: "30px",
-            borderRadius: "50%",
+            borderradius: "50%",
             background: "#00ffff",
             border: "none",
             color: "#000",

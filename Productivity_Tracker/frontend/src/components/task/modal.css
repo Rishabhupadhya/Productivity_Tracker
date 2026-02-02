@@ -12,7 +12,7 @@
   padding: 24px;
   width: 400px;
   max-width: 90vw;
-  border-radius: 12px;
+  borderradius: 12px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.3);
 }
 
@@ -28,7 +28,7 @@
   margin-bottom: 12px;
   padding: 10px 12px;
   border: 1px solid #444;
-  border-radius: 6px;
+  borderradius: 6px;
   background: var(--bg-primary);
   color: var(--text-primary);
   font-size: 14px;
@@ -55,7 +55,7 @@
 
 .actions button {
   padding: 10px 20px;
-  border-radius: 6px;
+  borderradius: 6px;
   border: none;
   cursor: pointer;
   font-size: 14px;

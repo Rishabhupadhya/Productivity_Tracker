@@ -29,7 +29,7 @@ All avatar components use:
 .user-avatar, .user-avatar-large, .avatar-display {
   display: grid;
   place-items: center;  /* Perfect centering for text/image */
-  border-radius: 50%;    /* Circular shape */
+  borderradius: 50%;    /* Circular shape */
   cursor: pointer;       /* Indicates clickability */
   background: var(--purple); /* Fallback background color */
 }

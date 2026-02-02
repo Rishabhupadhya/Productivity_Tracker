@@ -107,7 +107,7 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
         style={{ 
           background: "#1a1a1a", 
           padding: "24px", 
-          borderRadius: "8px", 
+          borderradius: "8px", 
           border: "1px solid #00ffff",
           maxWidth: "900px",
           width: "90%",
@@ -161,26 +161,26 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
             {activeTab === "summary" && summary && (
               <div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" }}>
-                  <div style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px", border: "1px solid #00ff00" }}>
+                  <div style={{ padding: "16px", background: "#0a0a0a", borderradius: "8px", border: "1px solid #00ff00" }}>
                     <div style={{ fontSize: "12px", color: "#666", marginBottom: "4px" }}>Income</div>
                     <div style={{ fontSize: "24px", color: "#00ff00", fontWeight: "bold" }}>₹{summary.income.toLocaleString()}</div>
                   </div>
-                  <div style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px", border: "1px solid #ff0000" }}>
+                  <div style={{ padding: "16px", background: "#0a0a0a", borderradius: "8px", border: "1px solid #ff0000" }}>
                     <div style={{ fontSize: "12px", color: "#666", marginBottom: "4px" }}>Expenses</div>
                     <div style={{ fontSize: "24px", color: "#ff0000", fontWeight: "bold" }}>₹{summary.expenses.toLocaleString()}</div>
                   </div>
-                  <div style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px", border: "1px solid #00ffff" }}>
+                  <div style={{ padding: "16px", background: "#0a0a0a", borderradius: "8px", border: "1px solid #00ffff" }}>
                     <div style={{ fontSize: "12px", color: "#666", marginBottom: "4px" }}>Savings</div>
                     <div style={{ fontSize: "24px", color: "#00ffff", fontWeight: "bold" }}>₹{summary.savings.toLocaleString()}</div>
                   </div>
-                  <div style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px", border: "1px solid #00ffff" }}>
+                  <div style={{ padding: "16px", background: "#0a0a0a", borderradius: "8px", border: "1px solid #00ffff" }}>
                     <div style={{ fontSize: "12px", color: "#666", marginBottom: "4px" }}>Savings Rate</div>
                     <div style={{ fontSize: "24px", color: "#00ffff", fontWeight: "bold" }}>{summary.savingsRate.toFixed(1)}%</div>
                   </div>
                 </div>
 
                 {summary.highestCategory && (
-                  <div style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px", marginBottom: "16px" }}>
+                  <div style={{ padding: "16px", background: "#0a0a0a", borderradius: "8px", marginBottom: "16px" }}>
                     <div style={{ fontSize: "14px", color: "#00ffff", marginBottom: "8px" }}>Highest Expense Category</div>
                     <div style={{ fontSize: "18px", color: "#fff" }}>
                       {summary.highestCategory.category}: ₹{summary.highestCategory.amount.toLocaleString()}
@@ -189,7 +189,7 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                 )}
 
                 {summary.comparison && (
-                  <div style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px" }}>
+                  <div style={{ padding: "16px", background: "#0a0a0a", borderradius: "8px" }}>
                     <div style={{ fontSize: "14px", color: "#00ffff", marginBottom: "8px" }}>vs Last Month</div>
                     <div style={{ fontSize: "16px", color: summary.comparison.expenseChange > 0 ? "#ff0000" : "#00ff00" }}>
                       {summary.comparison.expenseChange > 0 ? "↑" : "↓"} {Math.abs(summary.comparison.expenseChange).toFixed(1)}%
@@ -209,7 +209,7 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                     background: "#00ffff",
                     color: "#000",
                     border: "none",
-                    borderRadius: "4px",
+                    borderradius: "4px",
                     cursor: "pointer",
                     marginBottom: "16px",
                     fontWeight: "bold"
@@ -219,12 +219,12 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                 </button>
 
                 {showAddForm && (
-                  <form onSubmit={handleAddTransaction} style={{ marginBottom: "20px", padding: "16px", background: "#0a0a0a", borderRadius: "8px" }}>
+                  <form onSubmit={handleAddTransaction} style={{ marginBottom: "20px", padding: "16px", background: "#0a0a0a", borderradius: "8px" }}>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
                       <select
                         value={newTransaction.type}
                         onChange={(e) => setNewTransaction({ ...newTransaction, type: e.target.value as any })}
-                        style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff" }}
+                        style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff" }}
                       >
                         <option value="expense">Expense</option>
                         <option value="income">Income</option>
@@ -234,14 +234,14 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                         placeholder="Amount"
                         value={newTransaction.amount}
                         onChange={(e) => setNewTransaction({ ...newTransaction, amount: e.target.value })}
-                        style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff" }}
+                        style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff" }}
                         required
                       />
                     </div>
                     <select
                       value={newTransaction.category}
                       onChange={(e) => setNewTransaction({ ...newTransaction, category: e.target.value })}
-                      style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px" }}
+                      style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff", marginBottom: "12px" }}
                       required
                     >
                       <option value="">Select Category</option>
@@ -254,13 +254,13 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                       placeholder="Description (optional)"
                       value={newTransaction.description}
                       onChange={(e) => setNewTransaction({ ...newTransaction, description: e.target.value })}
-                      style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px" }}
+                      style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff", marginBottom: "12px" }}
                     />
                     <div style={{ display: "flex", gap: "8px" }}>
-                      <button type="submit" style={{ padding: "8px 16px", background: "#00ffff", color: "#000", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>
+                      <button type="submit" style={{ padding: "8px 16px", background: "#00ffff", color: "#000", border: "none", borderradius: "4px", cursor: "pointer", fontWeight: "bold" }}>
                         Add
                       </button>
-                      <button type="button" onClick={() => setShowAddForm(false)} style={{ padding: "8px 16px", background: "#333", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+                      <button type="button" onClick={() => setShowAddForm(false)} style={{ padding: "8px 16px", background: "#333", color: "#fff", border: "none", borderradius: "4px", cursor: "pointer" }}>
                         Cancel
                       </button>
                     </div>
@@ -269,11 +269,11 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
 
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                   {transactions.slice(0, 20).map(txn => (
-                    <div key={txn._id} style={{ padding: "12px", background: "#0a0a0a", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div key={txn._id} style={{ padding: "12px", background: "#0a0a0a", borderradius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
                           <span style={{ fontSize: "16px", color: "#fff" }}>{txn.category}</span>
-                          <span style={{ fontSize: "12px", color: "#666", padding: "2px 8px", background: "#1a1a1a", borderRadius: "4px" }}>
+                          <span style={{ fontSize: "12px", color: "#666", padding: "2px 8px", background: "#1a1a1a", borderradius: "4px" }}>
                             {txn.type}
                           </span>
                         </div>
@@ -309,7 +309,7 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                     background: "#00ffff",
                     color: "#000",
                     border: "none",
-                    borderRadius: "4px",
+                    borderradius: "4px",
                     cursor: "pointer",
                     marginBottom: "16px",
                     fontWeight: "bold"
@@ -319,11 +319,11 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                 </button>
 
                 {showBudgetForm && (
-                  <form onSubmit={handleAddBudget} style={{ marginBottom: "20px", padding: "16px", background: "#0a0a0a", borderRadius: "8px" }}>
+                  <form onSubmit={handleAddBudget} style={{ marginBottom: "20px", padding: "16px", background: "#0a0a0a", borderradius: "8px" }}>
                     <select
                       value={newBudget.category}
                       onChange={(e) => setNewBudget({ ...newBudget, category: e.target.value })}
-                      style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px" }}
+                      style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff", marginBottom: "12px" }}
                       required
                     >
                       <option value="">Select Category</option>
@@ -336,14 +336,14 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                       placeholder="Monthly Limit"
                       value={newBudget.monthlyLimit}
                       onChange={(e) => setNewBudget({ ...newBudget, monthlyLimit: e.target.value })}
-                      style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px" }}
+                      style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderradius: "4px", color: "#00ffff", marginBottom: "12px" }}
                       required
                     />
                     <div style={{ display: "flex", gap: "8px" }}>
-                      <button type="submit" style={{ padding: "8px 16px", background: "#00ffff", color: "#000", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>
+                      <button type="submit" style={{ padding: "8px 16px", background: "#00ffff", color: "#000", border: "none", borderradius: "4px", cursor: "pointer", fontWeight: "bold" }}>
                         Set Budget
                       </button>
-                      <button type="button" onClick={() => setShowBudgetForm(false)} style={{ padding: "8px 16px", background: "#333", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+                      <button type="button" onClick={() => setShowBudgetForm(false)} style={{ padding: "8px 16px", background: "#333", color: "#fff", border: "none", borderradius: "4px", cursor: "pointer" }}>
                         Cancel
                       </button>
                     </div>
@@ -354,7 +354,7 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                   {budgets.map(budget => {
                     const status = getBudgetStatus(budget.spent, budget.monthlyLimit);
                     return (
-                      <div key={budget._id} style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px", border: `1px solid ${status.color}` }}>
+                      <div key={budget._id} style={{ padding: "16px", background: "#0a0a0a", borderradius: "8px", border: `1px solid ${status.color}` }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                           <div style={{ fontSize: "16px", color: "#fff" }}>{budget.category}</div>
                           <div style={{ fontSize: "12px", color: status.color }}>{status.label}</div>
@@ -362,7 +362,7 @@ export default function FinancePanel({ onClose }: { onClose: () => void }) {
                         <div style={{ fontSize: "14px", color: "#888", marginBottom: "8px" }}>
                           ₹{budget.spent.toLocaleString()} / ₹{budget.monthlyLimit.toLocaleString()}
                         </div>
-                        <div style={{ background: "#1a1a1a", height: "8px", borderRadius: "4px", overflow: "hidden" }}>
+                        <div style={{ background: "#1a1a1a", height: "8px", borderradius: "4px", overflow: "hidden" }}>
                           <div style={{ background: status.color, height: "100%", width: `${status.percentage}%`, transition: "width 0.3s" }} />
                         </div>
                       </div>

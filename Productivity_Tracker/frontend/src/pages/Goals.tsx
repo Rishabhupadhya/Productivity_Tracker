@@ -129,7 +129,7 @@ export default function Goals() {
                   background: "#333",
                   color: "#00ffff",
                   border: "1px solid #00ffff",
-                  borderRadius: "8px",
+                  borderradius: "8px",
                   cursor: "pointer",
                   fontSize: "14px",
                   display: "flex",
@@ -156,7 +156,7 @@ export default function Goals() {
                 background: "#333",
                 color: "#fff",
                 border: "none",
-                borderRadius: "8px",
+                borderradius: "8px",
                 cursor: "pointer",
                 marginBottom: "24px",
                 fontSize: "14px"
@@ -165,7 +165,7 @@ export default function Goals() {
               ← Back to Goals
             </button>
 
-            <div style={{ padding: "32px", background: "#1a1a1a", borderRadius: "12px", marginBottom: "24px", border: "1px solid #00ffff" }}>
+            <div style={{ padding: "32px", background: "#1a1a1a", borderradius: "12px", marginBottom: "24px", border: "1px solid #00ffff" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
                 <span style={{ fontSize: "48px" }}>{getGoalIcon(selectedGoal.type)}</span>
                 <div style={{ flex: 1 }}>
@@ -174,7 +174,7 @@ export default function Goals() {
                 </div>
                 <button
                   onClick={() => handleDeleteGoal(selectedGoal._id)}
-                  style={{ padding: "8px 16px", background: "#ff0000", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
+                  style={{ padding: "8px 16px", background: "#ff0000", color: "#fff", border: "none", borderradius: "8px", cursor: "pointer", fontSize: "14px" }}
                 >
                   Delete Goal
                 </button>
@@ -184,7 +184,7 @@ export default function Goals() {
                 <div style={{ fontSize: "16px", color: "#888", marginBottom: "12px" }}>
                   {selectedGoal.currentValue} / {selectedGoal.targetValue} {selectedGoal.unit}
                 </div>
-                <div style={{ background: "#0a0a0a", height: "20px", borderRadius: "10px", overflow: "hidden" }}>
+                <div style={{ background: "#0a0a0a", height: "20px", borderradius: "10px", overflow: "hidden" }}>
                   <div style={{
                     background: getProgressColor(calculateProgress(selectedGoal)),
                     height: "100%",
@@ -198,7 +198,7 @@ export default function Goals() {
               </div>
 
               {getDaysRemaining(selectedGoal) !== null && (
-                <div style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px", marginBottom: "16px" }}>
+                <div style={{ padding: "16px", background: "#0a0a0a", borderradius: "8px", marginBottom: "16px" }}>
                   <div style={{ fontSize: "14px", color: "#00ffff", marginBottom: "4px" }}>Target Date</div>
                   <div style={{ fontSize: "16px", color: getDaysRemaining(selectedGoal)! > 0 ? "#fff" : "#ff0000" }}>
                     {new Date(selectedGoal.targetDate!).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -221,7 +221,7 @@ export default function Goals() {
                 <h3 style={{ color: "#00ffff", marginBottom: "16px", fontSize: "20px" }}>🏆 Milestones</h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {selectedGoal.milestones.map((milestone, idx) => (
-                    <div key={idx} style={{ padding: "20px", background: "#1a1a1a", borderRadius: "8px", display: "flex", alignItems: "center", gap: "16px", border: milestone.completed ? "1px solid #00ff00" : "1px solid #333" }}>
+                    <div key={idx} style={{ padding: "20px", background: "#1a1a1a", borderradius: "8px", display: "flex", alignItems: "center", gap: "16px", border: milestone.completed ? "1px solid #00ff00" : "1px solid #333" }}>
                       <div style={{ fontSize: "32px" }}>{milestone.completed ? "✅" : "⭕"}</div>
                       <div style={{ flex: 1 }}>
                         <div style={{ color: milestone.completed ? "#00ff00" : "#fff", fontSize: "16px", fontWeight: "500", marginBottom: "4px" }}>{milestone.title}</div>
@@ -249,7 +249,7 @@ export default function Goals() {
                     background: "#00ffff",
                     color: "#000",
                     border: "none",
-                    borderRadius: "8px",
+                    borderradius: "8px",
                     cursor: "pointer",
                     fontSize: "14px",
                     fontWeight: "bold"
@@ -260,32 +260,32 @@ export default function Goals() {
               </div>
 
               {showReviewForm && (
-                <form onSubmit={handleAddReview} style={{ marginBottom: "24px", padding: "24px", background: "#1a1a1a", borderRadius: "8px" }}>
+                <form onSubmit={handleAddReview} style={{ marginBottom: "24px", padding: "24px", background: "#1a1a1a", borderradius: "8px" }}>
                   <textarea
                     placeholder="What helped you make progress?"
                     value={review.whatHelped}
                     onChange={(e) => setReview({ ...review, whatHelped: e.target.value })}
-                    style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
+                    style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderradius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
                     required
                   />
                   <textarea
                     placeholder="What blocked your progress?"
                     value={review.whatBlocked}
                     onChange={(e) => setReview({ ...review, whatBlocked: e.target.value })}
-                    style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
+                    style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderradius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
                     required
                   />
                   <textarea
                     placeholder="Additional notes..."
                     value={review.notes}
                     onChange={(e) => setReview({ ...review, notes: e.target.value })}
-                    style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
+                    style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderradius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
                   />
                   <div style={{ display: "flex", gap: "12px" }}>
-                    <button type="submit" style={{ padding: "12px 24px", background: "#00ffff", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "14px" }}>
+                    <button type="submit" style={{ padding: "12px 24px", background: "#00ffff", color: "#000", border: "none", borderradius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "14px" }}>
                       Save Review
                     </button>
-                    <button type="button" onClick={() => setShowReviewForm(false)} style={{ padding: "12px 24px", background: "#333", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}>
+                    <button type="button" onClick={() => setShowReviewForm(false)} style={{ padding: "12px 24px", background: "#333", color: "#fff", border: "none", borderradius: "8px", cursor: "pointer", fontSize: "14px" }}>
                       Cancel
                     </button>
                   </div>
@@ -295,7 +295,7 @@ export default function Goals() {
               {selectedGoal.reviews.length > 0 ? (
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {selectedGoal.reviews.slice().reverse().map((rev, idx) => (
-                    <div key={idx} style={{ padding: "20px", background: "#1a1a1a", borderRadius: "8px" }}>
+                    <div key={idx} style={{ padding: "20px", background: "#1a1a1a", borderradius: "8px" }}>
                       <div style={{ fontSize: "12px", color: "#666", marginBottom: "12px" }}>
                         {new Date(rev.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </div>
@@ -310,7 +310,7 @@ export default function Goals() {
                   ))}
                 </div>
               ) : (
-                <div style={{ textAlign: "center", color: "#666", padding: "40px", background: "#1a1a1a", borderRadius: "8px" }}>
+                <div style={{ textAlign: "center", color: "#666", padding: "40px", background: "#1a1a1a", borderradius: "8px" }}>
                   No reviews yet. Add your first review to track your progress and learnings.
                 </div>
               )}
@@ -326,7 +326,7 @@ export default function Goals() {
                 background: "#00ffff",
                 color: "#000",
                 border: "none",
-                borderRadius: "8px",
+                borderradius: "8px",
                 cursor: "pointer",
                 marginBottom: "24px",
                 fontWeight: "bold",
@@ -337,26 +337,26 @@ export default function Goals() {
             </button>
 
             {showAddForm && (
-              <form onSubmit={handleAddGoal} style={{ marginBottom: "32px", padding: "24px", background: "#1a1a1a", borderRadius: "8px" }}>
+              <form onSubmit={handleAddGoal} style={{ marginBottom: "32px", padding: "24px", background: "#1a1a1a", borderradius: "8px" }}>
                 <input
                   type="text"
                   placeholder="Goal Title"
                   value={newGoal.title}
                   onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
-                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", fontSize: "14px" }}
+                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderradius: "8px", color: "#00ffff", marginBottom: "16px", fontSize: "14px" }}
                   required
                 />
                 <textarea
                   placeholder="Description (optional)"
                   value={newGoal.description}
                   onChange={(e) => setNewGoal({ ...newGoal, description: e.target.value })}
-                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
+                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderradius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
                 />
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginBottom: "16px" }}>
                   <select
                     value={newGoal.type}
                     onChange={(e) => setNewGoal({ ...newGoal, type: e.target.value as GoalType })}
-                    style={{ padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
+                    style={{ padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderradius: "8px", color: "#00ffff", fontSize: "14px" }}
                   >
                     <option value="count">Count Goal</option>
                     <option value="financial">Financial Goal</option>
@@ -368,7 +368,7 @@ export default function Goals() {
                     placeholder="Target Value"
                     value={newGoal.targetValue}
                     onChange={(e) => setNewGoal({ ...newGoal, targetValue: e.target.value })}
-                    style={{ padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
+                    style={{ padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderradius: "8px", color: "#00ffff", fontSize: "14px" }}
                     required
                   />
                   <input
@@ -376,20 +376,20 @@ export default function Goals() {
                     placeholder="Unit (e.g., km, hours, ₹)"
                     value={newGoal.unit}
                     onChange={(e) => setNewGoal({ ...newGoal, unit: e.target.value })}
-                    style={{ padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
+                    style={{ padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderradius: "8px", color: "#00ffff", fontSize: "14px" }}
                   />
                 </div>
                 <input
                   type="date"
                   value={newGoal.targetDate}
                   onChange={(e) => setNewGoal({ ...newGoal, targetDate: e.target.value })}
-                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", fontSize: "14px" }}
+                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderradius: "8px", color: "#00ffff", marginBottom: "16px", fontSize: "14px" }}
                 />
                 <div style={{ display: "flex", gap: "12px" }}>
-                  <button type="submit" style={{ padding: "12px 24px", background: "#00ffff", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "14px" }}>
+                  <button type="submit" style={{ padding: "12px 24px", background: "#00ffff", color: "#000", border: "none", borderradius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "14px" }}>
                     Create Goal
                   </button>
-                  <button type="button" onClick={() => setShowAddForm(false)} style={{ padding: "12px 24px", background: "#333", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}>
+                  <button type="button" onClick={() => setShowAddForm(false)} style={{ padding: "12px 24px", background: "#333", color: "#fff", border: "none", borderradius: "8px", cursor: "pointer", fontSize: "14px" }}>
                     Cancel
                   </button>
                 </div>
@@ -406,7 +406,7 @@ export default function Goals() {
                   return (
                     <div
                       key={goal._id}
-                      style={{ padding: "24px", background: "#1a1a1a", borderRadius: "12px", cursor: "pointer", border: "1px solid transparent", transition: "border-color 0.2s" }}
+                      style={{ padding: "24px", background: "#1a1a1a", borderradius: "12px", cursor: "pointer", border: "1px solid transparent", transition: "border-color 0.2s" }}
                       onClick={() => setSelectedGoal(goal)}
                       onMouseEnter={(e) => e.currentTarget.style.borderColor = "#00ffff"}
                       onMouseLeave={(e) => e.currentTarget.style.borderColor = "transparent"}
@@ -427,7 +427,7 @@ export default function Goals() {
                       <div style={{ fontSize: "14px", color: "#888", marginBottom: "12px" }}>
                         {goal.currentValue} / {goal.targetValue} {goal.unit}
                       </div>
-                      <div style={{ background: "#0a0a0a", height: "10px", borderRadius: "5px", overflow: "hidden", marginBottom: "8px" }}>
+                      <div style={{ background: "#0a0a0a", height: "10px", borderradius: "5px", overflow: "hidden", marginBottom: "8px" }}>
                         <div style={{
                           background: getProgressColor(progress),
                           height: "100%",
@@ -443,7 +443,7 @@ export default function Goals() {
                 })}
               </div>
             ) : (
-              <div style={{ textAlign: "center", color: "#666", padding: "80px", background: "#1a1a1a", borderRadius: "8px" }}>
+              <div style={{ textAlign: "center", color: "#666", padding: "80px", background: "#1a1a1a", borderradius: "8px" }}>
                 <div style={{ fontSize: "48px", marginBottom: "16px" }}>🎯</div>
                 <h3 style={{ marginBottom: "12px" }}>No goals yet</h3>
                 <p style={{ fontSize: "14px", maxWidth: "400px", margin: "0 auto" }}>

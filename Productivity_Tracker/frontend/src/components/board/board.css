@@ -11,7 +11,7 @@
   flex: 1;
   min-width: 0;
   background: var(--bg-panel);
-  border-radius: 8px;
+  borderradius: 8px;
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -29,7 +29,7 @@
 
 .column::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 2px;
+  borderradius: 2px;
 }
 
 .column h4 {
@@ -56,7 +56,7 @@
   }
   .column {
     padding: 8px;
-    border-radius: 6px;
+    borderradius: 6px;
   }
   .column h4 {
     font-size: 12px;

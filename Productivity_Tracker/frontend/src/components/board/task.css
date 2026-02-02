@@ -1,7 +1,7 @@
 .task {
   background: var(--bg-card);
   padding: 12px;
-  border-radius: 8px;
+  borderradius: 8px;
   margin-bottom: 10px;
   border-left: 4px solid var(--green);
   cursor: grab;
@@ -41,7 +41,7 @@
   background: var(--purple);
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  borderradius: 50%;
   display: grid;
   place-items: center;
   font-size: 11px;

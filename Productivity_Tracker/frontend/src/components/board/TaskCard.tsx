@@ -32,7 +32,7 @@ export default function TaskCard({
                 background: '#00ffff',
                 color: '#000',
                 padding: '2px 6px',
-                borderRadius: '10px',
+                borderradius: '10px',
                 fontWeight: 'bold'
               }}
               title="Team Task"
@@ -60,7 +60,7 @@ export default function TaskCard({
               position: 'relative',
               width: '28px',
               height: '28px',
-              borderRadius: '50%',
+              borderradius: '50%',
               border: '2px solid #00ffff',
               display: 'flex',
               alignItems: 'center',

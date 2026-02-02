@@ -163,7 +163,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   border: "1px solid #00ffff", 
                   color: "#00ffff", 
                   padding: "2px 8px", 
-                  borderRadius: "4px", 
+                  borderradius: "4px", 
                   cursor: "pointer",
                   fontSize: "12px"
                 }}
@@ -180,7 +180,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   padding: "10px", 
                   background: "rgba(255, 100, 0, 0.1)", 
                   border: "1px solid #ff6400",
-                  borderRadius: "6px", 
+                  borderradius: "6px", 
                   fontSize: "13px",
                   marginBottom: "12px",
                   color: "#ff6400",
@@ -212,7 +212,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                 padding: "8px", 
                 background: "#1a1a1a", 
                 border: "1px solid #00ffff", 
-                borderRadius: "4px", 
+                borderradius: "4px", 
                 color: "#00ffff",
                 marginBottom: "16px",
                 cursor: "pointer"
@@ -231,7 +231,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                 <div style={{ 
                   padding: "8px", 
                   background: "rgba(0, 255, 255, 0.1)", 
-                  borderRadius: "4px", 
+                  borderradius: "4px", 
                   fontSize: "12px",
                   marginBottom: "8px",
                   color: "#00ffff",
@@ -247,7 +247,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                     border: "1px solid #00ffff",
                     color: "#00ffff",
                     padding: "8px",
-                    borderRadius: "4px",
+                    borderradius: "4px",
                     cursor: "pointer",
                     fontSize: "12px",
                     fontWeight: "500",
@@ -285,7 +285,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   fontSize: "9px",
                   fontWeight: "600",
                   padding: "2px 4px",
-                  borderRadius: "8px",
+                  borderradius: "8px",
                   minWidth: "16px",
                   textAlign: "center",
                   lineHeight: "1"
@@ -336,7 +336,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   fontSize: "10px",
                   fontWeight: "600",
                   padding: "2px 6px",
-                  borderRadius: "10px",
+                  borderradius: "10px",
                   minWidth: "18px",
                   textAlign: "center"
                 }}>
@@ -354,7 +354,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                 border: "1px solid rgba(0, 255, 255, 0.3)",
                 color: "#00ffff",
                 padding: "8px 16px",
-                borderRadius: "4px",
+                borderradius: "4px",
                 cursor: "pointer",
                 fontSize: "13px",
                 fontWeight: "500",
@@ -385,7 +385,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   border: "1px solid #00ffff",
                   color: "#00ffff",
                   padding: "2px 8px",
-                  borderRadius: "4px",
+                  borderradius: "4px",
                   cursor: "pointer",
                   fontSize: "12px"
                 }}
@@ -468,7 +468,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
             style={{ 
               background: "#1a1a1a", 
               padding: "24px", 
-              borderRadius: "8px", 
+              borderradius: "8px", 
               border: "1px solid #00ffff",
               maxWidth: "400px",
               width: "90%"
@@ -488,7 +488,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   marginBottom: "16px", 
                   background: "#0a0a0a", 
                   border: "1px solid #00ffff", 
-                  borderRadius: "4px", 
+                  borderradius: "4px", 
                   color: "#00ffff"
                 }}
               />
@@ -500,7 +500,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                     padding: "8px 16px", 
                     background: "transparent", 
                     border: "1px solid #666", 
-                    borderRadius: "4px", 
+                    borderradius: "4px", 
                     color: "#666",
                     cursor: "pointer"
                   }}
@@ -513,7 +513,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                     padding: "8px 16px", 
                     background: "#00ffff", 
                     border: "none", 
-                    borderRadius: "4px", 
+                    borderradius: "4px", 
                     color: "#000",
                     cursor: "pointer",
                     fontWeight: "bold"
@@ -545,7 +545,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
             style={{ 
               background: "var(--bg-primary)", 
               padding: "24px", 
-              borderRadius: "12px", 
+              borderradius: "12px", 
               border: "1px solid var(--border)",
               maxWidth: "500px",
               width: "90%",
@@ -581,7 +581,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  borderRadius: "4px",
+                  borderradius: "4px",
                   transition: "all 0.2s"
                 }}
                 onMouseEnter={(e) => {
@@ -615,7 +615,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                       padding: "16px",
                       background: "var(--bg-secondary)",
                       border: "1px solid var(--border)",
-                      borderRadius: "8px",
+                      borderradius: "8px",
                       display: "flex",
                       flexDirection: "column",
                       gap: "12px"
@@ -626,7 +626,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                         width: "40px",
                         height: "40px",
                         background: "var(--accent)",
-                        borderRadius: "8px",
+                        borderradius: "8px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -674,7 +674,7 @@ export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?:
                           padding: "10px 16px",
                           background: "var(--accent)",
                           border: "none",
-                          borderRadius: "6px",
+                          borderradius: "6px",
                           color: "var(--bg-app)",
                           cursor: "pointer",
                           fontWeight: "600",

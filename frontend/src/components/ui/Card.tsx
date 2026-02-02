@@ -44,7 +44,7 @@ const Card: React.FC<CardProps> = ({
   };
 
   const baseStyles: React.CSSProperties = {
-    borderRadius: 'var(--radius-lg)',
+    borderradius: 'var(--radius-lg)',
     padding: paddingMap[padding],
     transition: 'all 0.2s ease',
     cursor: onClick ? 'pointer' : 'default',

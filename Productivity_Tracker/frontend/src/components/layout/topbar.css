@@ -19,7 +19,7 @@
   border: none;
   color: white;
   padding: 8px 14px;
-  border-radius: 6px;
+  borderradius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -37,7 +37,7 @@
   padding: 6px 12px;
   background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  borderradius: 6px;
 }
 
 .date-label {
@@ -65,7 +65,7 @@
   background: var(--purple);
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  borderradius: 50%;
   display: grid;
   place-items: center;
 }

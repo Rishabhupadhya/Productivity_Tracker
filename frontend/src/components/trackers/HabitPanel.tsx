@@ -316,7 +316,7 @@ export default function HabitPanel({ onClose }: { onClose: () => void }) {
                         border: "none",
                         color: "#fff",
                         padding: "8px 16px",
-                        borderRadius: "6px",
+                        borderradius: "6px",
                         cursor: "pointer",
                         fontSize: "14px",
                         fontWeight: "600",

@@ -266,7 +266,35 @@ export const updateHabit = async (habitId: string, userId: string, updates: any)
 };
 
 export const deleteHabit = async (habitId: string, userId: string) => {
-  await Habit.findOneAndUpdate({ _id: habitId, userId }, { $set: { isActive: false } });
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  const habit = await Habit.findOne({
+    _id: habitId,
+    $or: [
+      { userId },
+      { teamId: user.activeTeamId }
+    ]
+  });
+
+  if (!habit) throw new Error("Habit not found");
+
+  // Log activity before deletion
+  if (user.activeTeamId) {
+    await logActivity({
+      teamId: user.activeTeamId.toString(),
+      userId,
+      action: "habit_deleted",
+      targetType: "habit",
+      targetId: habit._id.toString(),
+      details: {
+        name: habit.name
+      }
+    });
+  }
+
+  // Permanently delete the habit
+  await Habit.findByIdAndDelete(habitId);
 };
 
 export const getHabitStats = async (habitId: string, userId: string) => {

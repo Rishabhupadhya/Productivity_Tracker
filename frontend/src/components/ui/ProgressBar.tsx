@@ -77,7 +77,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         width: '100%',
         height: sizeMap[size],
         background: 'var(--bg-tertiary)',
-        borderRadius: 'var(--radius-full)',
+        borderradius: 'var(--radius-full)',
         overflow: 'hidden',
         position: 'relative',
       }}>
@@ -86,7 +86,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
             height: '100%',
             width: `${percentage}%`,
             background: getBarColor(),
-            borderRadius: 'var(--radius-full)',
+            borderradius: 'var(--radius-full)',
             transition: animated ? 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)' : 'none',
             boxShadow: percentage > 0 ? '0 0 8px rgba(16, 185, 129, 0.4)' : 'none',
           }}
