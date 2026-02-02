@@ -79,6 +79,7 @@
   border-radius: var(--radius-lg);
   box-shadow: 0 24px 48px rgba(0,0,0,0.5);
   border: 1px solid var(--border);
+  box-sizing: border-box;
 }
 
 .modal h3 {
@@ -159,46 +160,61 @@
   .modal-backdrop,
   .modal-overlay {
     padding: 0;
+    align-items: flex-start;
   }
 
   .modal {
-    width: 100%;
-    max-width: 100%;
+    width: 100vw;
+    max-width: 100vw;
     height: 100vh;
     max-height: 100vh;
     border-radius: 0;
     padding: 16px;
     overflow-y: auto;
+    box-sizing: border-box;
   }
 
   .modal-content {
-    width: 100%;
-    max-width: 100%;
+    width: 100vw;
+    max-width: 100vw;
     height: 100vh;
     max-height: 100vh;
     border-radius: 0;
     padding: 16px;
+    box-sizing: border-box;
   }
 
   .modal h3 {
     font-size: 18px;
     margin-bottom: 16px;
+    position: sticky;
+    top: 0;
+    background: var(--bg-primary);
+    padding-bottom: 12px;
+    z-index: 1;
   }
 
   .modal input,
   .modal select {
     font-size: 16px; /* Prevents zoom on iOS */
     padding: 12px;
+    margin-bottom: 12px;
   }
 
   .actions {
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-primary);
+    padding-top: 16px;
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
   }
 
   .actions button {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
   }
 }
 
@@ -213,5 +229,17 @@
 
   .modal h3 {
     font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .modal input,
+  .modal select {
+    font-size: 15px;
+    padding: 10px;
+  }
+
+  .actions button {
+    padding: 12px;
+    font-size: 14px;
   }
 }
