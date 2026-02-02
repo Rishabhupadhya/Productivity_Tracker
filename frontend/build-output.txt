@@ -1,0 +1,27 @@
+
+> productivity-tracker-frontend@1.0.0 build
+> vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 128 modules transformed.
+✗ Build failed in 316ms
+error during build:
+src/services/project.service.ts (1:7): "default" is not exported by "src/services/api.ts", imported by "src/services/project.service.ts".
+file: /Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/src/services/project.service.ts:1:7
+
+1: import api from "./api";
+          ^
+2: 
+3: export interface Project {
+
+    at getRollupError (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/parseAst.js:402:41)
+    at error (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/parseAst.js:398:42)
+    at Module.error (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/node-entry.js:17040:16)
+    at Module.traceVariable (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/node-entry.js:17452:29)
+    at ModuleScope.findVariable (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/node-entry.js:15070:39)
+    at ReturnValueScope.findVariable (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at FunctionBodyScope.findVariable (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/node-entry.js:5673:38)
+    at MemberExpression.bind (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/node-entry.js:7392:49)
+    at CallExpression.bind (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/node-entry.js:2829:23)
+    at CallExpression.bind (file:///Users/rishabhupadhyay/Downloads/Projects/Productivity_Tracker/frontend/node_modules/rollup/dist/es/shared/node-entry.js:12179:15)
