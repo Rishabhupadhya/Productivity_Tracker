@@ -12,7 +12,14 @@ import { errorMiddleware } from "./middleware/error.middleware";
 
 export const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://momentum12.vercel.app',
+    /\.vercel\.app$/  // Allow all Vercel preview deployments
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // No need to serve static files - using Vercel Blob Storage
