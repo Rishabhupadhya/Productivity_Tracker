@@ -1,13 +1,30 @@
+import { useNavigate } from 'react-router-dom';
 import './Footer.css';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+
+  const handleLogoClick = () => {
+    navigate('/dashboard');
+  };
 
   return (
     <footer className="app-footer">
       <div className="footer-content">
         <div className="footer-left">
-          <span className="footer-brand">Momentum</span>
+          <span 
+            className="footer-brand" 
+            onClick={handleLogoClick}
+            style={{
+              cursor: 'pointer',
+              transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+          >
+            Momentum
+          </span>
           <span className="footer-separator">•</span>
           <span className="footer-tagline">Consistency that compounds</span>
           <span className="footer-separator">•</span>
