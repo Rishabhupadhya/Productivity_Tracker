@@ -1,0 +1,519 @@
+/* =================================================================
+   COMPREHENSIVE MOBILE RESPONSIVE STYLES
+   Import this in main.tsx after other styles
+   ================================================================= */
+
+/* ============= BASE VIEWPORT & FONT SCALING ============= */
+@media (max-width: 768px) {
+  :root {
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 16px;
+    --space-xl: 24px;
+    --text-xs: 11px;
+    --text-sm: 13px;
+    --text-base: 14px;
+    --text-lg: 16px;
+    --text-xl: 18px;
+    --text-2xl: 20px;
+  }
+}
+
+/* ============= TOPBAR MOBILE ============= */
+@media (max-width: 768px) {
+  .topbar {
+    height: 56px !important;
+    padding: 0 12px !important;
+  }
+
+  .topbar .app-title h1 {
+    font-size: 16px !important;
+  }
+
+  .topbar .app-title p {
+    display: none !important;
+  }
+
+  .topbar .right {
+    gap: 8px !important;
+  }
+
+  .topbar .date-input {
+    font-size: 14px !important;
+    padding: 8px !important;
+    min-width: auto !important;
+  }
+
+  .hamburger-menu {
+    display: flex !important;
+  }
+}
+
+/* ============= DASHBOARD & BOARD MOBILE ============= */
+@media (max-width: 1024px) {
+  .board {
+    gap: 12px;
+  }
+
+  .column {
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .board {
+    flex-direction: column !important;
+    gap: 16px;
+  }
+
+  .column {
+    min-width: 100% !important;
+    max-height: none !important;
+    min-height: 300px;
+  }
+
+  .column h4 {
+    font-size: 14px !important;
+  }
+
+  .time-slot {
+    min-height: 80px;
+  }
+}
+
+/* ============= TASK CARD MOBILE ============= */
+@media (max-width: 768px) {
+  .task-card {
+    padding: 12px !important;
+    font-size: 13px !important;
+  }
+
+  .task-card .task-title {
+    font-size: 14px !important;
+  }
+
+  .task-card .task-time {
+    font-size: 11px !important;
+  }
+
+  .task-actions {
+    gap: 8px !important;
+  }
+
+  .task-actions button {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* ============= MODALS MOBILE ============= */
+@media (max-width: 768px) {
+  .modal-backdrop,
+  .modal-overlay {
+    align-items: flex-start !important;
+    padding: 0 !important;
+  }
+
+  .modal,
+  .modal-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    overflow-y: auto !important;
+  }
+
+  .modal-header {
+    position: sticky;
+    top: 0;
+    background: var(--bg-primary);
+    z-index: 10;
+    padding-bottom: 12px;
+  }
+
+  .modal-header h2,
+  .modal h3 {
+    font-size: 18px !important;
+  }
+
+  .modal input,
+  .modal select,
+  .modal textarea {
+    font-size: 16px !important; /* Prevents iOS zoom */
+    padding: 12px !important;
+  }
+
+  .modal .actions {
+    flex-direction: column !important;
+    gap: 12px;
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-primary);
+    padding-top: 16px;
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .modal .actions button {
+    width: 100% !important;
+    padding: 14px !important;
+    font-size: 15px !important;
+  }
+}
+
+/* ============= SIDE PANELS (Activity, Profile, Settings) ============= */
+@media (max-width: 1024px) {
+  .activity-panel,
+  .profile-modal,
+  .settings-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    right: 0 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .activity-panel,
+  .profile-modal,
+  .settings-modal {
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+
+  .panel-header {
+    padding: 16px !important;
+  }
+
+  .panel-content {
+    padding: 16px !important;
+  }
+}
+
+/* ============= TRACKER PANELS (Habits, Goals, Finance) ============= */
+@media (max-width: 768px) {
+  .habit-panel,
+  .goal-panel,
+  .finance-panel {
+    padding: 16px !important;
+  }
+
+  .tracker-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .tracker-card {
+    padding: 12px !important;
+  }
+
+  .tracker-stats {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+}
+
+/* ============= TABLES MOBILE ============= */
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th, td {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* ============= FORMS MOBILE ============= */
+@media (max-width: 768px) {
+  form {
+    width: 100% !important;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px !important; /* Prevents iOS zoom */
+  }
+
+  .form-group {
+    margin-bottom: 16px !important;
+  }
+
+  .form-row {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  .form-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .form-actions button {
+    width: 100% !important;
+  }
+}
+
+/* ============= BUTTONS MOBILE ============= */
+@media (max-width: 768px) {
+  .btn,
+  button:not(.close-btn):not(.hamburger-menu) {
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+    min-height: 44px; /* iOS touch target */
+  }
+
+  .btn-group {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  .btn-group button {
+    width: 100% !important;
+  }
+}
+
+/* ============= CARDS & CONTAINERS MOBILE ============= */
+@media (max-width: 768px) {
+  .card,
+  .container {
+    padding: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .card-header {
+    padding: 12px !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .card-title {
+    font-size: 16px !important;
+  }
+
+  .card-body {
+    padding: 12px !important;
+  }
+}
+
+/* ============= GRIDS MOBILE ============= */
+@media (max-width: 1024px) {
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .grid,
+  .grid-2,
+  .grid-3,
+  .grid-4 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+/* ============= TEXT & TYPOGRAPHY MOBILE ============= */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px !important;
+  }
+
+  h2 {
+    font-size: 20px !important;
+  }
+
+  h3 {
+    font-size: 18px !important;
+  }
+
+  h4 {
+    font-size: 16px !important;
+  }
+
+  p, span, div {
+    font-size: 14px;
+  }
+}
+
+/* ============= SPACING MOBILE ============= */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 12px !important;
+  }
+
+  .section {
+    margin-bottom: 16px !important;
+  }
+
+  .page-container {
+    padding: 16px 12px !important;
+  }
+}
+
+/* ============= NAVIGATION MOBILE ============= */
+@media (max-width: 768px) {
+  .nav-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-tab {
+    min-width: auto !important;
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
+  }
+}
+
+/* ============= WAITING LIST MOBILE ============= */
+@media (max-width: 768px) {
+  .waiting-list {
+    padding: 12px !important;
+  }
+
+  .waiting-item {
+    padding: 10px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* ============= USER MENU MOBILE ============= */
+@media (max-width: 768px) {
+  .user-menu {
+    right: 8px !important;
+    min-width: 200px !important;
+  }
+
+  .user-menu-item {
+    padding: 12px 16px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* ============= TEAM PANEL MOBILE ============= */
+@media (max-width: 768px) {
+  .team-panel {
+    padding: 16px !important;
+  }
+
+  .team-member {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .team-member-avatar {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
+
+/* ============= STATS & METRICS MOBILE ============= */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .stat-card {
+    padding: 12px !important;
+  }
+
+  .stat-value {
+    font-size: 24px !important;
+  }
+
+  .stat-label {
+    font-size: 12px !important;
+  }
+}
+
+/* ============= SCROLLBAR MOBILE ============= */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px !important;
+    height: 4px !important;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 2px !important;
+  }
+}
+
+/* ============= TOUCH OPTIMIZATION ============= */
+@media (max-width: 768px) {
+  /* Larger tap targets for mobile */
+  a, button, input, select, textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text selection on buttons */
+  button {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  /* Smooth scrolling */
+  * {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* ============= LANDSCAPE MODE MOBILE ============= */
+@media (max-width: 768px) and (orientation: landscape) {
+  .modal,
+  .modal-content {
+    height: 100vh !important;
+    overflow-y: auto !important;
+  }
+
+  .topbar {
+    height: 48px !important;
+  }
+}
+
+/* ============= SMALL MOBILE (< 480px) ============= */
+@media (max-width: 480px) {
+  :root {
+    --space-xs: 4px;
+    --space-sm: 6px;
+    --space-md: 10px;
+    --space-lg: 14px;
+    --space-xl: 20px;
+  }
+
+  .topbar {
+    padding: 0 8px !important;
+  }
+
+  .main-content {
+    padding: 8px !important;
+  }
+
+  .modal,
+  .modal-content {
+    padding: 12px !important;
+  }
+
+  .btn {
+    padding: 10px 14px !important;
+    font-size: 13px !important;
+  }
+}
