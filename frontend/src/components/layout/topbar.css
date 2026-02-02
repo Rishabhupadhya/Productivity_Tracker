@@ -112,11 +112,18 @@
 
   .left {
     gap: var(--space-sm);
+    flex: 1;
+    min-width: 0;
   }
 
   .right {
     gap: var(--space-xs);
     margin-left: var(--space-sm);
+  }
+
+  /* Hide date input on mobile - too much space */
+  .date-input {
+    display: none !important;
   }
 }
 
@@ -129,8 +136,13 @@
     font-size: var(--text-base) !important;
   }
 
-  .date-input {
-    font-size: 12px;
-    padding: 6px 8px;
+  /* Make Add Task button more compact on small screens */
+  .left > div {
+    gap: 4px !important;
+  }
+  
+  .left button {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
   }
 }
