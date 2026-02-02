@@ -2,6 +2,7 @@ import { TIME_SLOTS } from "../../constants/timeSlots";
 import TaskCard from "./TaskCard";
 import UndoToast from "../ui/UndoToast";
 import CurrentTimeLine from "./CurrentTimeLine";
+import MobileDateSelector from "../ui/MobileDateSelector";
 import { useTasks } from "../../hooks/useTasks";
 import { useUser } from "../../contexts/UserContext";
 import { useMemo } from "react";
@@ -34,9 +35,11 @@ export default function CalendarBoard() {
 
   return (
     <>
+      {/* Mobile Date Selector - shows only on mobile/tablet */}
+      <MobileDateSelector value={selectedDate} />
+
       <div style={{ display: "flex", gap: "16px" }}>
-        <div className="board">
-          {week.map((dateObj) => {
+        <div className="board">{week.map((dateObj) => {
             const dateStr = formatDate(dateObj);
             const isToday = today === dateStr;
             

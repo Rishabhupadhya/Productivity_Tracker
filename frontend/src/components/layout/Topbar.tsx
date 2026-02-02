@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import AddTaskModal from "../task/AddTaskModal";
@@ -12,15 +12,37 @@ type TopbarProps = {
   onMenuClick?: () => void;
   isMobile?: boolean;
   onLogout?: () => void;
+  onDateChange?: (date: string) => void;
+  selectedDate?: string;
 };
 
-export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick, isMobile = false }: TopbarProps) {
+export default function Topbar({ 
+  showTaskControls = true, 
+  pageTitle, 
+  onMenuClick, 
+  isMobile = false,
+  onDateChange,
+  selectedDate: externalSelectedDate 
+}: TopbarProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(() => {
+  const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 767);
+  const [internalSelectedDate, setInternalSelectedDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split("T")[0];
   });
+
+  const selectedDate = externalSelectedDate || internalSelectedDate;
+
+  // Detect screen size changes for responsive button display
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth <= 767);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogoClick = () => {
     navigate('/dashboard');
@@ -28,7 +50,11 @@ export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
-    setSelectedDate(newDate);
+    setInternalSelectedDate(newDate);
+
+    if (onDateChange) {
+      onDateChange(newDate);
+    }
 
     window.dispatchEvent(
       new CustomEvent("date-change", {
@@ -39,26 +65,22 @@ export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick
 
   return (
     <>
-      <header className="topbar">
-        {/* LEFT SECTION - Branding */}
-        <div className="left">
-          {isMobile && (
-            <button 
-              onClick={onMenuClick}
-              className="hamburger-menu"
-              aria-label="Toggle menu"
-            >
-              <span></span>
-              <span></span>
-              <span></span>
-            </button>
-          )}
+      <div className="topbar-wrapper">
+        <header className="topbar">
+          {/* LEFT SECTION - Branding and page title */}
+          <div className="topbar-left">
+            {isMobile && (
+              <button 
+                onClick={onMenuClick}
+                className="hamburger-menu"
+                aria-label="Toggle menu"
+              >
+                <span></span>
+                <span></span>
+                <span></span>
+              </button>
+            )}
 
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--space-lg)',
-          }}>
             <div 
               className="app-title" 
               onClick={handleLogoClick}
@@ -78,7 +100,7 @@ export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick
               }}>
                 Momentum
               </h1>
-              <p style={{
+              <p className="app-subtitle" style={{
                 fontSize: 'var(--text-xs)',
                 color: 'var(--text-muted)',
                 margin: 0,
@@ -91,12 +113,12 @@ export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick
 
             {pageTitle && (
               <>
-                <div style={{
+                <div className="page-divider" style={{
                   width: '1px',
                   height: '32px',
                   background: 'var(--border-default)',
                 }} />
-                <span style={{
+                <span className="page-title-text" style={{
                   fontSize: 'var(--text-lg)',
                   color: 'var(--text-secondary)',
                   fontWeight: 'var(--font-medium)',
@@ -107,9 +129,14 @@ export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick
             )}
           </div>
 
-          {showTaskControls && (
-            <div style={{ display: 'flex', gap: 'var(--space-md)', marginLeft: 'auto' }}>
-              <Button onClick={() => setOpen(true)}>
+          {/* CENTER SECTION - Desktop task controls only */}
+          {showTaskControls && !isMobileView && (
+            <div className="topbar-controls">
+              <Button 
+                onClick={() => setOpen(true)}
+                className="add-task-btn"
+                title="Add Task"
+              >
                 + Add Task
               </Button>
 
@@ -130,13 +157,15 @@ export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick
               />
             </div>
           )}
-        </div>
 
-        {/* RIGHT SECTION */}
-        <div className="right">
-          <UserMenu />
-        </div>
-      </header>
+          {/* RIGHT SECTION - Profile */}
+          <div className="topbar-right">
+            <UserMenu />
+          </div>
+        </header>
+
+        {/* MOBILE: No secondary row - date picker moved to content */}
+      </div>
 
       {/* ADD TASK MODAL */}
       <AnimatePresence>

@@ -1,14 +1,34 @@
+.topbar-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+}
+
 .topbar {
   height: 64px;
   padding: 0 var(--space-lg);
   background: var(--bg-primary);
-  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  gap: var(--space-md);
+  flex-shrink: 0;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-shrink: 0;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-left: auto;
   flex-shrink: 0;
 }
 
@@ -56,8 +76,22 @@
   display: flex;
   align-items: center;
   gap: var(--space-md);
-  margin-left: var(--space-lg);
+  margin-left: auto;
   flex-shrink: 0;
+}
+
+/* Topbar controls row - separate from topbar */
+.topbar-controls-mobile {
+  display: none;
+}
+
+/* Desktop task controls - centered between logo and profile */
+.topbar-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .date-input {
@@ -69,6 +103,8 @@
   outline: none;
   color-scheme: dark;
   transition: all 0.2s;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
 }
 
 .date-input:hover {
@@ -102,47 +138,56 @@
 
 @media (max-width: 767px) {
   .topbar {
-    height: 56px;
-    padding: 0 var(--space-sm);
+    height: 48px;
+    padding: 0 12px;
   }
 
   .app-title h1 {
     font-size: var(--text-lg) !important;
   }
 
-  .left {
+  /* Hide subtitle on mobile for compact header */
+  .app-subtitle {
+    display: none !important;
+  }
+
+  /* Hide page title divider and text on mobile */
+  .page-divider,
+  .page-title-text {
+    display: none !important;
+  }
+
+  .topbar-left {
     gap: var(--space-sm);
     flex: 1;
     min-width: 0;
   }
 
-  .right {
+  .topbar-right {
     gap: var(--space-xs);
-    margin-left: var(--space-sm);
+    margin-left: auto;
+    flex-shrink: 0;
   }
 
-  /* Hide date input on mobile - too much space */
-  .date-input {
+  /* Remove mobile controls row - using FAB instead */
+  .topbar-controls-mobile {
     display: none !important;
   }
 }
 
 @media (max-width: 480px) {
   .topbar {
-    padding: 0 8px;
+    height: 44px;
+    padding: 0 10px;
   }
 
   .app-title h1 {
     font-size: var(--text-base) !important;
   }
 
-  /* Make Add Task button more compact on small screens */
-  .left > div {
-    gap: 4px !important;
-  }
-  
-  .left button {
-    padding: 8px 12px !important;
-    font-size: 13px !important;
+  .topbar-right {
+    gap: 4px;
+    margin-left: auto;
+    flex-shrink: 0;
   }
 }

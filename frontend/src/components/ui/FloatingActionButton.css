@@ -1,0 +1,57 @@
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3), 0 2px 6px rgba(0, 0, 0, 0.2);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: all 0.3s ease;
+}
+
+.fab:hover {
+  box-shadow: 0 6px 16px rgba(0, 255, 255, 0.4), 0 3px 8px rgba(0, 0, 0, 0.3);
+  background: var(--accent-hover);
+}
+
+.fab:active {
+  box-shadow: 0 2px 8px rgba(0, 255, 255, 0.3);
+}
+
+.fab-icon {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--bg-primary);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Show FAB only on mobile/tablet */
+@media (max-width: 1023px) {
+  .fab {
+    display: flex;
+  }
+}
+
+/* Smaller FAB on very small screens */
+@media (max-width: 480px) {
+  .fab {
+    width: 52px;
+    height: 52px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .fab-icon {
+    font-size: 24px;
+  }
+}

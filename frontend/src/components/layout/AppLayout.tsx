@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import Footer from "./Footer";
+import FloatingActionButton from "../ui/FloatingActionButton";
+import AddTaskModal from "../task/AddTaskModal";
 import { pageVariants } from "../../utils/motionVariants";
 import "./layout.css";
 
@@ -13,6 +15,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentView, setCurrentView] = useState("My Work");
+  const [showTaskModal, setShowTaskModal] = useState(false);
 
   // Detect mobile screen
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
@@ -99,6 +102,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </motion.div>
         <Footer />
+
+        {/* Floating Action Button for mobile - Add Task */}
+        {showTaskControls && isMobile && (
+          <FloatingActionButton 
+            onClick={() => setShowTaskModal(true)}
+            icon="+"
+            label="Add Task"
+          />
+        )}
+
+        {/* Task Modal */}
+        <AnimatePresence>
+          {showTaskModal && (
+            <AddTaskModal onClose={() => setShowTaskModal(false)} />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

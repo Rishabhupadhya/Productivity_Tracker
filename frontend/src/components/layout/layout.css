@@ -85,12 +85,13 @@
   overflow-x: hidden;
   min-height: 0;
   max-height: 100%;
+  position: relative;
 }
 
-/* Responsive breakpoints */
-@media (max-width: 1279px) {
+/* Reduce padding on mobile for more content space */
+@media (max-width: 1023px) {
   .content {
-    padding: 16px;
+    padding: 0 !important;
   }
 }
 
