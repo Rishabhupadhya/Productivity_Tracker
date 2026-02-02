@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import type { Goal, GoalType } from "../services/goal.service";
 import * as goalService from "../services/goal.service";
+import "./pages.css";
 
 export default function Goals() {
   const navigate = useNavigate();
@@ -91,12 +92,14 @@ export default function Goals() {
   const handleDeleteReview = async (reviewId: string) => {
     if (!selectedGoal || !confirm("Delete this review?")) return;
     try {
-      const updatedGoal = await goalService.deleteReview(selectedGoal._id, reviewId);
-      setSelectedGoal(updatedGoal);
-      await loadGoals();
+      await goalService.deleteReview(selectedGoal._id, reviewId);
+      const freshGoals = await goalService.getGoals();
+      setGoals(freshGoals);
+      const freshGoal = freshGoals.find(g => g._id === selectedGoal._id);
+      if (freshGoal) setSelectedGoal({ ...freshGoal });
     } catch (error) {
       console.error("Failed to delete review:", error);
-      alert('Failed to delete review');
+      alert('Failed to delete review. Check console for details.');
     }
   };
 
@@ -126,10 +129,10 @@ export default function Goals() {
   };
 
   const getProgressColor = (progress: number) => {
-    if (progress >= 100) return "#00ff00";
-    if (progress >= 75) return "#00ffff";
-    if (progress >= 50) return "#ffaa00";
-    return "#ff0000";
+    if (progress >= 100) return "var(--success)";
+    if (progress >= 75) return "var(--accent)";
+    if (progress >= 50) return "var(--warning)";
+    return "var(--danger)";
   };
 
   const calculateProgress = (goal: Goal) => {
@@ -146,383 +149,319 @@ export default function Goals() {
 
   return (
     <AppLayout>
-      <div style={{ padding: "24px", background: "#0b0f14", minHeight: "100%", color: "#fff", overflow: "auto" }}>
-        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+      <div className="page-container">
+        <div className="page-inner">
           {!selectedGoal && (
-            <div style={{ marginBottom: "32px", display: "flex", alignItems: "center", gap: "16px" }}>
-              <button
-                onClick={() => navigate("/dashboard")}
-                style={{
-                  padding: "12px 20px",
-                  background: "#333",
-                  color: "#00ffff",
-                  border: "1px solid #00ffff",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px"
-                }}
-              >
+            <div className="page-header">
+              <button className="page-header-back-btn" onClick={() => navigate("/dashboard")}>
                 ← Home
               </button>
               <div>
-                <h1 style={{ color: "#00ffff", fontSize: "32px", marginBottom: "8px" }}>🎯 Goal Tracker</h1>
-                <p style={{ color: "#888", fontSize: "14px" }}>Set and track your personal, financial, and professional goals</p>
+                <h1 className="page-header-title">🎯 Goal Tracker</h1>
+                <p className="page-header-subtitle">Set and track your personal, financial, and professional goals</p>
               </div>
             </div>
           )}
 
           {selectedGoal ? (
-          // Goal Detail View
-          <div>
-            <button
-              onClick={() => setSelectedGoal(null)}
-              style={{
-                padding: "12px 24px",
-                background: "#333",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                marginBottom: "24px",
-                fontSize: "14px"
-              }}
-            >
-              ← Back to Goals
-            </button>
+            // Goal Detail View
+            <div>
+              <button className="btn-secondary" onClick={() => setSelectedGoal(null)} style={{ marginBottom: "var(--space-2xl)" }}>
+                ← Back to Goals
+              </button>
 
-            <div style={{ padding: "32px", background: "#1a1a1a", borderRadius: "12px", marginBottom: "24px", border: "1px solid #00ffff" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" }}>
-                <span style={{ fontSize: "48px" }}>{getGoalIcon(selectedGoal.type)}</span>
-                <div style={{ flex: 1 }}>
-                  <h2 style={{ color: "#00ffff", margin: 0, fontSize: "28px" }}>{selectedGoal.title}</h2>
-                  {selectedGoal.description && <p style={{ color: "#888", fontSize: "14px", margin: "8px 0 0 0" }}>{selectedGoal.description}</p>}
-                </div>
-                <button
-                  onClick={() => handleDeleteGoal(selectedGoal._id)}
-                  style={{ padding: "8px 16px", background: "#ff0000", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}
-                >
-                  Delete Goal
-                </button>
-              </div>
-
-              <div style={{ marginBottom: "24px" }}>
-                <div style={{ fontSize: "16px", color: "#888", marginBottom: "12px" }}>
-                  {selectedGoal.currentValue} / {selectedGoal.targetValue} {selectedGoal.unit}
-                </div>
-                <div style={{ background: "#0a0a0a", height: "20px", borderRadius: "10px", overflow: "hidden" }}>
-                  <div style={{
-                    background: getProgressColor(calculateProgress(selectedGoal)),
-                    height: "100%",
-                    width: `${calculateProgress(selectedGoal)}%`,
-                    transition: "width 0.3s"
-                  }} />
-                </div>
-                <div style={{ fontSize: "24px", color: getProgressColor(calculateProgress(selectedGoal)), marginTop: "12px", fontWeight: "bold" }}>
-                  {calculateProgress(selectedGoal).toFixed(1)}% Complete
-                </div>
-              </div>
-
-              {/* Update Progress */}
-              <form onSubmit={handleUpdateProgress} style={{ marginBottom: "24px", padding: "20px", background: "#0a0a0a", borderRadius: "8px" }}>
-                <div style={{ fontSize: "14px", color: "#00ffff", marginBottom: "12px", fontWeight: "500" }}>Update Progress</div>
-                <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
-                  <input
-                    type="number"
-                    step="any"
-                    placeholder={`Add ${selectedGoal.unit || 'value'}`}
-                    value={progressInput}
-                    onChange={(e) => setProgressInput(e.target.value)}
-                    style={{ flex: 1, padding: "12px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
-                  />
-                  <button 
-                    type="submit"
-                    style={{ padding: "12px 24px", background: "#00ffff", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "14px" }}
-                  >
-                    Add Progress
+              <div className="card card-elevated" style={{ marginBottom: "var(--space-2xl)" }}>
+                <div className="flex-between" style={{ marginBottom: "var(--space-lg)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "var(--space-lg)" }}>
+                    <span style={{ fontSize: "48px" }}>{getGoalIcon(selectedGoal.type)}</span>
+                    <div>
+                      <h2 style={{ color: "var(--accent)", margin: 0, fontSize: "var(--text-2xl)", fontWeight: "var(--font-bold)" }}>{selectedGoal.title}</h2>
+                      {selectedGoal.description && <p style={{ color: "var(--text-muted)", fontSize: "var(--text-sm)", margin: "var(--space-sm) 0 0 0" }}>{selectedGoal.description}</p>}
+                    </div>
+                  </div>
+                  <button className="btn-danger" onClick={() => handleDeleteGoal(selectedGoal._id)}>
+                    Delete Goal
                   </button>
                 </div>
-                <div style={{ fontSize: "12px", color: "#666", marginTop: "8px" }}>
-                  Enter the amount to add to your current progress ({selectedGoal.currentValue} {selectedGoal.unit})
-                </div>
-              </form>
 
-              {getDaysRemaining(selectedGoal) !== null && (
-                <div style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px", marginBottom: "16px" }}>
-                  <div style={{ fontSize: "14px", color: "#00ffff", marginBottom: "4px" }}>Target Date</div>
-                  <div style={{ fontSize: "16px", color: getDaysRemaining(selectedGoal)! > 0 ? "#fff" : "#ff0000" }}>
-                    {new Date(selectedGoal.targetDate!).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                <div style={{ marginBottom: "var(--space-xl)" }}>
+                  <div style={{ fontSize: "var(--text-lg)", color: "var(--text-secondary)", marginBottom: "var(--space-md)", fontWeight: "var(--font-medium)" }}>
+                    {selectedGoal.currentValue} / {selectedGoal.targetValue} {selectedGoal.unit}
                   </div>
-                  <div style={{ fontSize: "14px", color: getDaysRemaining(selectedGoal)! > 0 ? "#888" : "#ff0000", marginTop: "4px" }}>
-                    {getDaysRemaining(selectedGoal)! > 0 
-                      ? `${getDaysRemaining(selectedGoal)} days remaining`
-                      : getDaysRemaining(selectedGoal) === 0
-                      ? "Due today!"
-                      : `${Math.abs(getDaysRemaining(selectedGoal)!)} days overdue`
-                    }
+                  <div className="progress-bar-container">
+                    <div className="progress-bar-fill" style={{
+                      background: getProgressColor(calculateProgress(selectedGoal)),
+                      width: `${calculateProgress(selectedGoal)}%`
+                    }} />
+                  </div>
+                  <div style={{ fontSize: "var(--text-2xl)", color: getProgressColor(calculateProgress(selectedGoal)), marginTop: "var(--space-md)", fontWeight: "var(--font-bold)" }}>
+                    {calculateProgress(selectedGoal).toFixed(1)}% Complete
+                  </div>
+                </div>
+
+                <form onSubmit={handleUpdateProgress} className="card" style={{ background: "var(--bg-tertiary)" }}>
+                  <div style={{ fontSize: "var(--text-sm)", color: "var(--accent)", marginBottom: "var(--space-md)", fontWeight: "var(--font-medium)" }}>Update Progress</div>
+                  <div className="flex-gap">
+                    <input
+                      type="number"
+                      step="any"
+                      placeholder={`Add ${selectedGoal.unit || 'value'}`}
+                      value={progressInput}
+                      onChange={(e) => setProgressInput(e.target.value)}
+                      className="form-input"
+                      style={{ flex: 1 }}
+                    />
+                    <button type="submit" className="btn-primary">
+                      Add Progress
+                    </button>
+                  </div>
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", marginTop: "var(--space-sm)" }}>
+                    Enter the amount to add to your current progress ({selectedGoal.currentValue} {selectedGoal.unit})
+                  </div>
+                </form>
+
+                {getDaysRemaining(selectedGoal) !== null && (
+                  <div className="stat-card" style={{ marginTop: "var(--space-lg)" }}>
+                    <div className="stat-label">Target Date</div>
+                    <div style={{ fontSize: "var(--text-lg)", color: getDaysRemaining(selectedGoal)! > 0 ? "var(--text-primary)" : "var(--danger)", marginBottom: "var(--space-sm)" }}>
+                      {new Date(selectedGoal.targetDate!).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </div>
+                    <div style={{ fontSize: "var(--text-sm)", color: getDaysRemaining(selectedGoal)! > 0 ? "var(--text-muted)" : "var(--danger)" }}>
+                      {getDaysRemaining(selectedGoal)! > 0 
+                        ? `${getDaysRemaining(selectedGoal)} days remaining`
+                        : getDaysRemaining(selectedGoal) === 0 ? "Due today!" : `${Math.abs(getDaysRemaining(selectedGoal)!)} days overdue`
+                      }
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Milestones */}
+              {selectedGoal.milestones.length > 0 && (
+                <div style={{ marginBottom: "var(--space-2xl)" }}>
+                  <h3 style={{ color: "var(--accent)", marginBottom: "var(--space-lg)", fontSize: "var(--text-xl)" }}>🏆 Milestones</h3>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-md)" }}>
+                    {selectedGoal.milestones.map((milestone, idx) => (
+                      <div key={idx} className="card" style={{ 
+                        display: "flex", 
+                        alignItems: "center", 
+                        gap: "var(--space-lg)",
+                        borderColor: milestone.completed ? "var(--success)" : "var(--border-default)"
+                      }}>
+                        <div style={{ fontSize: "32px" }}>{milestone.completed ? "✅" : "⭕"}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ color: milestone.completed ? "var(--success)" : "var(--text-primary)", fontSize: "var(--text-lg)", fontWeight: "var(--font-medium)", marginBottom: "var(--space-xs)" }}>{milestone.title}</div>
+                          <div style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}>Target: {milestone.targetValue} {selectedGoal.unit}</div>
+                        </div>
+                        {milestone.completed && milestone.completedAt && (
+                          <div style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)" }}>
+                            Completed: {new Date(milestone.completedAt).toLocaleDateString('en-IN')}
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
-            </div>
 
-            {/* Milestones */}
-            {selectedGoal.milestones.length > 0 && (
-              <div style={{ marginBottom: "24px" }}>
-                <h3 style={{ color: "#00ffff", marginBottom: "16px", fontSize: "20px" }}>🏆 Milestones</h3>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {selectedGoal.milestones.map((milestone, idx) => (
-                    <div key={idx} style={{ padding: "20px", background: "#1a1a1a", borderRadius: "8px", display: "flex", alignItems: "center", gap: "16px", border: milestone.completed ? "1px solid #00ff00" : "1px solid #333" }}>
-                      <div style={{ fontSize: "32px" }}>{milestone.completed ? "✅" : "⭕"}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ color: milestone.completed ? "#00ff00" : "#fff", fontSize: "16px", fontWeight: "500", marginBottom: "4px" }}>{milestone.title}</div>
-                        <div style={{ fontSize: "14px", color: "#666" }}>Target: {milestone.targetValue} {selectedGoal.unit}</div>
-                      </div>
-                      {milestone.completed && milestone.completedAt && (
-                        <div style={{ fontSize: "12px", color: "#666" }}>
-                          Completed: {new Date(milestone.completedAt).toLocaleDateString('en-IN')}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+              {/* Reviews */}
+              <div>
+                <div className="flex-between" style={{ marginBottom: "var(--space-lg)" }}>
+                  <h3 style={{ color: "var(--accent)", margin: 0, fontSize: "var(--text-xl)" }}>📝 Progress Reviews</h3>
+                  <button className="btn-primary" onClick={() => setShowReviewForm(!showReviewForm)}>
+                    + Add Review
+                  </button>
                 </div>
-              </div>
-            )}
 
-            {/* Reviews */}
+                {showReviewForm && (
+                  <form onSubmit={handleAddReview} className="card" style={{ marginBottom: "var(--space-xl)", background: "var(--bg-tertiary)" }}>
+                    <textarea
+                      placeholder="What helped you make progress?"
+                      value={review.whatHelped}
+                      onChange={(e) => setReview({ ...review, whatHelped: e.target.value })}
+                      className="form-textarea"
+                      style={{ marginBottom: "var(--space-lg)" }}
+                      required
+                    />
+                    <textarea
+                      placeholder="What blocked your progress?"
+                      value={review.whatBlocked}
+                      onChange={(e) => setReview({ ...review, whatBlocked: e.target.value })}
+                      className="form-textarea"
+                      style={{ marginBottom: "var(--space-lg)" }}
+                      required
+                    />
+                    <textarea
+                      placeholder="Additional notes..."
+                      value={review.notes}
+                      onChange={(e) => setReview({ ...review, notes: e.target.value })}
+                      className="form-textarea"
+                      style={{ marginBottom: "var(--space-lg)" }}
+                    />
+                    <div className="flex-gap">
+                      <button type="submit" className="btn-primary">Save Review</button>
+                      <button type="button" className="btn-secondary" onClick={() => setShowReviewForm(false)}>Cancel</button>
+                    </div>
+                  </form>
+                )}
+
+                {selectedGoal.reviews.length > 0 ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-md)" }} key={`reviews-${selectedGoal.reviews.length}`}>
+                    {selectedGoal.reviews.slice().reverse().map((rev, idx) => (
+                      <div key={`${rev._id}-${idx}`} className="card" style={{ position: "relative" }}>
+                        <button
+                          onClick={() => handleDeleteReview(rev._id)}
+                          className="btn-danger"
+                          style={{
+                            position: "absolute",
+                            top: "var(--space-md)",
+                            right: "var(--space-md)",
+                            padding: "6px 12px",
+                            fontSize: "var(--text-xs)"
+                          }}
+                        >
+                          Delete
+                        </button>
+                        <div style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", marginBottom: "var(--space-md)" }}>
+                          {new Date(rev.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </div>
+                        <div style={{ fontSize: "var(--text-sm)", color: "var(--success)", marginBottom: "var(--space-sm)" }}>
+                          <strong>✅ What helped:</strong> {rev.whatHelped}
+                        </div>
+                        <div style={{ fontSize: "var(--text-sm)", color: "var(--danger)", marginBottom: "var(--space-sm)" }}>
+                          <strong>🚫 What blocked:</strong> {rev.whatBlocked}
+                        </div>
+                        {rev.notes && <div style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}><strong>📌 Notes:</strong> {rev.notes}</div>}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="empty-state">
+                    No reviews yet. Add your first review to track your progress and learnings.
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            // Goals List
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                <h3 style={{ color: "#00ffff", margin: 0, fontSize: "20px" }}>📝 Progress Reviews</h3>
-                <button
-                  onClick={() => setShowReviewForm(!showReviewForm)}
-                  style={{
-                    padding: "8px 16px",
-                    background: "#00ffff",
-                    color: "#000",
-                    border: "none",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    fontSize: "14px",
-                    fontWeight: "bold"
-                  }}
-                >
-                  + Add Review
-                </button>
-              </div>
+              <button className="btn-primary" onClick={() => setShowAddForm(!showAddForm)} style={{ marginBottom: "var(--space-2xl)" }}>
+                + Create Goal
+              </button>
 
-              {showReviewForm && (
-                <form onSubmit={handleAddReview} style={{ marginBottom: "24px", padding: "24px", background: "#1a1a1a", borderRadius: "8px" }}>
-                  <textarea
-                    placeholder="What helped you make progress?"
-                    value={review.whatHelped}
-                    onChange={(e) => setReview({ ...review, whatHelped: e.target.value })}
-                    style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
+              {showAddForm && (
+                <form onSubmit={handleAddGoal} className="card" style={{ marginBottom: "var(--space-2xl)" }}>
+                  <input
+                    type="text"
+                    placeholder="Goal Title"
+                    value={newGoal.title}
+                    onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
+                    className="form-input"
+                    style={{ marginBottom: "var(--space-lg)" }}
                     required
                   />
                   <textarea
-                    placeholder="What blocked your progress?"
-                    value={review.whatBlocked}
-                    onChange={(e) => setReview({ ...review, whatBlocked: e.target.value })}
-                    style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
-                    required
+                    placeholder="Description (optional)"
+                    value={newGoal.description}
+                    onChange={(e) => setNewGoal({ ...newGoal, description: e.target.value })}
+                    className="form-textarea"
+                    style={{ marginBottom: "var(--space-lg)" }}
                   />
-                  <textarea
-                    placeholder="Additional notes..."
-                    value={review.notes}
-                    onChange={(e) => setReview({ ...review, notes: e.target.value })}
-                    style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-lg)", marginBottom: "var(--space-lg)" }}>
+                    <select
+                      value={newGoal.type}
+                      onChange={(e) => setNewGoal({ ...newGoal, type: e.target.value as GoalType })}
+                      className="form-select"
+                    >
+                      <option value="count">Count Goal</option>
+                      <option value="financial">Financial Goal</option>
+                      <option value="time">Time-based Goal</option>
+                      <option value="binary">Yes/No Goal</option>
+                    </select>
+                    <input
+                      type="number"
+                      placeholder="Target Value"
+                      value={newGoal.targetValue}
+                      onChange={(e) => setNewGoal({ ...newGoal, targetValue: e.target.value })}
+                      className="form-input"
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="Unit (e.g., km, hours, ₹)"
+                      value={newGoal.unit}
+                      onChange={(e) => setNewGoal({ ...newGoal, unit: e.target.value })}
+                      className="form-input"
+                    />
+                  </div>
+                  <input
+                    type="date"
+                    value={newGoal.targetDate}
+                    onChange={(e) => setNewGoal({ ...newGoal, targetDate: e.target.value })}
+                    className="form-input"
+                    style={{ marginBottom: "var(--space-lg)" }}
                   />
-                  <div style={{ display: "flex", gap: "12px" }}>
-                    <button type="submit" style={{ padding: "12px 24px", background: "#00ffff", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "14px" }}>
-                      Save Review
-                    </button>
-                    <button type="button" onClick={() => setShowReviewForm(false)} style={{ padding: "12px 24px", background: "#333", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}>
-                      Cancel
-                    </button>
+                  <div className="flex-gap">
+                    <button type="submit" className="btn-primary">Create Goal</button>
+                    <button type="button" className="btn-secondary" onClick={() => setShowAddForm(false)}>Cancel</button>
                   </div>
                 </form>
               )}
 
-              {selectedGoal.reviews.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {selectedGoal.reviews.slice().reverse().map((rev) => (
-                    <div key={rev._id} style={{ padding: "20px", background: "#1a1a1a", borderRadius: "8px", position: "relative" }}>
-                      <button
-                        onClick={() => handleDeleteReview(rev._id)}
-                        style={{
-                          position: "absolute",
-                          top: "12px",
-                          right: "12px",
-                          background: "#ff4444",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "6px",
-                          padding: "6px 12px",
-                          cursor: "pointer",
-                          fontSize: "12px",
-                          fontWeight: "bold"
-                        }}
+              {loading ? (
+                <div className="loading-state">Loading...</div>
+              ) : goals.length > 0 ? (
+                <div className="list-grid">
+                  {goals.map(goal => {
+                    const progress = calculateProgress(goal);
+                    const daysLeft = getDaysRemaining(goal);
+                    return (
+                      <div
+                        key={goal._id}
+                        className="card"
+                        onClick={() => setSelectedGoal(goal)}
+                        style={{ cursor: "pointer" }}
                       >
-                        Delete
-                      </button>
-                      <div style={{ fontSize: "12px", color: "#666", marginBottom: "12px" }}>
-                        {new Date(rev.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        <div className="flex-between" style={{ marginBottom: "var(--space-md)" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "var(--space-md)" }}>
+                            <span style={{ fontSize: "32px" }}>{getGoalIcon(goal.type)}</span>
+                            <div>
+                              <div style={{ color: "var(--text-primary)", fontSize: "var(--text-lg)", fontWeight: "var(--font-medium)" }}>{goal.title}</div>
+                              {daysLeft !== null && (
+                                <div style={{ fontSize: "var(--text-xs)", color: daysLeft > 0 ? "var(--text-muted)" : "var(--danger)", marginTop: "var(--space-xs)" }}>
+                                  {daysLeft > 0 ? `${daysLeft} days left` : daysLeft === 0 ? "Due today" : `${Math.abs(daysLeft)} days overdue`}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)", marginBottom: "var(--space-md)" }}>
+                          {goal.currentValue} / {goal.targetValue} {goal.unit}
+                        </div>
+                        <div className="progress-bar-container" style={{ height: "10px", marginBottom: "var(--space-sm)" }}>
+                          <div className="progress-bar-fill" style={{
+                            background: getProgressColor(progress),
+                            width: `${progress}%`
+                          }} />
+                        </div>
+                        <div style={{ fontSize: "var(--text-sm)", color: getProgressColor(progress), fontWeight: "var(--font-bold)" }}>
+                          {progress.toFixed(1)}% complete
+                        </div>
                       </div>
-                      <div style={{ fontSize: "14px", color: "#00ff00", marginBottom: "8px" }}>
-                        <strong>✅ What helped:</strong> {rev.whatHelped}
-                      </div>
-                      <div style={{ fontSize: "14px", color: "#ff0000", marginBottom: "8px" }}>
-                        <strong>🚫 What blocked:</strong> {rev.whatBlocked}
-                      </div>
-                      {rev.notes && <div style={{ fontSize: "14px", color: "#888" }}><strong>📌 Notes:</strong> {rev.notes}</div>}
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
-                <div style={{ textAlign: "center", color: "#666", padding: "40px", background: "#1a1a1a", borderRadius: "8px" }}>
-                  No reviews yet. Add your first review to track your progress and learnings.
+                <div className="empty-state">
+                  <div className="empty-state-icon">🎯</div>
+                  <h3 className="empty-state-title">No goals yet</h3>
+                  <p className="empty-state-description">
+                    Create your first goal to start tracking your progress towards what matters most.
+                  </p>
                 </div>
               )}
             </div>
-          </div>
-        ) : (
-          // Goals List
-          <div>
-            <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              style={{
-                padding: "12px 24px",
-                background: "#00ffff",
-                color: "#000",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                marginBottom: "24px",
-                fontWeight: "bold",
-                fontSize: "14px"
-              }}
-            >
-              + Create Goal
-            </button>
-
-            {showAddForm && (
-              <form onSubmit={handleAddGoal} style={{ marginBottom: "32px", padding: "24px", background: "#1a1a1a", borderRadius: "8px" }}>
-                <input
-                  type="text"
-                  placeholder="Goal Title"
-                  value={newGoal.title}
-                  onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
-                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", fontSize: "14px" }}
-                  required
-                />
-                <textarea
-                  placeholder="Description (optional)"
-                  value={newGoal.description}
-                  onChange={(e) => setNewGoal({ ...newGoal, description: e.target.value })}
-                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
-                />
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginBottom: "16px" }}>
-                  <select
-                    value={newGoal.type}
-                    onChange={(e) => setNewGoal({ ...newGoal, type: e.target.value as GoalType })}
-                    style={{ padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
-                  >
-                    <option value="count">Count Goal</option>
-                    <option value="financial">Financial Goal</option>
-                    <option value="time">Time-based Goal</option>
-                    <option value="binary">Yes/No Goal</option>
-                  </select>
-                  <input
-                    type="number"
-                    placeholder="Target Value"
-                    value={newGoal.targetValue}
-                    onChange={(e) => setNewGoal({ ...newGoal, targetValue: e.target.value })}
-                    style={{ padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
-                    required
-                  />
-                  <input
-                    type="text"
-                    placeholder="Unit (e.g., km, hours, ₹)"
-                    value={newGoal.unit}
-                    onChange={(e) => setNewGoal({ ...newGoal, unit: e.target.value })}
-                    style={{ padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
-                  />
-                </div>
-                <input
-                  type="date"
-                  value={newGoal.targetDate}
-                  onChange={(e) => setNewGoal({ ...newGoal, targetDate: e.target.value })}
-                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", fontSize: "14px" }}
-                />
-                <div style={{ display: "flex", gap: "12px" }}>
-                  <button type="submit" style={{ padding: "12px 24px", background: "#00ffff", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "14px" }}>
-                    Create Goal
-                  </button>
-                  <button type="button" onClick={() => setShowAddForm(false)} style={{ padding: "12px 24px", background: "#333", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}>
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {loading ? (
-              <div style={{ textAlign: "center", color: "#00ffff", padding: "80px" }}>Loading...</div>
-            ) : goals.length > 0 ? (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(350px, 1fr))", gap: "16px" }}>
-                {goals.map(goal => {
-                  const progress = calculateProgress(goal);
-                  const daysLeft = getDaysRemaining(goal);
-                  return (
-                    <div
-                      key={goal._id}
-                      style={{ padding: "24px", background: "#1a1a1a", borderRadius: "12px", cursor: "pointer", border: "1px solid transparent", transition: "border-color 0.2s" }}
-                      onClick={() => setSelectedGoal(goal)}
-                      onMouseEnter={(e) => e.currentTarget.style.borderColor = "#00ffff"}
-                      onMouseLeave={(e) => e.currentTarget.style.borderColor = "transparent"}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                          <span style={{ fontSize: "32px" }}>{getGoalIcon(goal.type)}</span>
-                          <div>
-                            <div style={{ color: "#fff", fontSize: "18px", fontWeight: "500" }}>{goal.title}</div>
-                            {daysLeft !== null && (
-                              <div style={{ fontSize: "12px", color: daysLeft > 0 ? "#888" : "#ff0000", marginTop: "4px" }}>
-                                {daysLeft > 0 ? `${daysLeft} days left` : daysLeft === 0 ? "Due today" : `${Math.abs(daysLeft)} days overdue`}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      <div style={{ fontSize: "14px", color: "#888", marginBottom: "12px" }}>
-                        {goal.currentValue} / {goal.targetValue} {goal.unit}
-                      </div>
-                      <div style={{ background: "#0a0a0a", height: "10px", borderRadius: "5px", overflow: "hidden", marginBottom: "8px" }}>
-                        <div style={{
-                          background: getProgressColor(progress),
-                          height: "100%",
-                          width: `${progress}%`,
-                          transition: "width 0.3s"
-                        }} />
-                      </div>
-                      <div style={{ fontSize: "14px", color: getProgressColor(progress), fontWeight: "bold" }}>
-                        {progress.toFixed(1)}% complete
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div style={{ textAlign: "center", color: "#666", padding: "80px", background: "#1a1a1a", borderRadius: "8px" }}>
-                <div style={{ fontSize: "48px", marginBottom: "16px" }}>🎯</div>
-                <h3 style={{ marginBottom: "12px" }}>No goals yet</h3>
-                <p style={{ fontSize: "14px", maxWidth: "400px", margin: "0 auto" }}>
-                  Create your first goal to start tracking your progress towards what matters most.
-                </p>
-              </div>
-            )}
-          </div>
-        )}
+          )}
         </div>
       </div>
     </AppLayout>

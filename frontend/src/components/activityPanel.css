@@ -1,12 +1,14 @@
 .activity-panel {
-  background: var(--bg-panel);
+  background: var(--bg-primary);
   width: 500px;
   max-width: 90vw;
   max-height: 80vh;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
 }
 
 .activity-list {
@@ -19,14 +21,15 @@
   display: flex;
   gap: 12px;
   padding: 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 8px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .activity-item:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--bg-tertiary);
+  border-color: var(--border-hover);
 }
 
 .activity-icon {
@@ -55,16 +58,16 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #00ffff, #00aaaa);
+  background: var(--accent);
   display: grid;
   place-items: center;
   font-size: 12px;
   font-weight: bold;
-  color: #000;
+  color: var(--bg-app);
 }
 
 .user-avatar.default {
-  background: linear-gradient(135deg, #00ffff, #00aaaa);
+  background: var(--accent);
 }
 
 .user-name {

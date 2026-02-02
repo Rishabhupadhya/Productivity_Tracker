@@ -12,7 +12,7 @@ import {
   acceptInvite,
   removeMember
 } from "./team.controller";
-import { getActivity } from "../activity/activity.controller";
+import { getActivity, getUserActivities } from "../activity/activity.controller";
 import { authMiddleware } from "../../../middleware/auth.middleware";
 
 const router = Router();
@@ -37,6 +37,7 @@ router.post("/:teamId/accept", authMiddleware, acceptInvite);
 router.delete("/:teamId/members/:memberId", authMiddleware, removeMember);
 
 // Activity
+router.get("/activity/me", authMiddleware, getUserActivities);
 router.get("/:teamId/activity", authMiddleware, getActivity);
 
 export default router;

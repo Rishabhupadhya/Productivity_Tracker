@@ -10,8 +10,9 @@
 .column {
   flex: 1;
   min-width: 0;
-  background: var(--bg-panel);
-  border-radius: 8px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -28,7 +29,7 @@
 }
 
 .column::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: var(--border-hover);
   border-radius: 2px;
 }
 
@@ -53,14 +54,29 @@
 @media (max-width: 768px) {
   .board {
     gap: 8px;
+    flex-direction: column;
   }
   .column {
     padding: 8px;
     border-radius: 6px;
+    max-height: none;
+    min-height: 200px;
   }
   .column h4 {
     font-size: 12px;
     margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .board {
+    gap: 6px;
+  }
+  .column {
+    padding: 6px;
+  }
+  .column h4 {
+    font-size: 11px;
   }
 }
 

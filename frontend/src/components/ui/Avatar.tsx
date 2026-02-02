@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import './Avatar.css';
 
 interface AvatarProps {
   src?: string | null;
@@ -15,6 +16,8 @@ const Avatar: React.FC<AvatarProps> = ({
   onClick,
   style 
 }) => {
+  const [imageError, setImageError] = useState(false);
+  
   const sizeMap = {
     small: 32,
     medium: 40,
@@ -49,39 +52,57 @@ const Avatar: React.FC<AvatarProps> = ({
     cursor: onClick ? 'pointer' : 'default',
     transition: 'all 0.2s ease',
     flexShrink: 0,
+    border: '2px solid transparent',
     ...style
   };
 
-  if (src) {
+  // Show fallback if no src or image failed to load
+  if (!src || imageError) {
     return (
-      <img
-        src={src}
-        alt={name || 'User'}
+      <div
         onClick={onClick}
+        onKeyDown={(e) => {
+          if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            onClick();
+          }
+        }}
+        tabIndex={onClick ? 0 : -1}
+        role={onClick ? 'button' : undefined}
+        aria-label={onClick ? `${name || 'User'} menu` : name || 'User avatar'}
+        className="avatar-fallback"
         style={{
           ...baseStyle,
-          objectFit: 'cover'
+          background: 'var(--accent)',
+          color: 'var(--bg-app)'
         }}
-        onError={(e) => {
-          // On image load error, hide the image to show fallback
-          e.currentTarget.style.display = 'none';
-        }}
-      />
+      >
+        {getInitial()}
+      </div>
     );
   }
 
-  // Fallback: Initial or '?'
   return (
-    <div
+    <img
+      src={src}
+      alt={name || 'User'}
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      tabIndex={onClick ? 0 : -1}
+      role={onClick ? 'button' : undefined}
+      aria-label={onClick ? `${name || 'User'} menu` : name || 'User avatar'}
+      className="avatar-image"
       style={{
         ...baseStyle,
-        background: 'linear-gradient(135deg, #00ffff 0%, #0099cc 100%)',
-        color: '#000'
+        objectFit: 'cover'
       }}
-    >
-      {getInitial()}
-    </div>
+      onError={() => setImageError(true)}
+    />
   );
 };
 

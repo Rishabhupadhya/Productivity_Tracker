@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { Goal, GoalType } from "../../services/goal.service";
 import * as goalService from "../../services/goal.service";
+import "./tracker.css";
 
 export default function GoalPanel({ onClose }: { onClose: () => void }) {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -29,7 +30,8 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
   const loadGoals = async () => {
     try {
       setLoading(true);
-      const data = await goalService.getGoals("active");
+      const data = await goalService.getGoals();
+      console.log("Loaded goals:", data);
       setGoals(data);
     } catch (error) {
       console.error("Failed to load goals:", error);
@@ -110,83 +112,52 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div 
-        className="modal-content" 
-        onClick={(e) => e.stopPropagation()}
-        style={{ 
-          background: "#1a1a1a", 
-          padding: "24px", 
-          borderRadius: "8px", 
-          border: "1px solid #00ffff",
-          maxWidth: "900px",
-          width: "90%",
-          maxHeight: "85vh",
-          overflow: "auto"
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
-          <h2 style={{ color: "#00ffff", margin: 0 }}>🎯 Goals</h2>
-          <button
-            onClick={onClose}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#00ffff",
-              fontSize: "24px",
-              cursor: "pointer",
-              padding: "0"
-            }}
-          >
+    <div className="tracker-backdrop" onClick={onClose}>
+      <div className="tracker-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="tracker-header">
+          <h2>🎯 Goals</h2>
+          <button onClick={onClose} className="tracker-close">
             ×
           </button>
         </div>
+
+        <div className="tracker-content">
 
         {selectedGoal ? (
           <div>
             <button
               onClick={() => setSelectedGoal(null)}
-              style={{
-                padding: "8px 16px",
-                background: "#333",
-                color: "#fff",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginBottom: "16px"
-              }}
+              className="btn btn-back"
             >
               ← Back to Goals
             </button>
 
-            <div style={{ padding: "20px", background: "#0a0a0a", borderRadius: "8px", marginBottom: "20px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
-                <span style={{ fontSize: "32px" }}>{getGoalIcon(selectedGoal.type)}</span>
+            <div className="detail-container">
+              <div className="detail-header">
+                <span className="detail-icon">{getGoalIcon(selectedGoal.type)}</span>
                 <div>
-                  <h3 style={{ color: "#00ffff", margin: 0 }}>{selectedGoal.title}</h3>
-                  {selectedGoal.description && <p style={{ color: "#888", fontSize: "14px", margin: "4px 0 0 0" }}>{selectedGoal.description}</p>}
+                  <h3 style={{ color: "var(--accent)", margin: 0 }}>{selectedGoal.title}</h3>
+                  {selectedGoal.description && <p style={{ color: "var(--text-secondary)", fontSize: "14px", margin: "4px 0 0 0" }}>{selectedGoal.description}</p>}
                 </div>
               </div>
 
-              <div style={{ marginBottom: "16px" }}>
-                <div style={{ fontSize: "14px", color: "#888", marginBottom: "8px" }}>
+              <div className="progress-section">
+                <div className="progress-label">
                   {selectedGoal.currentValue} / {selectedGoal.targetValue} {selectedGoal.unit}
                 </div>
-                <div style={{ background: "#1a1a1a", height: "12px", borderRadius: "6px", overflow: "hidden" }}>
-                  <div style={{
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{
                     background: getProgressColor(calculateProgress(selectedGoal)),
-                    height: "100%",
-                    width: `${calculateProgress(selectedGoal)}%`,
-                    transition: "width 0.3s"
+                    width: `${calculateProgress(selectedGoal)}%`
                   }} />
                 </div>
-                <div style={{ fontSize: "18px", color: getProgressColor(calculateProgress(selectedGoal)), marginTop: "8px", fontWeight: "bold" }}>
+                <div className="progress-text" style={{ color: getProgressColor(calculateProgress(selectedGoal)) }}>
                   {calculateProgress(selectedGoal).toFixed(1)}% Complete
                 </div>
               </div>
 
               {getDaysRemaining(selectedGoal) !== null && (
-                <div style={{ fontSize: "14px", color: "#888" }}>
+                <div style={{ fontSize: "14px", color: "var(--text-secondary)" }}>
                   {getDaysRemaining(selectedGoal)! > 0 
                     ? `${getDaysRemaining(selectedGoal)} days remaining`
                     : getDaysRemaining(selectedGoal) === 0
@@ -198,18 +169,18 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
             </div>
 
             {selectedGoal.milestones.length > 0 && (
-              <div style={{ marginBottom: "20px" }}>
-                <h4 style={{ color: "#00ffff", marginBottom: "12px" }}>Milestones</h4>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div className="review-section">
+                <h4 className="section-title">Milestones</h4>
+                <div className="milestone-list">
                   {selectedGoal.milestones.map((milestone, idx) => (
-                    <div key={idx} style={{ padding: "12px", background: "#0a0a0a", borderRadius: "8px", display: "flex", alignItems: "center", gap: "12px" }}>
-                      <div style={{ fontSize: "20px" }}>{milestone.completed ? "✅" : "⭕"}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ color: milestone.completed ? "#00ff00" : "#fff" }}>{milestone.title}</div>
-                        <div style={{ fontSize: "12px", color: "#666" }}>Target: {milestone.targetValue} {selectedGoal.unit}</div>
+                    <div key={idx} className="milestone-item">
+                      <div className="item-icon">{milestone.completed ? "✅" : "⭕"}</div>
+                      <div className="milestone-info">
+                        <div style={{ color: milestone.completed ? "var(--success)" : "var(--text-primary)" }}>{milestone.title}</div>
+                        <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>Target: {milestone.targetValue} {selectedGoal.unit}</div>
                       </div>
                       {milestone.completed && milestone.completedAt && (
-                        <div style={{ fontSize: "11px", color: "#666" }}>
+                        <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>
                           {new Date(milestone.completedAt).toLocaleDateString()}
                         </div>
                       )}
@@ -219,53 +190,44 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
               </div>
             )}
 
-            <div style={{ marginBottom: "20px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                <h4 style={{ color: "#00ffff", margin: 0 }}>Reviews</h4>
+            <div className="review-section">
+              <div className="section-header">
+                <h4 className="section-title">Reviews</h4>
                 <button
                   onClick={() => setShowReviewForm(!showReviewForm)}
-                  style={{
-                    padding: "6px 12px",
-                    background: "#00ffff",
-                    color: "#000",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "12px",
-                    fontWeight: "bold"
-                  }}
+                  className="btn btn-primary"
                 >
                   + Add Review
                 </button>
               </div>
 
               {showReviewForm && (
-                <form onSubmit={handleAddReview} style={{ marginBottom: "16px", padding: "16px", background: "#0a0a0a", borderRadius: "8px" }}>
+                <form onSubmit={handleAddReview} className="form-container">
                   <textarea
                     placeholder="What helped you make progress?"
                     value={review.whatHelped}
                     onChange={(e) => setReview({ ...review, whatHelped: e.target.value })}
-                    style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px", minHeight: "60px" }}
+                    className="form-textarea"
                     required
                   />
                   <textarea
                     placeholder="What blocked your progress?"
                     value={review.whatBlocked}
                     onChange={(e) => setReview({ ...review, whatBlocked: e.target.value })}
-                    style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px", minHeight: "60px" }}
+                    className="form-textarea"
                     required
                   />
                   <textarea
                     placeholder="Additional notes..."
                     value={review.notes}
                     onChange={(e) => setReview({ ...review, notes: e.target.value })}
-                    style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px", minHeight: "60px" }}
+                    className="form-textarea"
                   />
-                  <div style={{ display: "flex", gap: "8px" }}>
-                    <button type="submit" style={{ padding: "8px 16px", background: "#00ffff", color: "#000", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>
+                  <div className="form-actions">
+                    <button type="submit" className="btn btn-primary">
                       Save Review
                     </button>
-                    <button type="button" onClick={() => setShowReviewForm(false)} style={{ padding: "8px 16px", background: "#333", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+                    <button type="button" onClick={() => setShowReviewForm(false)} className="btn btn-secondary">
                       Cancel
                     </button>
                   </div>
@@ -273,24 +235,60 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
               )}
 
               {selectedGoal.reviews.length > 0 ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <div className="review-list">
                   {selectedGoal.reviews.slice().reverse().map((rev, idx) => (
-                    <div key={idx} style={{ padding: "12px", background: "#0a0a0a", borderRadius: "8px" }}>
-                      <div style={{ fontSize: "11px", color: "#666", marginBottom: "8px" }}>
+                    <div key={rev._id || idx} className="review-item">
+                      <div style={{ fontSize: "11px", color: "var(--text-muted)", marginBottom: "8px" }}>
                         {new Date(rev.date).toLocaleDateString()}
                       </div>
-                      <div style={{ fontSize: "13px", color: "#00ff00", marginBottom: "4px" }}>
+                      <div style={{ fontSize: "13px", color: "var(--success)", marginBottom: "4px" }}>
                         <strong>What helped:</strong> {rev.whatHelped}
                       </div>
-                      <div style={{ fontSize: "13px", color: "#ff0000", marginBottom: "4px" }}>
+                      <div style={{ fontSize: "13px", color: "var(--danger)", marginBottom: "4px" }}>
                         <strong>What blocked:</strong> {rev.whatBlocked}
                       </div>
-                      {rev.notes && <div style={{ fontSize: "13px", color: "#888" }}><strong>Notes:</strong> {rev.notes}</div>}
+                      {rev.notes && <div style={{ fontSize: "13px", color: "var(--text-secondary)" }}><strong>Notes:</strong> {rev.notes}</div>}
+                      <button
+                        onClick={async () => {
+                          if (!selectedGoal || !rev._id) {
+                            console.log("Cannot delete: missing data", { selectedGoal: !!selectedGoal, reviewId: rev._id });
+                            alert("Cannot delete: review doesn't have an ID. This review was created before the schema update.");
+                            return;
+                          }
+                          if (!window.confirm("Delete this review?")) return;
+                          try {
+                            console.log("Deleting review:", { goalId: selectedGoal._id, reviewId: rev._id });
+                            const updatedGoal = await goalService.deleteReview(selectedGoal._id, rev._id);
+                            console.log("Delete successful, updated goal:", updatedGoal);
+                            console.log("Reviews count before:", selectedGoal.reviews?.length, "after:", updatedGoal.reviews?.length);
+                            
+                            // Update selectedGoal immediately with the response
+                            setSelectedGoal(updatedGoal);
+                            
+                            // Also update the goals list in the background
+                            const freshGoals = await goalService.getGoals();
+                            setGoals(freshGoals);
+                            
+                            // Find and set the updated goal from the fresh list to ensure consistency
+                            const freshGoal = freshGoals.find(g => g._id === selectedGoal._id);
+                            if (freshGoal) {
+                              setSelectedGoal(freshGoal);
+                            }
+                          } catch (error) {
+                            console.error("Failed to delete review:", error);
+                            alert("Failed to delete review. Check console for details.");
+                          }
+                        }}
+                        className="btn-icon danger"
+                        title="Delete review"
+                      >
+                        ×
+                      </button>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div style={{ textAlign: "center", color: "#666", padding: "20px" }}>No reviews yet</div>
+                <div className="empty-state">No reviews yet</div>
               )}
             </div>
           </div>
@@ -298,41 +296,32 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
           <div>
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              style={{
-                padding: "8px 16px",
-                background: "#00ffff",
-                color: "#000",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                marginBottom: "16px",
-                fontWeight: "bold"
-              }}
+              className="btn btn-primary"
             >
               + Add Goal
             </button>
 
             {showAddForm && (
-              <form onSubmit={handleAddGoal} style={{ marginBottom: "20px", padding: "16px", background: "#0a0a0a", borderRadius: "8px" }}>
+              <form onSubmit={handleAddGoal} className="form-container">
                 <input
                   type="text"
                   placeholder="Goal Title"
                   value={newGoal.title}
                   onChange={(e) => setNewGoal({ ...newGoal, title: e.target.value })}
-                  style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px" }}
+                  className="form-input"
                   required
                 />
                 <textarea
                   placeholder="Description (optional)"
                   value={newGoal.description}
                   onChange={(e) => setNewGoal({ ...newGoal, description: e.target.value })}
-                  style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px", minHeight: "60px" }}
+                  className="form-textarea"
                 />
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+                <div className="form-grid">
                   <select
                     value={newGoal.type}
                     onChange={(e) => setNewGoal({ ...newGoal, type: e.target.value as GoalType })}
-                    style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff" }}
+                    className="form-select"
                   >
                     <option value="count">Count</option>
                     <option value="financial">Financial</option>
@@ -344,7 +333,7 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
                     placeholder="Target Value"
                     value={newGoal.targetValue}
                     onChange={(e) => setNewGoal({ ...newGoal, targetValue: e.target.value })}
-                    style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff" }}
+                    className="form-input"
                     required
                   />
                   <input
@@ -352,20 +341,20 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
                     placeholder="Unit (e.g., km, hours)"
                     value={newGoal.unit}
                     onChange={(e) => setNewGoal({ ...newGoal, unit: e.target.value })}
-                    style={{ padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff" }}
+                    className="form-input"
                   />
                 </div>
                 <input
                   type="date"
                   value={newGoal.targetDate}
                   onChange={(e) => setNewGoal({ ...newGoal, targetDate: e.target.value })}
-                  style={{ width: "100%", padding: "8px", background: "#1a1a1a", border: "1px solid #00ffff", borderRadius: "4px", color: "#00ffff", marginBottom: "12px" }}
+                  className="form-input"
                 />
-                <div style={{ display: "flex", gap: "8px" }}>
-                  <button type="submit" style={{ padding: "8px 16px", background: "#00ffff", color: "#000", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>
+                <div className="form-actions">
+                  <button type="submit" className="btn btn-primary">
                     Create Goal
                   </button>
-                  <button type="button" onClick={() => setShowAddForm(false)} style={{ padding: "8px 16px", background: "#333", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+                  <button type="button" onClick={() => setShowAddForm(false)} className="btn btn-secondary">
                     Cancel
                   </button>
                 </div>
@@ -373,27 +362,27 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
             )}
 
             {loading ? (
-              <div style={{ textAlign: "center", color: "#00ffff", padding: "40px" }}>Loading...</div>
+              <div className="loading-state">Loading...</div>
             ) : goals.length > 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div className="item-list">
                 {goals.map(goal => {
                   const progress = calculateProgress(goal);
                   const daysLeft = getDaysRemaining(goal);
                   return (
                     <div
                       key={goal._id}
-                      style={{ padding: "16px", background: "#0a0a0a", borderRadius: "8px", cursor: "pointer", border: "1px solid transparent", transition: "border-color 0.2s" }}
+                      className="item-card"
                       onClick={() => setSelectedGoal(goal)}
-                      onMouseEnter={(e) => e.currentTarget.style.borderColor = "#00ffff"}
+                      onMouseEnter={(e) => e.currentTarget.style.borderColor = "var(--accent)"}
                       onMouseLeave={(e) => e.currentTarget.style.borderColor = "transparent"}
                     >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                      <div className="item-header">
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                          <span style={{ fontSize: "24px" }}>{getGoalIcon(goal.type)}</span>
+                          <span className="item-icon">{getGoalIcon(goal.type)}</span>
                           <div>
-                            <div style={{ color: "#fff", fontSize: "16px" }}>{goal.title}</div>
+                            <div className="item-title">{goal.title}</div>
                             {daysLeft !== null && (
-                              <div style={{ fontSize: "11px", color: daysLeft > 0 ? "#888" : "#ff0000" }}>
+                              <div style={{ fontSize: "11px", color: daysLeft > 0 ? "var(--text-secondary)" : "var(--danger)" }}>
                                 {daysLeft > 0 ? `${daysLeft}d left` : daysLeft === 0 ? "Due today" : `${Math.abs(daysLeft)}d overdue`}
                               </div>
                             )}
@@ -404,23 +393,21 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
                             e.stopPropagation();
                             handleDeleteGoal(goal._id);
                           }}
-                          style={{ background: "none", border: "none", color: "#ff0000", cursor: "pointer", fontSize: "18px" }}
+                          className="btn-icon danger"
                         >
                           ×
                         </button>
                       </div>
-                      <div style={{ fontSize: "12px", color: "#888", marginBottom: "8px" }}>
+                      <div className="progress-label">
                         {goal.currentValue} / {goal.targetValue} {goal.unit}
                       </div>
-                      <div style={{ background: "#1a1a1a", height: "8px", borderRadius: "4px", overflow: "hidden" }}>
-                        <div style={{
+                      <div className="progress-bar">
+                        <div className="progress-fill" style={{
                           background: getProgressColor(progress),
-                          height: "100%",
-                          width: `${progress}%`,
-                          transition: "width 0.3s"
+                          width: `${progress}%`
                         }} />
                       </div>
-                      <div style={{ fontSize: "12px", color: getProgressColor(progress), marginTop: "4px" }}>
+                      <div className="progress-text" style={{ color: getProgressColor(progress) }}>
                         {progress.toFixed(1)}% complete
                       </div>
                     </div>
@@ -428,12 +415,12 @@ export default function GoalPanel({ onClose }: { onClose: () => void }) {
                 })}
               </div>
             ) : (
-              <div style={{ textAlign: "center", color: "#666", padding: "40px" }}>
+              <div className="empty-state">
                 No goals yet. Click "Add Goal" to get started!
               </div>
             )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

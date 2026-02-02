@@ -31,3 +31,20 @@ export const getTeamActivity = async (teamId: string, limit: number = 50) => {
     .populate("userId", "name email avatar")
     .lean();
 };
+
+export const getUserActivity = async (teamId: string, userId: string, limit: number = 50) => {
+  return Activity.find({ teamId, userId })
+    .sort({ timestamp: -1 })
+    .limit(limit)
+    .populate("userId", "name email avatar")
+    .lean();
+};
+
+export const getAllUserActivity = async (userId: string, limit: number = 100) => {
+  return Activity.find({ userId })
+    .sort({ timestamp: -1 })
+    .limit(limit)
+    .populate("userId", "name email avatar")
+    .populate("teamId", "name")
+    .lean();
+};

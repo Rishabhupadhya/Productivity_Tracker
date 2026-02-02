@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useUser } from "../../contexts/UserContext";
 import { updateSettings } from "../../services/profile.service";
+import { modalBackdropVariants, modalContentVariants } from "../../utils/motionVariants";
 import "./settings.css";
 
 export default function SettingsModal({ onClose }: { onClose: () => void }) {
@@ -52,8 +54,19 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="modal-backdrop">
-      <div className="settings-modal">
+    <motion.div 
+      className="modal-backdrop"
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={modalBackdropVariants}
+      onClick={onClose}
+    >
+      <motion.div 
+        className="settings-modal"
+        variants={modalContentVariants}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="settings-header">
           <h2>Settings</h2>
           <button className="close-btn" onClick={onClose}>✕</button>
@@ -207,7 +220,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
             {saving ? "Saving..." : "Save Settings"}
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

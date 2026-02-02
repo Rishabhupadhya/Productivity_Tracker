@@ -178,21 +178,33 @@ export const cancelTeamInvite = async (
   adminUserId: string,
   email: string
 ) => {
+  console.log('cancelTeamInvite called:', { teamId, adminUserId, email });
+  
   const team = await Team.findById(teamId);
   if (!team) throw new Error("Team not found");
 
+  console.log('Team found:', team.name);
+  console.log('Current invites:', team.invites);
+
   // Check if user is admin
   const admin = team.members.find(m => m.userId.toString() === adminUserId);
+  console.log('Admin check:', { admin, role: admin?.role });
+  
   if (!admin || admin.role !== "admin") {
     throw new Error("Only admins can cancel invites");
   }
 
-  // Remove the invite
-  team.invites = team.invites.filter(
-    i => !(i.email === email && i.status === "pending")
-  );
+  // Count before
+  const beforeCount = team.invites.length;
+  
+  // Remove the invite (more flexible - remove by email regardless of status)
+  team.invites = team.invites.filter(i => i.email !== email);
+  
+  console.log('Invites after filter:', { before: beforeCount, after: team.invites.length });
 
   await team.save();
+  console.log('Team saved successfully');
+  
   return team;
 };
 
@@ -233,9 +245,14 @@ export const acceptTeamInvite = async (teamId: string, userId: string) => {
     joinedAt: new Date()
   });
 
-  // Update invite status
-  invite.status = "accepted";
+  // Remove the accepted invite from the invites list
+  team.invites = team.invites.filter(i => !(i.email === user.email && i.status === "pending"));
   await team.save();
+
+  // Set this team as the user's active team if they don't have one
+  if (!user.activeTeamId) {
+    await User.findByIdAndUpdate(userId, { activeTeamId: team._id });
+  }
 
   // Log activity
   await logActivity({

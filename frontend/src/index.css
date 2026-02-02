@@ -1,44 +1,46 @@
 :root {
-  /* Background Layers - Calm, Elevated Hierarchy */
-  --bg-app: #0a0e14;
-  --bg-main: #0a0e14;
-  --bg-primary: #111827;
-  --bg-secondary: #1a1f2e;
-  --bg-panel: #111827;
-  --bg-card: #1a1f2e;
-  --bg-tertiary: #232938;
-  --bg-elevated: #2a3142;
+  /* === MODERN NEUTRAL DARK PALETTE === */
+  
+  /* Backgrounds - Pure neutral grays, no blue tint */
+  --bg-app: #0a0a0a;           /* Main app background - deepest */
+  --bg-main: #0a0a0a;
+  --bg-primary: #151515;       /* Sidebar - slightly elevated */
+  --bg-secondary: #1a1a1a;     /* Panels, modals - mid elevation */
+  --bg-panel: #1a1a1a;
+  --bg-card: #202020;          /* Cards, items - highest elevation */
+  --bg-tertiary: #252525;      /* Hover states */
+  --bg-elevated: #2a2a2a;      /* Active/selected states */
   
   /* Text Hierarchy */
-  --text-primary: #e5e7eb;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --text-inverse: #111827;
+  --text-primary: #ffffff;     /* Main text - pure white */
+  --text-secondary: #a0a0a0;   /* Secondary text - light gray */
+  --text-muted: #606060;       /* Muted/disabled text - mid gray */
+  --text-inverse: #000000;     /* Text on accent backgrounds */
   
-  /* Accent - Use Sparingly (CTAs, Progress, Success) */
-  --accent: #10b981;
-  --accent-hover: #059669;
-  --accent-light: rgba(16, 185, 129, 0.1);
+  /* Accent - Cyan (intentional use only) */
+  --accent: #00e5ff;           /* Primary accent - bright cyan */
+  --accent-hover: #00d4ed;     /* Accent hover - slightly darker */
+  --accent-light: rgba(0, 229, 255, 0.1); /* Subtle accent backgrounds */
   
   /* Status Colors */
-  --success: #10b981;
-  --success-light: rgba(16, 185, 129, 0.1);
-  --warning: #f59e0b;
-  --warning-light: rgba(245, 158, 11, 0.1);
-  --danger: #ef4444;
-  --danger-light: rgba(239, 68, 68, 0.1);
-  --info: #3b82f6;
-  --info-light: rgba(59, 130, 246, 0.1);
+  --success: #00ff88;          /* Success/positive - bright green */
+  --success-light: rgba(0, 255, 136, 0.1);
+  --warning: #ffaa00;          /* Warning - amber */
+  --warning-light: rgba(255, 170, 0, 0.1);
+  --danger: #ff4444;           /* Error/destructive - bright red */
+  --danger-light: rgba(255, 68, 68, 0.1);
+  --info: #00e5ff;             /* Info (same as accent) */
+  --info-light: rgba(0, 229, 255, 0.1);
   
-  /* Borders & Dividers - Minimal */
-  --border: rgba(255, 255, 255, 0.06);
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.2);
+  /* Borders & Dividers - Subtle neutral */
+  --border: #2a2a2a;           /* Default borders */
+  --border-subtle: #1f1f1f;    /* Subtle borders */
+  --border-default: #2a2a2a;
+  --border-strong: #404040;    /* Strong borders */
   
   /* Shadows for Elevation */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
   

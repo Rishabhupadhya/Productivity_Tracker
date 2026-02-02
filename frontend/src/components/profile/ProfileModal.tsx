@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { useUser } from "../../contexts/UserContext";
 import { updateProfile, changePassword, uploadAvatar } from "../../services/profile.service";
 import { env } from "../../config/env";
+import { modalBackdropVariants, modalContentVariants } from "../../utils/motionVariants";
 import "./profile.css";
 
 export default function ProfileModal({ onClose }: { onClose: () => void }) {
@@ -155,8 +157,19 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
    */
 
   return (
-    <div className="modal-backdrop">
-      <div className="profile-modal">
+    <motion.div 
+      className="modal-backdrop"
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={modalBackdropVariants}
+      onClick={onClose}
+    >
+      <motion.div 
+        className="profile-modal"
+        variants={modalContentVariants}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="profile-header">
           <h2>Profile</h2>
           <button className="close-btn" onClick={onClose}>✕</button>
@@ -336,7 +349,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
             </button>
           </section>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

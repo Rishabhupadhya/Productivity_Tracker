@@ -1,14 +1,34 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import Footer from "./Footer";
+import { pageVariants } from "../../utils/motionVariants";
 import "./layout.css";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentView, setCurrentView] = useState("My Work");
+
+  // Detect mobile screen
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const handleViewChange = (event: any) => {
@@ -31,40 +51,54 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="app-layout">
-      <div style={{ 
-        width: sidebarCollapsed ? "60px" : "250px", 
-        transition: "width 0.3s ease",
-        position: "relative"
-      }}>
-        <Sidebar collapsed={sidebarCollapsed} />
-        <button
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          style={{
-            position: "absolute",
-            right: "-15px",
-            top: "20px",
-            width: "30px",
-            height: "30px",
-            borderRadius: "50%",
-            background: "#00ffff",
-            border: "none",
-            color: "#000",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "16px",
-            fontWeight: "bold",
-            zIndex: 1000,
-            boxShadow: "0 2px 8px rgba(0, 255, 255, 0.3)"
-          }}
-        >
-          {sidebarCollapsed ? "›" : "‹"}
-        </button>
+      {/* Mobile Overlay */}
+      {isMobile && mobileMenuOpen && (
+        <div 
+          className="mobile-overlay"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div 
+        className={`sidebar-wrapper ${isMobile ? 'mobile' : ''} ${mobileMenuOpen ? 'open' : ''}`}
+        style={{ 
+          width: isMobile ? '280px' : (sidebarCollapsed ? "60px" : "250px"), 
+          transition: "width 0.3s ease"
+        }}
+      >
+        <Sidebar 
+          collapsed={sidebarCollapsed && !isMobile} 
+          onNavigate={() => setMobileMenuOpen(false)}
+        />
+        {!isMobile && (
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="sidebar-toggle-btn"
+          >
+            {sidebarCollapsed ? "›" : "‹"}
+          </button>
+        )}
       </div>
+
       <div className="main-content">
-        <Topbar onLogout={handleLogout} showTaskControls={showTaskControls} />
-        <div className="content">{children}</div>
+        <Topbar 
+          onLogout={handleLogout} 
+          showTaskControls={showTaskControls}
+          onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          isMobile={isMobile}
+        />
+        <motion.div 
+          className="content"
+          key={location.pathname}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={pageVariants}
+        >
+          {children}
+        </motion.div>
+        <Footer />
       </div>
     </div>
   );

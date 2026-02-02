@@ -26,8 +26,8 @@ export interface Goal {
   completedAt?: Date;
 }
 
-export const getUserGoals = async (): Promise<Goal[]> => {
-  const response = await api.get("/goals");
+export const getUserGoals = async (status?: string): Promise<Goal[]> => {
+  const response = await api.get("/goals", { params: status ? { status } : {} });
   return response.data;
 };
 
@@ -45,8 +45,8 @@ export const deleteGoal = async (goalId: string): Promise<void> => {
   await api.delete(`/goals/${goalId}`);
 };
 
-export const updateGoalProgress = async (goalId: string, currentValue: number): Promise<Goal> => {
-  const response = await api.put(`/goals/${goalId}/progress`, { currentValue });
+export const updateGoalProgress = async (goalId: string, incrementValue: number): Promise<Goal> => {
+  const response = await api.post(`/goals/${goalId}/progress`, { incrementValue });
   return response.data;
 };
 
@@ -68,6 +68,6 @@ export const completeGoal = async (goalId: string): Promise<Goal> => {
   return response.data;
 };
 
-export const getGoals = getUserGoals;
+export const getGoals = (status?: string) => getUserGoals(status);
 export const addReview = addGoalReview;
 export const deleteReview = deleteGoalReview;

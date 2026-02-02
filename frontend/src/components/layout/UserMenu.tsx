@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "../../contexts/UserContext";
 import ProfileModal from "../profile/ProfileModal";
 import SettingsModal from "../settings/SettingsModal";
 import Avatar from "../ui/Avatar";
 import { env } from "../../config/env";
+import { dropdownVariants } from "../../utils/motionVariants";
 import "./userMenu.css";
 
 export default function UserMenu() {
@@ -32,9 +34,21 @@ export default function UserMenu() {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+      }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscape);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("keydown", handleEscape);
+      };
+    }
+  }, [open]);
 
   const handleLogout = () => {
     logout();
@@ -61,16 +75,16 @@ export default function UserMenu() {
           <div style={{ 
             marginRight: "12px", 
             fontSize: "14px", 
-            color: "#00ffff", 
+            color: "var(--accent)", 
             fontWeight: "bold",
             display: "flex",
             alignItems: "center",
             gap: "8px"
           }}>
-            <span style={{ color: "#888" }}>Level</span>
+            <span style={{ color: "var(--text-secondary)" }}>Level</span>
             <span>{user.level}</span>
             {user.xp !== undefined && (
-              <span style={{ fontSize: "12px", color: "#666" }}>({user.xp} XP)</span>
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>({user.xp} XP)</span>
             )}
           </div>
         )}
@@ -82,45 +96,69 @@ export default function UserMenu() {
           onClick={() => setOpen(!open)}
         />
 
-        {open && (
-          <div className="user-dropdown">
-            <div className="user-info">
-              <Avatar
-                src={user.avatar ? `${env.API_URL.replace('/api', '')}${user.avatar}` : null}
-                name={user.name}
-                size="large"
-              />
-              <div className="user-details">
-                <div className="user-name">{user.name}</div>
-                <div className="user-email">{user.email}</div>
-                {user.level && user.level > 1 && (
-                  <div style={{ fontSize: "12px", color: "#00ffff", marginTop: "4px" }}>
-                    Level {user.level} • {user.xp} XP
-                  </div>
-                )}
+        <AnimatePresence>
+          {open && (
+            <motion.div 
+              className="user-dropdown"
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              variants={dropdownVariants}
+            >
+              <div className="user-info">
+                <Avatar
+                  src={user.avatar ? `${env.API_URL.replace('/api', '')}${user.avatar}` : null}
+                  name={user.name}
+                  size="large"
+                />
+                <div className="user-details">
+                  <div className="user-name">{user.name}</div>
+                  <div className="user-email">{user.email}</div>
+                  {user.level && user.level > 1 && (
+                    <div style={{ fontSize: "12px", color: "var(--accent)", marginTop: "4px" }}>
+                      Level {user.level} • {user.xp} XP
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className="menu-divider"></div>
+              <div className="menu-divider"></div>
 
-            <button className="menu-item" onClick={() => { setOpen(false); setShowProfile(true); }}>
-              <span>👤</span> Profile
-            </button>
-            <button className="menu-item" onClick={() => { setOpen(false); setShowSettings(true); }}>
-              <span>⚙️</span> Settings
-            </button>
+              <button className="menu-item" onClick={() => { setOpen(false); setShowProfile(true); }}>
+                <span>👤</span> Profile
+              </button>
+              <button className="menu-item" onClick={() => { setOpen(false); setShowSettings(true); }}>
+                <span>⚙️</span> Settings
+              </button>
+              
+              {user.settings?.userType && (
+                <div className="menu-item" style={{ 
+                  cursor: 'default', 
+                  fontSize: '12px', 
+                  color: 'var(--text-muted)',
+                  padding: '8px 16px'
+                }}>
+                  Role: <span style={{ color: 'var(--accent)', marginLeft: '4px' }}>{user.settings.userType}</span>
+                </div>
+              )}
 
-            <div className="menu-divider"></div>
+              <div className="menu-divider"></div>
 
-            <button className="menu-item logout" onClick={handleLogout}>
-              <span>🚪</span> Logout
-            </button>
-          </div>
-        )}
+              <button className="menu-item logout" onClick={handleLogout}>
+                <span>🚪</span> Logout
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {showProfile && <ProfileModal onClose={() => setShowProfile(false)} />}
-      {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      <AnimatePresence>
+        {showProfile && <ProfileModal onClose={() => setShowProfile(false)} />}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      </AnimatePresence>
     </>
   );
 }

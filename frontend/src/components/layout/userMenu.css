@@ -1,9 +1,32 @@
 .user-menu {
   position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Avatar hover effects */
+.avatar-image,
+.avatar-fallback {
+  outline: none;
+  user-select: none;
+}
+
+.avatar-image:hover,
+.avatar-fallback:hover {
+  transform: scale(1.05);
+  border: 2px solid var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.avatar-image:focus-visible,
+.avatar-fallback:focus-visible {
+  border: 2px solid var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-light);
+  outline: none;
 }
 
 .user-avatar {
-  background: var(--purple);
+  background: var(--accent);
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -11,26 +34,38 @@
   place-items: center;
   font-size: 14px;
   font-weight: 600;
-  color: white;
+  color: var(--bg-app);
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s;
 }
 
 .user-avatar:hover {
-  transform: scale(1.05);
+  filter: brightness(1.1);
 }
 
 .user-dropdown {
   position: absolute;
   top: 48px;
   right: 0;
-  background: var(--bg-panel);
+  background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  width: 240px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-lg);
+  width: 260px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   z-index: 1000;
   overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .user-info {
@@ -41,7 +76,7 @@
 }
 
 .user-avatar-large {
-  background: var(--purple);
+  background: var(--accent);
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -93,11 +128,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  outline: none;
 }
 
 .menu-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-tertiary);
+  padding-left: 20px;
+}
+
+.menu-item:focus-visible {
+  background: var(--bg-tertiary);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 .menu-item span {
@@ -105,9 +148,10 @@
 }
 
 .menu-item.logout {
-  color: #ff4444;
+  color: var(--danger);
 }
 
 .menu-item.logout:hover {
-  background: rgba(255, 68, 68, 0.1);
+  background: var(--danger-light);
+  padding-left: 20px;
 }

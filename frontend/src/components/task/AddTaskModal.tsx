@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useTasks } from "../../hooks/useTasks";
 import { useSelectedDate } from "../../hooks/useSelectedDate";
 import { formatDate, getWeekDays } from "../../utils/date";
 import { TIME_SLOTS } from "../../constants/timeSlots";
 import { getTeamDetails } from "../../services/team.service";
 import { useTeam } from "../../contexts/TeamContext";
+import { useUser } from "../../contexts/UserContext";
+import { modalBackdropVariants, modalContentVariants } from "../../utils/motionVariants";
 import "./modal.css";
 
 export default function AddTaskModal({ onClose }: { onClose: () => void }) {
@@ -12,6 +15,7 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
   const selectedDate = useSelectedDate();
   const weekDays = getWeekDays(selectedDate);
   const { activeTeam } = useTeam();
+  const { user } = useUser();
   
   const [title, setTitle] = useState("");
   const [duration, setDuration] = useState("1h");
@@ -20,21 +24,37 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
   const [category, setCategory] = useState("work");
   const [assignedTo, setAssignedTo] = useState("");
   const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (activeTeam) {
+    if (activeTeam && user) {
       getTeamDetails(activeTeam._id)
         .then(team => {
           const members = team.members.map((m: any) => m.userId);
           setTeamMembers(members);
+          
+          // Check if current user is admin
+          const userMember = team.members.find((m: any) => m.userId._id === user.id);
+          setIsAdmin(userMember?.role === "admin");
         })
         .catch(console.error);
     }
-  }, [activeTeam]);
+  }, [activeTeam, user]);
 
   return (
-    <div className="modal-backdrop">
-      <div className="modal">
+    <motion.div 
+      className="modal-backdrop"
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={modalBackdropVariants}
+      onClick={onClose}
+    >
+      <motion.div 
+        className="modal"
+        variants={modalContentVariants}
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3>Add Task</h3>
 
         <input
@@ -76,10 +96,10 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
           <option value="other">Other</option>
         </select>
 
-        {activeTeam && teamMembers.length > 0 && (
+        {activeTeam && teamMembers.length > 0 && isAdmin && (
           <div style={{ marginTop: '8px' }}>
             <label style={{ display: 'block', marginBottom: '4px', color: '#00ffff', fontSize: '14px' }}>
-              👤 Assign to team member:
+              👤 Assign to team member (Admin only):
             </label>
             <select 
               value={assignedTo} 
@@ -116,7 +136,7 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
             Add
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

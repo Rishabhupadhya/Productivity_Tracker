@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import AddTaskModal from "../task/AddTaskModal";
 import UserMenu from "./UserMenu";
 import Button from "../ui/Button";
@@ -7,9 +8,12 @@ import "./topbar.css";
 type TopbarProps = {
   showTaskControls?: boolean;
   pageTitle?: string;
+  onMenuClick?: () => void;
+  isMobile?: boolean;
+  onLogout?: () => void;
 };
 
-export default function Topbar({ showTaskControls = true, pageTitle }: TopbarProps) {
+export default function Topbar({ showTaskControls = true, pageTitle, onMenuClick, isMobile = false }: TopbarProps) {
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
@@ -32,16 +36,24 @@ export default function Topbar({ showTaskControls = true, pageTitle }: TopbarPro
       <header className="topbar">
         {/* LEFT SECTION - Branding */}
         <div className="left">
+          {isMobile && (
+            <button 
+              onClick={onMenuClick}
+              className="hamburger-menu"
+              aria-label="Toggle menu"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          )}
+
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: 'var(--space-lg)',
           }}>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2px',
-            }}>
+            <div className="app-title">
               <h1 style={{
                 fontSize: 'var(--text-2xl)',
                 fontWeight: 'var(--font-bold)',
@@ -49,7 +61,7 @@ export default function Topbar({ showTaskControls = true, pageTitle }: TopbarPro
                 margin: 0,
                 lineHeight: 1,
               }}>
-                Taskly
+                Momentum
               </h1>
               <p style={{
                 fontSize: 'var(--text-xs)',
@@ -112,9 +124,11 @@ export default function Topbar({ showTaskControls = true, pageTitle }: TopbarPro
       </header>
 
       {/* ADD TASK MODAL */}
-      {open && showTaskControls && (
-        <AddTaskModal onClose={() => setOpen(false)} />
-      )}
+      <AnimatePresence>
+        {open && showTaskControls && (
+          <AddTaskModal onClose={() => setOpen(false)} />
+        )}
+      </AnimatePresence>
     </>
   );
 }

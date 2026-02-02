@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AppLayout from "../components/layout/AppLayout";
 import type { Habit, HabitFrequency, HabitStats } from "../services/habit.service";
 import * as habitService from "../services/habit.service";
+import "./pages.css";
 
 export default function Habits() {
   const navigate = useNavigate();
@@ -157,16 +158,16 @@ export default function Habits() {
   };
 
   const getStreakColor = (streak: number) => {
-    if (streak >= 30) return "#ff0000";
+    if (streak >= 30) return "var(--danger)";
     if (streak >= 14) return "#ff6600";
-    if (streak >= 7) return "#ffaa00";
-    return "#00ffff";
+    if (streak >= 7) return "var(--warning)";
+    return "var(--accent)";
   };
 
   const getSuccessRateColor = (rate: number) => {
-    if (rate >= 80) return "#00ff00";
-    if (rate >= 60) return "#ffaa00";
-    return "#ff0000";
+    if (rate >= 80) return "var(--success)";
+    if (rate >= 60) return "var(--warning)";
+    return "var(--danger)";
   };
 
   const getIndiaDateTime = () => {
@@ -180,30 +181,16 @@ export default function Habits() {
 
   return (
     <AppLayout>
-      <div style={{ padding: "24px", background: "#0b0f14", minHeight: "100%", color: "#fff", overflow: "auto" }}>
-        <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
+      <div className="page-container">
+        <div className="page-inner">
           {/* Header */}
-          <div style={{ marginBottom: "32px", display: "flex", alignItems: "center", gap: "16px" }}>
-            <button
-              onClick={() => navigate("/dashboard")}
-              style={{
-                padding: "12px 20px",
-                background: "#333",
-                color: "#00ffff",
-                border: "1px solid #00ffff",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontSize: "14px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px"
-              }}
-            >
+          <div className="page-header">
+            <button className="page-header-back-btn" onClick={() => navigate("/dashboard")}>
               ← Home
             </button>
             <div>
-              <h1 style={{ color: "#00ffff", fontSize: "32px", marginBottom: "8px" }}>✅ Habit Tracker</h1>
-              <p style={{ color: "#888", fontSize: "14px" }}>Build lasting habits with daily tracking and streak monitoring</p>
+              <h1 className="page-header-title">✅ Habit Tracker</h1>
+              <p className="page-header-subtitle">Build lasting habits with daily tracking and streak monitoring</p>
             </div>
           </div>
 
@@ -215,65 +202,57 @@ export default function Habits() {
                 setSelectedHabit(null);
                 setHabitStats(null);
               }}
-              style={{
-                padding: "12px 24px",
-                background: "#333",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                marginBottom: "24px",
-                fontSize: "14px"
-              }}
+              className="btn-secondary"
+              style={{ marginBottom: "var(--space-2xl)" }}
             >
               ← Back to Habits
             </button>
 
-            <div style={{ padding: "32px", background: "#1a1a1a", borderRadius: "12px", marginBottom: "24px", border: "1px solid #00ffff" }}>
+            <div className="card card-elevated" style={{ marginBottom: "var(--space-2xl)" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
                 <div style={{ flex: 1 }}>
-                  <h2 style={{ color: "#00ffff", margin: 0, marginBottom: "8px", fontSize: "28px" }}>{selectedHabit.name}</h2>
-                  {selectedHabit.description && <p style={{ color: "#888", fontSize: "14px", margin: 0 }}>{selectedHabit.description}</p>}
+                  <h2 style={{ color: "var(--accent)", margin: 0, marginBottom: "var(--space-sm)", fontSize: "var(--text-2xl)", fontWeight: "var(--font-bold)" }}>{selectedHabit.name}</h2>
+                  {selectedHabit.description && <p style={{ color: "var(--text-muted)", fontSize: "var(--text-sm)", margin: 0 }}>{selectedHabit.description}</p>}
                 </div>
                 <div style={{ fontSize: "64px", color: getStreakColor(habitStats.currentStreak), display: "flex", alignItems: "center", gap: "8px" }}>
                   🔥 <span style={{ fontSize: "48px", fontWeight: "bold" }}>{habitStats.currentStreak}</span>
                 </div>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "16px" }}>
-                <div style={{ padding: "20px", background: "#0a0a0a", borderRadius: "8px" }}>
-                  <div style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>Current Streak</div>
-                  <div style={{ fontSize: "28px", color: getStreakColor(habitStats.currentStreak), fontWeight: "bold" }}>
+              <div className="stats-grid">
+                <div className="stat-card">
+                  <div className="stat-label">Current Streak</div>
+                  <div className="stat-value" style={{ color: getStreakColor(habitStats.currentStreak) }}>
                     {habitStats.currentStreak} days
                   </div>
                 </div>
-                <div style={{ padding: "20px", background: "#0a0a0a", borderRadius: "8px" }}>
-                  <div style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>Longest Streak</div>
-                  <div style={{ fontSize: "28px", color: "#00ffff", fontWeight: "bold" }}>
+                <div className="stat-card">
+                  <div className="stat-label">Longest Streak</div>
+                  <div className="stat-value" style={{ color: "var(--accent)" }}>
                     {habitStats.longestStreak} days
                   </div>
                 </div>
-                <div style={{ padding: "20px", background: "#0a0a0a", borderRadius: "8px" }}>
-                  <div style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>Total Completions</div>
-                  <div style={{ fontSize: "28px", color: "#00ffff", fontWeight: "bold" }}>
+                <div className="stat-card">
+                  <div className="stat-label">Total Completions</div>
+                  <div className="stat-value" style={{ color: "var(--accent)" }}>
                     {habitStats.totalCompletions}
                   </div>
                 </div>
-                <div style={{ padding: "20px", background: "#0a0a0a", borderRadius: "8px" }}>
-                  <div style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>Success Rate</div>
-                  <div style={{ fontSize: "28px", color: getSuccessRateColor(habitStats.successRate), fontWeight: "bold" }}>
+                <div className="stat-card">
+                  <div className="stat-label">Success Rate</div>
+                  <div className="stat-value" style={{ color: getSuccessRateColor(habitStats.successRate) }}>
                     {habitStats.successRate.toFixed(1)}%
                   </div>
                 </div>
-                <div style={{ padding: "20px", background: "#0a0a0a", borderRadius: "8px" }}>
-                  <div style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>Last 7 Days</div>
-                  <div style={{ fontSize: "28px", color: "#00ffff", fontWeight: "bold" }}>
+                <div className="stat-card">
+                  <div className="stat-label">Last 7 Days</div>
+                  <div className="stat-value" style={{ color: "var(--accent)" }}>
                     {habitStats.last7DaysCount} / 7
                   </div>
                 </div>
-                <div style={{ padding: "20px", background: "#0a0a0a", borderRadius: "8px" }}>
-                  <div style={{ fontSize: "12px", color: "#666", marginBottom: "8px" }}>Last 30 Days</div>
-                  <div style={{ fontSize: "28px", color: "#00ffff", fontWeight: "bold" }}>
+                <div className="stat-card">
+                  <div className="stat-label">Last 30 Days</div>
+                  <div className="stat-value" style={{ color: "var(--accent)" }}>
                     {habitStats.last30DaysCount} / 30
                   </div>
                 </div>
@@ -281,16 +260,16 @@ export default function Habits() {
             </div>
 
             {/* Today's Action */}
-            <div style={{ padding: "24px", background: "#1a1a1a", borderRadius: "12px", marginBottom: "24px", border: "1px solid #00ffff" }}>
+            <div className="card card-elevated" style={{ marginBottom: "var(--space-2xl)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
                 <button
                   onClick={() => handleToggleComplete(selectedHabit._id, selectedHabit.completedToday || false)}
                   style={{
                     width: "60px",
                     height: "60px",
-                    background: selectedHabit.completedToday ? "#00ff00" : "#0a0a0a",
-                    border: selectedHabit.completedToday ? "none" : "3px solid #00ffff",
-                    borderRadius: "12px",
+                    background: selectedHabit.completedToday ? "var(--success)" : "var(--bg-tertiary)",
+                    border: selectedHabit.completedToday ? "none" : "3px solid var(--accent)",
+                    borderRadius: "var(--radius-lg)",
                     cursor: "pointer",
                     fontSize: "36px",
                     color: "#000",
@@ -307,14 +286,14 @@ export default function Habits() {
                   {selectedHabit.completedToday ? "✔" : ""}
                 </button>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: "18px", color: "#00ffff", fontWeight: "500", marginBottom: "4px" }}>
+                  <div style={{ fontSize: "var(--text-lg)", color: "var(--accent)", fontWeight: "var(--font-medium)", marginBottom: "var(--space-xs)" }}>
                     {selectedHabit.completedToday ? "Completed Today! 🎉" : "Mark as completed today"}
                   </div>
-                  <div style={{ fontSize: "14px", color: "#888" }}>
+                  <div style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)" }}>
                     {todayDate.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} • {todayDate.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                   </div>
-                  <div style={{ fontSize: "13px", color: "#666", marginTop: "4px" }}>
-                    {selectedHabit.completedToday ? "Great job maintaining your streak!" : "Click the checkbox to complete this habit"}
+                  <div style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", marginTop: "var(--space-xs)" }}>
+                    {selectedHabit.completedToday ? "Great job maintaining your streak!" : "Click the checkbox to complete this habit for today"}
                   </div>
                 </div>
               </div>
@@ -322,43 +301,34 @@ export default function Habits() {
 
             {/* Recent History */}
             <div>
-              <h3 style={{ color: "#00ffff", marginBottom: "16px", fontSize: "20px" }}>📅 Recent History</h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <h3 style={{ color: "var(--accent)", marginBottom: "var(--space-lg)", fontSize: "var(--text-xl)" }}>📅 Recent History</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-sm)" }}>
                 {habitStats.completionHistory.slice(0, 21).map((completion, idx) => (
-                  <div key={idx} style={{ 
-                    padding: "16px", 
-                    background: completion.completed ? "#0a3020" : "#0a0a0a", 
-                    borderRadius: "8px",
+                  <div key={idx} className="card" style={{ 
+                    background: completion.completed ? "rgba(34, 197, 94, 0.1)" : "var(--bg-tertiary)", 
+                    padding: "var(--space-lg)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    border: completion.completed ? "1px solid #00ff00" : "1px solid #333"
+                    borderColor: completion.completed ? "var(--success)" : "var(--border-default)"
                   }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-md)" }}>
                       <span style={{ fontSize: "24px" }}>{completion.completed ? "✅" : "⭕"}</span>
                       <div>
-                        <span style={{ color: completion.completed ? "#00ff00" : "#888", fontSize: "16px" }}>
+                        <span style={{ color: completion.completed ? "var(--success)" : "var(--text-muted)", fontSize: "var(--text-base)", fontWeight: "var(--font-medium)" }}>
                           {new Date(completion.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
                         </span>
-                        {completion.notes && <div style={{ fontSize: "13px", color: "#666", marginTop: "4px" }}>{completion.notes}</div>}
+                        {completion.notes && <div style={{ fontSize: "var(--text-xs)", color: "var(--text-muted)", marginTop: "var(--space-xs)" }}>{completion.notes}</div>}
                       </div>
                     </div>
                     {completion.completed && (
                       <button
                         onClick={() => handleDeleteCompletion(selectedHabit._id, completion.date)}
+                        className="btn-danger"
                         style={{
                           padding: "6px 12px",
-                          background: "#ff4444",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: "6px",
-                          cursor: "pointer",
-                          fontSize: "12px",
-                          fontWeight: "500",
-                          transition: "background 0.2s"
+                          fontSize: "var(--text-xs)"
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = "#ff0000"}
-                        onMouseLeave={(e) => e.currentTarget.style.background = "#ff4444"}
                       >
                         🗑️ Delete
                       </button>
@@ -370,16 +340,8 @@ export default function Habits() {
 
             <button
               onClick={() => handleDeleteHabit(selectedHabit._id)}
-              style={{
-                padding: "12px 24px",
-                background: "#ff0000",
-                color: "#fff",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                marginTop: "24px",
-                fontSize: "14px"
-              }}
+              className="btn-danger"
+              style={{ marginTop: "var(--space-2xl)" }}
             >
               Delete Habit
             </button>
@@ -387,46 +349,35 @@ export default function Habits() {
         ) : (
           // Habits List
           <div>
-            <button
-              onClick={() => setShowAddForm(!showAddForm)}
-              style={{
-                padding: "12px 24px",
-                background: "#00ffff",
-                color: "#000",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                marginBottom: "24px",
-                fontWeight: "bold",
-                fontSize: "14px"
-              }}
-            >
+            <button className="btn-primary" onClick={() => setShowAddForm(!showAddForm)} style={{ marginBottom: "var(--space-2xl)" }}>
               + Create Habit
             </button>
 
             {showAddForm && (
-              <form onSubmit={handleAddHabit} style={{ marginBottom: "32px", padding: "24px", background: "#1a1a1a", borderRadius: "8px" }}>
+              <form onSubmit={handleAddHabit} className="card" style={{ marginBottom: "var(--space-2xl)" }}>
                 <input
                   type="text"
                   placeholder="Habit Name (e.g., Morning Workout, Read 30 min)"
                   value={newHabit.name}
                   onChange={(e) => setNewHabit({ ...newHabit, name: e.target.value })}
-                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", fontSize: "14px" }}
+                  className="form-input"
+                  style={{ marginBottom: "var(--space-lg)" }}
                   required
                 />
                 <textarea
                   placeholder="Description (optional)"
                   value={newHabit.description}
                   onChange={(e) => setNewHabit({ ...newHabit, description: e.target.value })}
-                  style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", marginBottom: "16px", minHeight: "80px", fontSize: "14px" }}
+                  className="form-textarea"
+                  style={{ marginBottom: "var(--space-lg)" }}
                 />
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "var(--space-lg)", marginBottom: "var(--space-lg)" }}>
                   <div>
-                    <label style={{ display: "block", color: "#00ffff", fontSize: "12px", marginBottom: "6px", fontWeight: "500" }}>Frequency</label>
+                    <label className="form-label">Frequency</label>
                     <select
                       value={newHabit.frequency}
                       onChange={(e) => setNewHabit({ ...newHabit, frequency: e.target.value as HabitFrequency })}
-                      style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
+                      className="form-select"
                     >
                       <option value="daily">Daily</option>
                       <option value="weekly">Weekly</option>
@@ -434,70 +385,60 @@ export default function Habits() {
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: "block", color: "#00ffff", fontSize: "12px", marginBottom: "6px", fontWeight: "500" }}>Times per Week</label>
+                    <label className="form-label">Times per Week</label>
                     <input
                       type="number"
                       placeholder="7"
                       value={newHabit.timesPerWeek}
                       onChange={(e) => setNewHabit({ ...newHabit, timesPerWeek: e.target.value })}
-                      style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
+                      className="form-input"
                       min="1"
                       max="7"
                     />
                   </div>
                   <div>
-                    <label style={{ display: "block", color: "#00ffff", fontSize: "12px", marginBottom: "6px", fontWeight: "500" }}>Grace Days</label>
+                    <label className="form-label">Grace Days</label>
                     <input
                       type="number"
                       placeholder="1"
                       value={newHabit.graceDays}
                       onChange={(e) => setNewHabit({ ...newHabit, graceDays: e.target.value })}
-                      style={{ width: "100%", padding: "12px", background: "#0a0a0a", border: "1px solid #00ffff", borderRadius: "8px", color: "#00ffff", fontSize: "14px" }}
+                      className="form-input"
                       min="0"
                       max="3"
                     />
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: "12px" }}>
-                  <button type="submit" style={{ padding: "12px 24px", background: "#00ffff", color: "#000", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "bold", fontSize: "14px" }}>
-                    Create Habit
-                  </button>
-                  <button type="button" onClick={() => setShowAddForm(false)} style={{ padding: "12px 24px", background: "#333", color: "#fff", border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "14px" }}>
-                    Cancel
-                  </button>
+                <div className="flex-gap">
+                  <button type="submit" className="btn-primary">Create Habit</button>
+                  <button type="button" className="btn-secondary" onClick={() => setShowAddForm(false)}>Cancel</button>
                 </div>
               </form>
             )}
 
             {loading ? (
-              <div style={{ textAlign: "center", color: "#00ffff", padding: "80px" }}>Loading...</div>
+              <div className="loading-state">Loading...</div>
             ) : habits.length > 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-lg)" }}>
                 {habits.map(habit => (
                   <div
                     key={habit._id}
+                    className="card"
                     style={{ 
-                      padding: "24px", 
-                      background: "#1a1a1a", 
-                      borderRadius: "12px", 
                       display: "flex",
                       alignItems: "center",
-                      justifyContent: "space-between",
-                      border: "1px solid transparent",
-                      transition: "border-color 0.2s"
+                      justifyContent: "space-between"
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.borderColor = "#00ffff"}
-                    onMouseLeave={(e) => e.currentTarget.style.borderColor = "transparent"}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "20px", flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "var(--space-lg)", flex: 1 }}>
                       <button
                         onClick={() => handleToggleComplete(habit._id, habit.completedToday || false)}
                         style={{
                           width: "50px",
                           height: "50px",
-                          background: habit.completedToday ? "#00ff00" : "#0a0a0a",
-                          border: habit.completedToday ? "none" : "3px solid #00ffff",
-                          borderRadius: "10px",
+                          background: habit.completedToday ? "var(--success)" : "var(--bg-tertiary)",
+                          border: habit.completedToday ? "none" : "3px solid var(--accent)",
+                          borderRadius: "var(--radius-md)",
                           cursor: "pointer",
                           fontSize: "28px",
                           color: "#000",
@@ -515,12 +456,12 @@ export default function Habits() {
                       </button>
                       <div style={{ flex: 1 }}>
                         <div 
-                          style={{ color: "#fff", fontSize: "18px", cursor: "pointer", fontWeight: "500", marginBottom: "6px" }}
+                          style={{ color: "var(--text-primary)", fontSize: "var(--text-lg)", cursor: "pointer", fontWeight: "var(--font-medium)", marginBottom: "var(--space-xs)" }}
                           onClick={() => setSelectedHabit(habit)}
                         >
                           {habit.name}
                         </div>
-                        <div style={{ fontSize: "14px", color: "#888", display: "flex", alignItems: "center", gap: "12px" }}>
+                        <div style={{ fontSize: "var(--text-sm)", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "var(--space-md)" }}>
                           {habit.currentStreak > 0 ? (
                             <span style={{ color: getStreakColor(habit.currentStreak), display: "flex", alignItems: "center", gap: "4px" }}>
                               <span style={{ fontSize: "16px" }}>🔥</span> {habit.currentStreak} day streak
@@ -540,10 +481,10 @@ export default function Habits() {
                 ))}
               </div>
             ) : (
-              <div style={{ textAlign: "center", color: "#666", padding: "80px", background: "#1a1a1a", borderRadius: "8px" }}>
-                <div style={{ fontSize: "48px", marginBottom: "16px" }}>✅</div>
-                <h3 style={{ marginBottom: "12px" }}>No habits yet</h3>
-                <p style={{ fontSize: "14px", maxWidth: "400px", margin: "0 auto" }}>
+              <div className="empty-state">
+                <div className="empty-state-icon">✅</div>
+                <h3 className="empty-state-title">No habits yet</h3>
+                <p className="empty-state-description">
                   Create your first habit to start building positive routines and tracking your progress.
                 </p>
               </div>

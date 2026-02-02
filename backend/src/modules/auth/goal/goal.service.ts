@@ -182,11 +182,29 @@ export const getGoalReviews = async (goalId: string, userId: string) => {
 };
 
 export const deleteGoalReview = async (goalId: string, userId: string, reviewId: string) => {
+  console.log("Backend deleteGoalReview:", { goalId, userId, reviewId });
+  
   const goal = await Goal.findOne({ _id: goalId, userId });
   if (!goal) throw new Error("Goal not found");
-
-  goal.reviews = goal.reviews.filter((review: any) => review._id.toString() !== reviewId);
+  
+  console.log("Reviews before deletion:", goal.reviews.length);
+  console.log("Review IDs before:", goal.reviews.map((r: any) => r._id?.toString()));
+  
+  // Find the index of the review to remove
+  const reviewIndex = goal.reviews.findIndex((r: any) => r._id?.toString() === reviewId);
+  
+  if (reviewIndex === -1) {
+    console.log("Review not found with ID:", reviewId);
+    throw new Error("Review not found");
+  }
+  
+  // Use splice to remove the review
+  goal.reviews.splice(reviewIndex, 1);
   await goal.save();
+  
+  console.log("Reviews after deletion:", goal.reviews.length);
+  console.log("Review IDs after:", goal.reviews.map((r: any) => r._id?.toString()));
+  
   return goal;
 };
 

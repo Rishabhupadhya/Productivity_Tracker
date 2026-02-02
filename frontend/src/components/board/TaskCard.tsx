@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+import { cardVariants } from "../../utils/motionVariants";
 import "./task.css";
 
 export default function TaskCard({
@@ -15,13 +17,17 @@ export default function TaskCard({
   };
 
   return (
-    <div
+    <motion.div
       className="task green"
       draggable={draggable}
       onDragStart={(e) =>
         e.dataTransfer.setData("taskId", task._id)
       }
       style={{ background: getTaskColor() }}
+      variants={cardVariants}
+      initial="initial"
+      animate="animate"
+      whileHover="hover"
     >
       <div className="task-header">
         <h5 style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -85,6 +91,6 @@ export default function TaskCard({
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

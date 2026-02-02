@@ -3,6 +3,70 @@
   height: 100vh;
   background: var(--bg-main);
   overflow: hidden;
+  position: relative;
+}
+
+/* Mobile overlay */
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Sidebar wrapper */
+.sidebar-wrapper {
+  position: relative;
+  transition: width 0.3s ease, transform 0.3s ease;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.sidebar-wrapper.mobile {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 280px !important;
+  transform: translateX(-100%);
+  z-index: 1000;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-wrapper.mobile.open {
+  transform: translateX(0);
+}
+
+.sidebar-toggle-btn {
+  position: absolute;
+  right: -15px;
+  top: 20px;
+  width: 30px;
+  height: 30px;
+  borderRadius: 50%;
+  background: var(--accent);
+  border: none;
+  color: #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  fontSize: 16px;
+  fontWeight: bold;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 255, 255, 0.3);
+  transition: transform 0.2s;
+}
+
+.sidebar-toggle-btn:hover {
+  transform: scale(1.1);
 }
 
 .main-content {
@@ -10,27 +74,48 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  overflow: hidden;
   height: 100vh;
+  overflow: hidden;
 }
 
 .content {
   flex: 1;
-  padding: 20px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   min-height: 0;
+  max-height: 100%;
 }
 
-@media (max-width: 1200px) {
+/* Responsive breakpoints */
+@media (max-width: 1279px) {
   .content {
     padding: 16px;
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1023px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar-wrapper:not(.mobile) {
+    display: none;
+  }
+
   .content {
     padding: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .content {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 4px;
   }
 }

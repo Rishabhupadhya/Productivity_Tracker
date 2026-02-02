@@ -62,7 +62,7 @@ const GoalReviewSchema = new Schema({
   whatHelped: { type: String, default: "" },
   whatBlocked: { type: String, default: "" },
   notes: { type: String, default: "" }
-}, { _id: false });
+}, { _id: true, versionKey: false });
 
 const GoalSchema = new Schema<IGoal>(
   {

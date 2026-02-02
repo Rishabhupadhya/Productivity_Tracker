@@ -5,10 +5,11 @@ import TeamPanel from "../team/TeamPanel";
 import ActivityPanel from "../activity/ActivityPanel";
 import AddProjectModal from "../project/AddProjectModal";
 import { getUserProjects, createProject, deleteProject } from "../../services/project.service";
+import { getPendingInvites, acceptTeamInvite } from "../../services/team.service";
 import type { Project } from "../../services/project.service";
 import "./sidebar.css";
 
-export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) {
+export default function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [active, setActive] = useState("My Work");
@@ -18,7 +19,14 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [newTeamName, setNewTeamName] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
-  const { teams, activeTeam, switchTeam, createTeam } = useTeam();
+  const [pendingInvites, setPendingInvites] = useState<any[]>([]);
+  const [showInvitesModal, setShowInvitesModal] = useState(false);
+  const { teams, activeTeam, switchTeam, createTeam, refreshTeams } = useTeam();
+
+  const handleNavigation = (callback: () => void) => {
+    callback();
+    onNavigate?.();
+  };
 
   // Sync active state with current route
   useEffect(() => {
@@ -62,7 +70,39 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
 
   useEffect(() => {
     loadProjects();
+    loadPendingInvites();
   }, []);
+
+  useEffect(() => {
+    const handleTeamChange = () => {
+      loadPendingInvites();
+    };
+    window.addEventListener('teamChanged', handleTeamChange);
+    return () => window.removeEventListener('teamChanged', handleTeamChange);
+  }, []);
+
+  const loadPendingInvites = async () => {
+    try {
+      const invites = await getPendingInvites();
+      setPendingInvites(invites.filter((inv: any) => inv.invite));
+    } catch (error) {
+      console.error("Failed to load pending invites:", error);
+    }
+  };
+
+  const handleAcceptInvite = async (teamId: string) => {
+    try {
+      await acceptTeamInvite(teamId);
+      await loadPendingInvites();
+      await refreshTeams();
+      setShowInvitesModal(false);
+      window.dispatchEvent(new CustomEvent('teamChanged'));
+      alert('Successfully joined the team!');
+    } catch (error) {
+      console.error("Failed to accept invite:", error);
+      alert('Failed to accept invite. Please try again.');
+    }
+  };
 
   const loadProjects = async () => {
     try {
@@ -75,7 +115,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
 
   const handleAddProject = async (name: string, color: string, icon: string) => {
     try {
-      await createProject(name, color, icon);
+      await createProject({ name, color, icon });
       await loadProjects();
     } catch (error) {
       console.error("Failed to create project:", error);
@@ -131,6 +171,38 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 + New
               </button>
             </p>
+
+            {/* Pending Invites Notification */}
+            {pendingInvites.length > 0 && (
+              <div 
+                onClick={() => setShowInvitesModal(true)}
+                style={{ 
+                  padding: "10px", 
+                  background: "rgba(255, 100, 0, 0.1)", 
+                  border: "1px solid #ff6400",
+                  borderRadius: "6px", 
+                  fontSize: "13px",
+                  marginBottom: "12px",
+                  color: "#ff6400",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = "rgba(255, 100, 0, 0.2)"}
+                onMouseLeave={(e) => e.currentTarget.style.background = "rgba(255, 100, 0, 0.1)"}
+              >
+                <span style={{ fontSize: "16px" }}>📬</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: "600" }}>Team Invites</div>
+                  <div style={{ fontSize: "11px", opacity: 0.8 }}>
+                    {pendingInvites.length} pending invitation{pendingInvites.length > 1 ? 's' : ''}
+                  </div>
+                </div>
+                <span style={{ fontSize: "12px" }}>→</span>
+              </div>
+            )}
             
             <select 
               value={activeTeam?._id || "personal"}
@@ -155,52 +227,40 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
             </select>
             
             {activeTeam && (
-              <div style={{ 
-                padding: "8px", 
-                background: "rgba(0, 255, 255, 0.1)", 
-                borderRadius: "4px", 
-                fontSize: "12px",
-                marginBottom: "16px",
-                color: "#00ffff",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                gap: "8px"
-              }}>
-                <span>✓ Viewing: <strong>{activeTeam.name}</strong></span>
-                <div style={{ display: "flex", gap: "4px" }}>
-                  <button
-                    onClick={() => setShowActivityPanel(true)}
-                    style={{
-                      background: "none",
-                      border: "1px solid #00ffff",
-                      color: "#00ffff",
-                      padding: "2px 6px",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "10px"
-                    }}
-                    title="View activity log"
-                  >
-                    📊 Log
-                  </button>
-                  <button
-                    onClick={() => setShowTeamPanel(true)}
-                    style={{
-                      background: "none",
-                      border: "1px solid #00ffff",
-                      color: "#00ffff",
-                      padding: "2px 6px",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "10px"
-                    }}
-                    title="View team members"
-                  >
-                    👥 View
-                  </button>
+              <>
+                <div style={{ 
+                  padding: "8px", 
+                  background: "rgba(0, 255, 255, 0.1)", 
+                  borderRadius: "4px", 
+                  fontSize: "12px",
+                  marginBottom: "8px",
+                  color: "#00ffff",
+                  textAlign: "center"
+                }}>
+                  <span>✓ Viewing: <strong>{activeTeam.name}</strong></span>
                 </div>
-              </div>
+                <button
+                  onClick={() => setShowTeamPanel(true)}
+                  style={{
+                    width: "100%",
+                    background: "none",
+                    border: "1px solid #00ffff",
+                    color: "#00ffff",
+                    padding: "8px",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                    fontWeight: "500",
+                    transition: "all 0.2s",
+                    marginBottom: "16px"
+                  }}
+                  title="View team members"
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(0, 255, 255, 0.1)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "none"}
+                >
+                  👥 View Team
+                </button>
+              </>
             )}
           </div>
         )}
@@ -208,7 +268,39 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
         {collapsed ? (
           <>
             <a className={active === "My Work" ? "active" : ""} onClick={() => { setActive("My Work"); navigate("/dashboard"); window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: 'My Work' } })); }} title="My Work">🏠</a>
-            <a className={active === "Teams" ? "active" : ""} onClick={() => { setActive("Teams"); navigate("/dashboard"); window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: 'Teams' } })); }} title="Teams">👥</a>
+            <a 
+              className={active === "Teams" ? "active" : ""} 
+              onClick={() => { setActive("Teams"); navigate("/dashboard"); window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: 'Teams' } })); }} 
+              title={pendingInvites.length > 0 ? `Teams (${pendingInvites.length} pending invites)` : "Teams"}
+              style={{ position: "relative" }}
+            >
+              👥
+              {pendingInvites.length > 0 && (
+                <span style={{
+                  position: "absolute",
+                  top: "-2px",
+                  right: "-2px",
+                  background: "#ff6400",
+                  color: "white",
+                  fontSize: "9px",
+                  fontWeight: "600",
+                  padding: "2px 4px",
+                  borderRadius: "8px",
+                  minWidth: "16px",
+                  textAlign: "center",
+                  lineHeight: "1"
+                }}>
+                  {pendingInvites.length}
+                </span>
+              )}
+            </a>
+            <a 
+              onClick={() => setShowActivityPanel(true)} 
+              title="My Activity"
+              style={{ cursor: "pointer" }}
+            >
+              📊
+            </a>
             <div style={{ borderTop: "1px solid #333", margin: "8px 0" }}></div>
             {projects.map(project => (
               <a key={project._id} onClick={() => { setActive(project.name); navigate("/dashboard"); window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: 'project', projectId: project._id } })); }} title={project.name}>📁</a>
@@ -222,7 +314,67 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
           <>
             <p className="section">Workspace</p>
             <Item label="My Work" />
-            <Item label="Teams" />
+            <a
+              className={active === "Teams" ? "active" : ""}
+              onClick={() => {
+                setActive("Teams");
+                navigate("/dashboard");
+                window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: 'Teams' } }));
+              }}
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px"
+              }}
+            >
+              Teams
+              {pendingInvites.length > 0 && (
+                <span style={{
+                  background: "#ff6400",
+                  color: "white",
+                  fontSize: "10px",
+                  fontWeight: "600",
+                  padding: "2px 6px",
+                  borderRadius: "10px",
+                  minWidth: "18px",
+                  textAlign: "center"
+                }}>
+                  {pendingInvites.length}
+                </span>
+              )}
+            </a>
+
+            {/* Global My Activity Button */}
+            <button
+              onClick={() => setShowActivityPanel(true)}
+              style={{
+                width: "100%",
+                background: "none",
+                border: "1px solid rgba(0, 255, 255, 0.3)",
+                color: "#00ffff",
+                padding: "8px 16px",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: "500",
+                transition: "all 0.2s",
+                textAlign: "left",
+                marginTop: "8px",
+                marginBottom: "8px"
+              }}
+              title="View your activity log"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(0, 255, 255, 0.1)";
+                e.currentTarget.style.borderColor = "#00ffff";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "none";
+                e.currentTarget.style.borderColor = "rgba(0, 255, 255, 0.3)";
+              }}
+            >
+              📊 My Activity
+            </button>
 
             <p className="section" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               Projects
@@ -382,6 +534,165 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
           onClose={() => setShowProjectModal(false)}
           onAdd={handleAddProject}
         />
+      )}
+
+      {/* Pending Invites Modal */}
+      {showInvitesModal && (
+        <div className="modal-backdrop" onClick={() => setShowInvitesModal(false)}>
+          <div 
+            className="modal-content" 
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              background: "var(--bg-primary)", 
+              padding: "24px", 
+              borderRadius: "12px", 
+              border: "1px solid var(--border)",
+              maxWidth: "500px",
+              width: "90%",
+              maxHeight: "80vh",
+              overflow: "auto"
+            }}
+          >
+            <div style={{ 
+              display: "flex", 
+              justifyContent: "space-between", 
+              alignItems: "center",
+              marginBottom: "20px" 
+            }}>
+              <h2 style={{ 
+                color: "var(--accent)", 
+                margin: 0,
+                fontSize: "20px",
+                fontWeight: "600"
+              }}>
+                📬 Team Invitations
+              </h2>
+              <button
+                onClick={() => setShowInvitesModal(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--text-muted)",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  padding: "0",
+                  width: "32px",
+                  height: "32px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "4px",
+                  transition: "all 0.2s"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "var(--bg-tertiary)";
+                  e.currentTarget.style.color = "var(--text-primary)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "none";
+                  e.currentTarget.style.color = "var(--text-muted)";
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {pendingInvites.length === 0 ? (
+              <div style={{
+                textAlign: "center",
+                padding: "40px 20px",
+                color: "var(--text-muted)"
+              }}>
+                <div style={{ fontSize: "48px", marginBottom: "16px" }}>📭</div>
+                <div>No pending invitations</div>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {pendingInvites.map((invite) => (
+                  <div
+                    key={invite.teamId}
+                    style={{
+                      padding: "16px",
+                      background: "var(--bg-secondary)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "12px"
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "start", gap: "12px" }}>
+                      <div style={{
+                        width: "40px",
+                        height: "40px",
+                        background: "var(--accent)",
+                        borderRadius: "8px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "20px",
+                        flexShrink: 0
+                      }}>
+                        👥
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ 
+                          fontSize: "16px", 
+                          fontWeight: "600", 
+                          color: "var(--text-primary)",
+                          marginBottom: "4px"
+                        }}>
+                          {invite.teamName}
+                        </div>
+                        <div style={{ 
+                          fontSize: "13px", 
+                          color: "var(--text-secondary)",
+                          marginBottom: "4px"
+                        }}>
+                          Invited by: {invite.invitedBy?.name || invite.invitedBy?.email || "Team Admin"}
+                        </div>
+                        <div style={{ 
+                          fontSize: "12px", 
+                          color: "var(--text-muted)"
+                        }}>
+                          Role: <span style={{ 
+                            color: "var(--accent)", 
+                            fontWeight: "500",
+                            textTransform: "capitalize"
+                          }}>
+                            {invite.invite?.role || "member"}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <button
+                        onClick={() => handleAcceptInvite(invite.teamId)}
+                        style={{
+                          flex: 1,
+                          padding: "10px 16px",
+                          background: "var(--accent)",
+                          border: "none",
+                          borderRadius: "6px",
+                          color: "var(--bg-app)",
+                          cursor: "pointer",
+                          fontWeight: "600",
+                          fontSize: "14px",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.opacity = "0.9"}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = "1"}
+                      >
+                        ✓ Accept Invitation
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </>
   );

@@ -6,6 +6,7 @@ export interface Project {
   name: string;
   description?: string;
   color?: string;
+  icon?: string;
   createdAt: Date;
   updatedAt: Date;
 }

@@ -59,7 +59,16 @@ export const getUserHabits = async (userId: string, includeInactive = false) => 
 };
 
 export const completeHabit = async (habitId: string, userId: string, date?: Date, notes?: string) => {
-  const habit = await Habit.findOne({ _id: habitId, userId });
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  const habit = await Habit.findOne({
+    _id: habitId,
+    $or: [
+      { userId },
+      { teamId: user.activeTeamId }
+    ]
+  });
   if (!habit) throw new Error("Habit not found");
 
   const completionDate = date || new Date();
@@ -112,7 +121,6 @@ export const completeHabit = async (habitId: string, userId: string, date?: Date
   }
 
   // Log activity
-  const user = await User.findById(userId);
   if (user?.activeTeamId) {
     await logActivity({
       teamId: user.activeTeamId.toString(),
@@ -179,7 +187,16 @@ const updateStreak = (habit: any, completionDate: Date) => {
 };
 
 export const uncompleteHabit = async (habitId: string, userId: string, date: Date) => {
-  const habit = await Habit.findOne({ _id: habitId, userId });
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  const habit = await Habit.findOne({
+    _id: habitId,
+    $or: [
+      { userId },
+      { teamId: user.activeTeamId }
+    ]
+  });
   if (!habit) throw new Error("Habit not found");
 
   const targetDate = new Date(date);
@@ -253,7 +270,16 @@ export const deleteHabit = async (habitId: string, userId: string) => {
 };
 
 export const getHabitStats = async (habitId: string, userId: string) => {
-  const habit = await Habit.findOne({ _id: habitId, userId });
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  const habit = await Habit.findOne({
+    _id: habitId,
+    $or: [
+      { userId },
+      { teamId: user.activeTeamId }
+    ]
+  });
   if (!habit) throw new Error("Habit not found");
 
   const last30Days = habit.completions.filter(c => {
@@ -284,7 +310,16 @@ export const getHabitStats = async (habitId: string, userId: string) => {
 };
 
 export const getHabitCalendar = async (habitId: string, userId: string, year: number, month: number) => {
-  const habit = await Habit.findOne({ _id: habitId, userId });
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  const habit = await Habit.findOne({
+    _id: habitId,
+    $or: [
+      { userId },
+      { teamId: user.activeTeamId }
+    ]
+  });
   if (!habit) throw new Error("Habit not found");
 
   const startDate = new Date(year, month - 1, 1);
