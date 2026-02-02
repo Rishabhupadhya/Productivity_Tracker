@@ -1,22 +1,9 @@
 import multer from "multer";
 import path from "path";
-import fs from "fs";
 
-// Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, "../../uploads/avatars");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, "avatar-" + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+// Use memory storage for Vercel Blob
+// Files will be stored in memory before uploading to Vercel Blob
+const storage = multer.memoryStorage();
 
 const fileFilter = (req: any, file: any, cb: any) => {
   const allowedTypes = /jpeg|jpg|png|gif/;

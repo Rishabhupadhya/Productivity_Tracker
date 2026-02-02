@@ -20,7 +20,8 @@ export const uploadAvatar = async (req: AuthRequest, res: Response, next: NextFu
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
-    const user = await updateAvatar(req.user.id, req.file.filename);
+    // Pass file buffer and original name for Vercel Blob upload
+    const user = await updateAvatar(req.user.id, req.file.buffer, req.file.originalname);
     res.json(user);
   } catch (error) {
     next(error);

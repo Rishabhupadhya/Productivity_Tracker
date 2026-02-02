@@ -1,7 +1,7 @@
 import { User } from "../auth.model";
 import bcrypt from "bcrypt";
-import path from "path";
-import fs from "fs";
+import { put, del } from "@vercel/blob";
+import { env } from "../../../config/env";
 
 export const updateProfile = async (
   userId: string,
@@ -34,21 +34,30 @@ export const updateProfile = async (
   return updatedUser;
 };
 
-export const updateAvatar = async (userId: string, filename: string) => {
+export const updateAvatar = async (userId: string, fileBuffer: Buffer, originalname: string) => {
   const user = await User.findById(userId);
   
-  // Delete old avatar file if exists
-  if (user && user.avatar && user.avatar.startsWith("/uploads/")) {
-    const oldPath = path.join(__dirname, "../../../", user.avatar);
-    if (fs.existsSync(oldPath)) {
-      fs.unlinkSync(oldPath);
+  // Delete old avatar from Vercel Blob if exists
+  if (user && user.avatar && user.avatar.startsWith("https://")) {
+    try {
+      await del(user.avatar);
+    } catch (error) {
+      console.error("Failed to delete old avatar:", error);
+      // Continue even if deletion fails
     }
   }
 
-  const avatarPath = `/uploads/avatars/${filename}`;
+  // Upload new avatar to Vercel Blob
+  const filename = `avatar-${userId}-${Date.now()}-${originalname}`;
+  const blob = await put(filename, fileBuffer, {
+    access: 'public',
+    token: env.BLOB_READ_WRITE_TOKEN,
+  });
+
+  // Update user with new blob URL
   return User.findByIdAndUpdate(
     userId,
-    { $set: { avatar: avatarPath } },
+    { $set: { avatar: blob.url } },
     { new: true }
   ).select('-password');
 };

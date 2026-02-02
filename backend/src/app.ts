@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
 import authRoutes from "./modules/auth/auth.routes";
 import taskRoutes from "./modules/auth/task/task.routes";
 import teamRoutes from "./modules/auth/team/team.routes";
@@ -16,8 +15,7 @@ export const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve uploaded files
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// No need to serve static files - using Vercel Blob Storage
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
