@@ -3,13 +3,17 @@ import { body, validationResult } from "express-validator";
 import { registerUser, loginUser } from "./auth.service";
 
 // Cookie options for secure token storage
-const getCookieOptions = () => ({
-  httpOnly: true, // Prevents JavaScript access
-  secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-  sameSite: 'none' as const, // Required for cross-site cookies
-  path: '/'
-  // Don't set domain - let browser handle it automatically
-});
+const getCookieOptions = () => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true, // Prevents JavaScript access
+    secure: isProduction, // HTTPS only in production
+    sameSite: isProduction ? ('none' as const) : ('lax' as const), // none for cross-domain in prod
+    path: '/',
+    maxAge: undefined // Let expiry be controlled by separate maxAge parameter
+    // Don't set domain - let browser handle it automatically
+  };
+};
 
 // Input validation middleware
 export const registerValidation = [

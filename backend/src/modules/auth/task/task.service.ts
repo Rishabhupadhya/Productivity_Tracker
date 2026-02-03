@@ -14,6 +14,10 @@ export const createTask = async (
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
 
+  // Parse scheduledDate from day string (YYYY-MM-DD)
+  const scheduledDate = new Date(day);
+  scheduledDate.setHours(0, 0, 0, 0); // Reset to midnight
+
   const taskData: any = { 
     title, 
     duration, 
@@ -21,7 +25,11 @@ export const createTask = async (
     startTime, 
     userId,
     assignedTo: assignedTo || userId,
-    workspaceId: user.workspaceId 
+    workspaceId: user.workspaceId,
+    scheduledDate, // Add parsed date
+    scheduledTime: startTime, // Store time separately
+    completed: false,
+    status: "pending"
   };
 
   // If user has active team, add teamId
@@ -192,4 +200,68 @@ export const updateTaskSlot = async (
     { day, startTime },
     { new: true }
   ).populate('assignedTo', 'name email avatar');
+};
+
+/**
+ * Toggle task completion status
+ * Updates completed, completedAt, and status fields
+ */
+export const toggleTaskCompletion = async (
+  taskId: string,
+  userId: string,
+  completed: boolean
+) => {
+  const task = await Task.findById(taskId);
+  if (!task) throw new Error("Task not found");
+
+  // Check permissions
+  if (task.teamId) {
+    const team = await Team.findById(task.teamId);
+    if (!team) throw new Error("Team not found");
+    
+    const member = team.members.find(m => m.userId.toString() === userId);
+    if (!member) throw new Error("Not authorized");
+    
+    // Only assigned user or admin can toggle completion
+    if (member.role !== "admin" && task.assignedTo?.toString() !== userId) {
+      throw new Error("Not authorized");
+    }
+  } else {
+    // Personal task - only owner can toggle
+    if (task.userId.toString() !== userId) {
+      throw new Error("Not authorized");
+    }
+  }
+
+  // Update completion fields
+  const updateData: any = {
+    completed,
+    status: completed ? "completed" : "pending"
+  };
+
+  if (completed) {
+    updateData.completedAt = new Date();
+  } else {
+    updateData.completedAt = null;
+  }
+
+  const updatedTask = await Task.findOneAndUpdate(
+    { _id: taskId },
+    updateData,
+    { new: true }
+  ).populate('assignedTo', 'name email avatar');
+
+  // Log activity if it's a team task
+  if (task.teamId) {
+    await logActivity({
+      teamId: task.teamId.toString(),
+      userId,
+      action: completed ? "task_completed" : "task_uncompleted",
+      targetType: "task",
+      targetId: taskId,
+      details: { taskTitle: task.title }
+    });
+  }
+
+  return updatedTask;
 };

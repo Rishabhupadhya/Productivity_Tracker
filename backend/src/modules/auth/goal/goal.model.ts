@@ -46,6 +46,10 @@ export interface IGoal extends Document {
   // Reviews
   reviews: IGoalReview[];
   
+  // Email notification tracking
+  lastEmailSentAt?: Date;
+  emailsSentCount: number;
+  
   createdAt: Date;
   updatedAt: Date;
 }
@@ -87,7 +91,11 @@ const GoalSchema = new Schema<IGoal>(
     linkedFinanceCategory: { type: String },
     linkedTasks: [{ type: Schema.Types.ObjectId, ref: "Task" }],
     
-    reviews: [GoalReviewSchema]
+    reviews: [GoalReviewSchema],
+    
+    // Email tracking
+    lastEmailSentAt: { type: Date },
+    emailsSentCount: { type: Number, default: 0 }
   },
   { timestamps: true }
 );

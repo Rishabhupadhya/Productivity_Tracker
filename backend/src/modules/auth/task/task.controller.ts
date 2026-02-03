@@ -1,6 +1,6 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../../../middleware/auth.middleware";
-import { createTask, getTasksByUser, updateTaskSlot, deleteTask } from "./task.service";
+import { createTask, getTasksByUser, updateTaskSlot, deleteTask, toggleTaskCompletion } from "./task.service";
 
 export const addTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -35,6 +35,26 @@ export const removeTask = async (req: AuthRequest, res: Response, next: NextFunc
   try {
     await deleteTask(req.params.id, req.user.id);
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Toggle task completion status
+ * PATCH /api/tasks/:id/complete
+ */
+export const completeTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params;
+    const { completed } = req.body; // true or false
+    
+    const task = await toggleTaskCompletion(id, req.user.id, completed);
+    res.json({ 
+      success: true, 
+      task,
+      message: completed ? "Task marked as completed" : "Task marked as incomplete"
+    });
   } catch (error) {
     next(error);
   }

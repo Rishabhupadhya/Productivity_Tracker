@@ -6,6 +6,7 @@ export interface IHabitCompletion {
   date: Date;
   completed: boolean;
   notes?: string;
+  lastEmailSentAt?: Date; // Track when reminder was last sent
 }
 
 export interface IHabit extends Document {
@@ -35,6 +36,10 @@ export interface IHabit extends Document {
   totalCompletions: number;
   successRate: number; // percentage
   
+  // Email notification tracking
+  lastEmailSentAt?: Date;
+  emailsSentCount: number;
+  
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -43,7 +48,8 @@ export interface IHabit extends Document {
 const HabitCompletionSchema = new Schema({
   date: { type: Date, required: true },
   completed: { type: Boolean, default: true },
-  notes: { type: String, default: "" }
+  notes: { type: String, default: "" },
+  lastEmailSentAt: { type: Date } // Email tracking per completion
 }, { _id: false });
 
 const HabitSchema = new Schema<IHabit>(
@@ -68,6 +74,10 @@ const HabitSchema = new Schema<IHabit>(
     
     totalCompletions: { type: Number, default: 0 },
     successRate: { type: Number, default: 0 },
+    
+    // Email tracking
+    lastEmailSentAt: { type: Date },
+    emailsSentCount: { type: Number, default: 0 },
     
     isActive: { type: Boolean, default: true }
   },
