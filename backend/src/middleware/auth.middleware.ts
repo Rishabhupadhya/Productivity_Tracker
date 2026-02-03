@@ -20,6 +20,11 @@ export const authMiddleware = (
   }
 
   if (!token) {
+    console.log('Auth failed: No token provided', {
+      hasAuthHeader: !!req.headers.authorization,
+      hasCookies: !!req.cookies,
+      path: req.path
+    });
     return res.status(401).json({ 
       success: false,
       message: "Unauthorized - No token provided" 
@@ -31,6 +36,10 @@ export const authMiddleware = (
     req.user = decoded;
     next();
   } catch (error) {
+    console.log('Auth failed: Invalid token', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      path: req.path
+    });
     res.status(401).json({ 
       success: false,
       message: "Invalid or expired token" 
