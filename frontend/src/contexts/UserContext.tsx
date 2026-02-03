@@ -81,7 +81,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setError(null);
       const userData = await getUserProfileService();
       setUser(userData);
-      console.log('User profile loaded successfully:', userData.name);
+      console.log('User profile loaded successfully:', userData?.name || 'Unknown');
     } catch (err: any) {
       console.error("Failed to fetch user profile:", err);
       

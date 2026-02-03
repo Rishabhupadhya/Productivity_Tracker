@@ -218,9 +218,9 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                           }}>
                             {member.role}
                           </span>
-                          {member.role !== "admin" && (
+                          {member.role !== "admin" && member.userId?._id && (
                             <button
-                              onClick={() => handleRemoveMember(member.userId._id, member.userId?.name || 'User')}
+                              onClick={() => handleRemoveMember(member.userId?._id, member.userId?.name || 'User')}
                               style={{
                                 padding: "4px 12px",
                                 background: "var(--danger)",

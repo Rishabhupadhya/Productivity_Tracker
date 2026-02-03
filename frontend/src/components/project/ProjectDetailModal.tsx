@@ -4,7 +4,7 @@ import type { Project } from "../../services/project.service";
 import "./projectDetailModal.css";
 
 interface ProjectDetailModalProps {
-  project: Project;
+  project: Project | null;
   isOpen: boolean;
   onClose: () => void;
   onUpdate: () => void;
@@ -16,19 +16,21 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
   onClose,
   onUpdate,
 }) => {
-  const [name, setName] = useState(project.name);
-  const [description, setDescription] = useState(project.description || "");
-  const [notes, setNotes] = useState(project.notes || "");
+  const [name, setName] = useState(project?.name || "");
+  const [description, setDescription] = useState(project?.description || "");
+  const [notes, setNotes] = useState(project?.notes || "");
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setName(project.name);
-    setDescription(project.description || "");
-    setNotes(project.notes || "");
+    if (project) {
+      setName(project.name || "");
+      setDescription(project.description || "");
+      setNotes(project.notes || "");
+    }
   }, [project]);
 
   const handleSave = async () => {
-    if (!name.trim()) return;
+    if (!project || !name.trim()) return;
 
     try {
       setIsSaving(true);
@@ -43,15 +45,15 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !project) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content project-detail-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <div className="modal-title-wrapper">
-            <span className="project-icon">{project.icon}</span>
-            <h2>{project.name}</h2>
+            <span className="project-icon">{project?.icon || '📁'}</span>
+            <h2>{project?.name || 'Project'}</h2>
           </div>
           <button className="close-button" onClick={onClose}>
             ×

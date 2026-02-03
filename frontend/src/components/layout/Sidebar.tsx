@@ -222,7 +222,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
               }}
             >
               <option value="personal">👤 Personal Team</option>
-              {teams.map(team => (
+              {teams.filter(team => team && team._id).map(team => (
                 <option key={team._id} value={team._id}>
                   👥 {team?.name || 'Unnamed Team'}
                 </option>
@@ -607,7 +607,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {pendingInvites.map((invite) => (
+                {pendingInvites.filter(invite => invite && invite.teamId).map((invite) => (
                   <div
                     key={invite.teamId}
                     style={{
@@ -641,14 +641,14 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                           color: "var(--text-primary)",
                           marginBottom: "4px"
                         }}>
-                          {invite.teamName}
+                          {invite?.teamName || 'Team Invitation'}
                         </div>
                         <div style={{ 
                           fontSize: "13px", 
                           color: "var(--text-secondary)",
                           marginBottom: "4px"
                         }}>
-                          Invited by: {invite.invitedBy?.name || invite.invitedBy?.email || "Team Admin"}
+                          Invited by: {invite?.invitedBy?.name || invite?.invitedBy?.email || "Team Admin"}
                         </div>
                         <div style={{ 
                           fontSize: "12px", 
@@ -659,7 +659,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                             fontWeight: "500",
                             textTransform: "capitalize"
                           }}>
-                            {invite.invite?.role || "member"}
+                            {invite?.invite?.role || "member"}
                           </span>
                         </div>
                       </div>
@@ -667,7 +667,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
 
                     <div style={{ display: "flex", gap: "8px" }}>
                       <button
-                        onClick={() => handleAcceptInvite(invite.teamId)}
+                        onClick={() => handleAcceptInvite(invite?.teamId)}
                         style={{
                           flex: 1,
                           padding: "10px 16px",
