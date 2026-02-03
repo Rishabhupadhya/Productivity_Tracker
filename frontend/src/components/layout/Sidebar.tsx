@@ -240,7 +240,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                   color: "#00ffff",
                   textAlign: "center"
                 }}>
-                  <span>✓ Viewing: <strong>{activeTeam?.name || 'Team'}</strong></span>
+                  <span>✓ Viewing: <strong>{activeTeam.name || 'Unnamed Team'}</strong></span>
                 </div>
                 <button
                   onClick={() => setShowTeamPanel(true)}

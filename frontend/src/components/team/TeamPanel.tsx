@@ -25,10 +25,14 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
     if (!activeTeam) return;
     try {
       setLoading(true);
-      console.log('Loading team details for:', activeTeam._id);
+      if (import.meta.env.DEV) {
+        console.debug('Loading team details for:', activeTeam._id);
+      }
       const details = await getTeamDetails(activeTeam._id);
-      console.log('Team details loaded:', details);
-      console.log('Invites in loaded team:', details.invites);
+      if (import.meta.env.DEV) {
+        console.debug('Team details loaded:', details);
+        console.debug('Invites in loaded team:', details.invites);
+      }
       setTeamDetails(details);
     } catch (error) {
       console.error("Failed to load team details:", error);
@@ -48,30 +52,31 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
       
       // Send email notification using EmailJS
       try {
-        console.log('📧 Sending email with config:', {
-          serviceId: env.EMAILJS_SERVICE_ID,
-          templateId: env.EMAILJS_TEMPLATE_ID,
-          publicKey: env.EMAILJS_PUBLIC_KEY ? '✓ Present' : '✗ Missing',
-          params: {
-            email: inviteEmail,
-            to_name: inviteEmail.split('@')[0],
-            title: `Join ${activeTeam?.name || 'Team'}`,
-            invite_link: `${window.location.origin}/teams/${activeTeam._id}/accept`,
-          }
-        });
+        // Extract email params to avoid duplication
+        const emailParams = {
+          email: inviteEmail,
+          to_name: inviteEmail.split('@')[0],
+          title: `Join ${activeTeam?.name || 'Team'}`,
+          invite_link: `${window.location.origin}/teams/${activeTeam._id}/accept`,
+        };
+
+        // Dev-only debug logging (production safe)
+        if (import.meta.env.DEV) {
+          console.debug('📧 Sending email with params:', {
+            ...emailParams,
+            to_name: inviteEmail.split('@')[0], // Show email split part only in dev
+          });
+        }
 
         const response = await emailjs.send(
           env.EMAILJS_SERVICE_ID,
           env.EMAILJS_TEMPLATE_ID,
-          {
-            email: inviteEmail,
-            to_name: inviteEmail.split('@')[0],
-            title: `Join ${activeTeam?.name || 'Team'}`,
-            invite_link: `${window.location.origin}/teams/${activeTeam._id}/accept`,
-          }
+          emailParams
         );
         
-        console.log('✅ Email notification sent successfully:', response);
+        if (import.meta.env.DEV) {
+          console.debug('✅ Email notification sent successfully');
+        }
         alert(`Team invite sent! Email delivered to ${inviteEmail}`);
       } catch (emailError: any) {
         console.error("❌ Email notification failed:", emailError);
@@ -95,9 +100,13 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
     if (!activeTeam || !confirm(`Cancel invite for ${email}?`)) return;
     
     try {
-      console.log('Canceling invite:', { teamId: activeTeam._id, email });
+      if (import.meta.env.DEV) {
+        console.debug('Canceling invite:', { teamId: activeTeam._id, email });
+      }
       await cancelTeamInvite(activeTeam._id, email);
-      console.log('Invite canceled successfully');
+      if (import.meta.env.DEV) {
+        console.debug('Invite canceled successfully');
+      }
       await loadTeamDetails();
       await refreshTeams();
     } catch (error: any) {
