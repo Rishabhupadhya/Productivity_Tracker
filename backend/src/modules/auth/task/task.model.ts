@@ -18,7 +18,7 @@ export interface ITask extends Document {
   status: TaskStatus;
   
   // Date fields for proper scheduling
-  scheduledDate: Date; // Full date object
+  scheduledDate?: Date; // Full date object (optional, auto-set from day)
   scheduledTime?: string; // HH:mm format
   
   // Email notification tracking
@@ -46,8 +46,8 @@ const TaskSchema = new Schema<ITask>(
       default: "pending" 
     },
     
-    // Scheduling
-    scheduledDate: { type: Date, required: true },
+    // Scheduling (make scheduledDate optional for backwards compatibility)
+    scheduledDate: { type: Date },
     scheduledTime: { type: String }, // Optional time
     
     // Email tracking
@@ -61,5 +61,14 @@ const TaskSchema = new Schema<ITask>(
 TaskSchema.index({ userId: 1, scheduledDate: 1 });
 TaskSchema.index({ status: 1, scheduledDate: 1 });
 TaskSchema.index({ completed: 1, scheduledDate: 1 });
+
+// Pre-save hook to ensure scheduledDate is set
+TaskSchema.pre('save', function(next) {
+  if (!this.scheduledDate && this.day) {
+    this.scheduledDate = new Date(this.day);
+    this.scheduledDate.setHours(0, 0, 0, 0);
+  }
+  next();
+});
 
 export const Task = mongoose.model<ITask>("Task", TaskSchema);

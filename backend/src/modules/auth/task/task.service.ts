@@ -14,10 +14,6 @@ export const createTask = async (
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
 
-  // Parse scheduledDate from day string (YYYY-MM-DD)
-  const scheduledDate = new Date(day);
-  scheduledDate.setHours(0, 0, 0, 0); // Reset to midnight
-
   const taskData: any = { 
     title, 
     duration, 
@@ -26,10 +22,10 @@ export const createTask = async (
     userId,
     assignedTo: assignedTo || userId,
     workspaceId: user.workspaceId,
-    scheduledDate, // Add parsed date
-    scheduledTime: startTime, // Store time separately
+    scheduledTime: startTime,
     completed: false,
     status: "pending"
+    // scheduledDate will be auto-set by pre-save middleware from day field
   };
 
   // If user has active team, add teamId
