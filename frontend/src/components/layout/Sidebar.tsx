@@ -4,6 +4,7 @@ import { useTeam } from "../../contexts/TeamContext";
 import TeamPanel from "../team/TeamPanel";
 import ActivityPanel from "../activity/ActivityPanel";
 import AddProjectModal from "../project/AddProjectModal";
+import ProjectDetailModal from "../project/ProjectDetailModal";
 import { getUserProjects, createProject, deleteProject } from "../../services/project.service";
 import { getPendingInvites, acceptTeamInvite } from "../../services/team.service";
 import type { Project } from "../../services/project.service";
@@ -17,6 +18,8 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
   const [showTeamPanel, setShowTeamPanel] = useState(false);
   const [showActivityPanel, setShowActivityPanel] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
+  const [showProjectDetail, setShowProjectDetail] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [newTeamName, setNewTeamName] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
   const [pendingInvites, setPendingInvites] = useState<any[]>([]);
@@ -115,6 +118,11 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
       console.error("Failed to delete project:", error);
     }
   }, [loadProjects]);
+
+  const handleProjectClick = useCallback((project: Project) => {
+    setSelectedProject(project);
+    setShowProjectDetail(true);
+  }, []);
 
   useEffect(() => {
     loadProjects();
@@ -298,7 +306,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
             </a>
             <div style={{ borderTop: "1px solid #333", margin: "8px 0" }}></div>
             {projects.map(project => (
-              <a key={project._id} onClick={() => { setActive(project.name); navigate("/dashboard"); window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: 'project', projectId: project._id } })); }} title={project.name}>📁</a>
+              <a key={project._id} onClick={() => handleProjectClick(project)} title={project.name}>📁</a>
             ))}
             <div style={{ borderTop: "1px solid #333", margin: "8px 0" }}></div>
             <a className={active === "Habits" ? "active" : ""} onClick={() => { setActive("Habits"); navigate("/habits"); }} title="Habit Tracker">✅</a>
@@ -392,17 +400,13 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
         {projects.map(project => (
           <a
             key={project._id}
-            className={active === project.name ? "active" : ""}
-            onClick={() => {
-              setActive(project.name);
-              navigate("/dashboard");
-              window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: project.name, projectId: project._id } }));
-            }}
+            onClick={() => handleProjectClick(project)}
             style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              color: project.color
+              color: project.color,
+              cursor: "pointer"
             }}
           >
             <span>
@@ -689,6 +693,13 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
           </div>
         </div>
       )}
+
+      <ProjectDetailModal
+        project={selectedProject}
+        isOpen={showProjectDetail}
+        onClose={() => setShowProjectDetail(false)}
+        onUpdate={loadProjects}
+      />
     </>
   );
 }
