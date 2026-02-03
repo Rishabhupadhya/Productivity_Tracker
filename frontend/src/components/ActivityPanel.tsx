@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, memo } from "react";
 import { useTeam } from "../../contexts/TeamContext";
 import { getTeamActivity } from "../../services/activity.service";
+import { env } from "../../config/env";
 import "./activityPanel.css";
 
 interface Activity {
@@ -132,7 +133,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                         <div
                           className="user-avatar"
                           style={{
-                            backgroundImage: `url(http://localhost:5001${activity.userId.avatar})`,
+                            backgroundImage: `url(${env.API_URL.replace('/api', '')}${activity.userId.avatar})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center'
                           }}

@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { memo, useState } from "react";
 import { cardVariants } from "../../utils/motionVariants";
 import { toggleTaskCompletion } from "../../services/task.service";
+import { env } from "../../config/env";
 import "./task.css";
 
 function TaskCard({
@@ -140,7 +141,7 @@ function TaskCard({
               cursor: 'pointer',
               transition: 'transform 0.2s',
               ...(task.assignedTo.avatar ? {
-                backgroundImage: `url(http://localhost:5001${task.assignedTo.avatar})`,
+                backgroundImage: `url(${env.API_URL.replace('/api', '')}${task.assignedTo.avatar})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               } : {
