@@ -43,6 +43,17 @@ credentials.json
 token.json
 config.json
 *.env*
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+**/.env
+**/.env.*
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
 
 # Database
 *.db
