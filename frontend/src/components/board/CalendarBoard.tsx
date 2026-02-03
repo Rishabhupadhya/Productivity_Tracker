@@ -109,6 +109,7 @@ export default function CalendarBoard() {
                             key={task._id}
                             task={task}
                             onDelete={deleteTask}
+                            onUpdate={refreshTasks}
                             draggable={enableDragDrop}
                           />
                         ))}

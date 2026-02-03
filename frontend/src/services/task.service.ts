@@ -23,3 +23,13 @@ export const moveTask = async (taskId: string, day: string, startTime?: string) 
 export const deleteTask = async (taskId: string) => {
   await api.delete(`/tasks/${taskId}`);
 };
+
+/**
+ * Toggle task completion status
+ * @param taskId Task ID
+ * @param completed true or false
+ */
+export const toggleTaskCompletion = async (taskId: string, completed: boolean) => {
+  const res = await api.patch(`/tasks/${taskId}/complete`, { completed });
+  return res.data;
+};

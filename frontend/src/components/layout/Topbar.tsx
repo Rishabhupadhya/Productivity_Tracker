@@ -4,6 +4,11 @@ import { AnimatePresence } from "framer-motion";
 import AddTaskModal from "../task/AddTaskModal";
 import UserMenu from "./UserMenu";
 import Button from "../ui/Button";
+import { 
+  navigateToToday, 
+  navigateToPreviousDay, 
+  navigateToNextDay 
+} from "../../hooks/useSelectedDate";
 import "./topbar.css";
 
 type TopbarProps = {
@@ -139,14 +144,83 @@ export default function Topbar({
 
           {/* CENTER SECTION - Desktop task controls only */}
           {showTaskControls && !isMobileView && (
-            <div className="topbar-controls">
-              <Button 
-                onClick={handleOpenModal}
-                className="add-task-btn"
-                title="Add Task"
-              >
-                + Add Task
-              </Button>
+            <div className="topbar-controls" style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+            }}>
+              {/* Date Navigation */}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '4px',
+                background: 'var(--bg-secondary)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border-default)',
+              }}>
+                <button
+                  onClick={() => navigateToPreviousDay()}
+                  title="Previous Day"
+                  style={{
+                    padding: '8px 12px',
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--text-primary)',
+                    cursor: 'pointer',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    transition: 'background 0.2s',
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-tertiary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                >
+                  ◀
+                </button>
+
+                <button
+                  onClick={() => navigateToToday()}
+                  title="Go to Today"
+                  style={{
+                    padding: '8px 16px',
+                    background: 'var(--accent-primary)',
+                    border: 'none',
+                    color: '#000',
+                    cursor: 'pointer',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    transition: 'opacity 0.2s',
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+                >
+                  Today
+                </button>
+
+                <button
+                  onClick={() => navigateToNextDay()}
+                  title="Next Day"
+                  style={{
+                    padding: '8px 12px',
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--text-primary)',
+                    cursor: 'pointer',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    transition: 'background 0.2s',
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-tertiary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                >
+                  ▶
+                </button>
+              </div>
 
               <input
                 type="date"
@@ -163,6 +237,14 @@ export default function Topbar({
                   cursor: 'pointer',
                 }}
               />
+
+              <Button 
+                onClick={handleOpenModal}
+                className="add-task-btn"
+                title="Add Task"
+              >
+                + Add Task
+              </Button>
             </div>
           )}
 

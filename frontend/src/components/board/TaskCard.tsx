@@ -1,54 +1,117 @@
 import { motion } from "framer-motion";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { cardVariants } from "../../utils/motionVariants";
+import { toggleTaskCompletion } from "../../services/task.service";
 import "./task.css";
 
 function TaskCard({
   task,
   onDelete,
+  onUpdate,
   draggable = true
 }: {
   task: any;
   onDelete: (task: any) => void;
+  onUpdate?: () => void;
   draggable?: boolean;
 }) {
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [completed, setCompleted] = useState(task.completed || false);
+
+  const handleToggleComplete = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent drag start
+    
+    try {
+      setIsCompleting(true);
+      const newCompletedState = !completed;
+      await toggleTaskCompletion(task._id, newCompletedState);
+      setCompleted(newCompletedState);
+      
+      // Notify parent to refresh data
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      console.error("Failed to toggle task completion:", error);
+      alert("Failed to update task. Please try again.");
+    } finally {
+      setIsCompleting(false);
+    }
+  };
+
   const getTaskColor = () => {
-    if (task.teamId) return '#00ffff20'; // Team tasks get cyan tint
+    if (completed) return '#48bb7840'; // Green tint for completed
+    if (task.teamId) return '#00ffff20'; // Cyan tint for team tasks
     return 'transparent';
   };
 
   return (
     <motion.div
-      className="task green"
-      draggable={draggable}
+      className={`task green ${completed ? 'completed-task' : ''}`}
+      draggable={draggable && !isCompleting}
       onDragStart={(e) =>
         e.dataTransfer.setData("taskId", task._id)
       }
-      style={{ background: getTaskColor() }}
+      style={{ 
+        background: getTaskColor(),
+        opacity: completed ? 0.7 : 1,
+        transition: 'all 0.3s ease'
+      }}
       variants={cardVariants}
       initial="initial"
       animate="animate"
       whileHover="hover"
     >
       <div className="task-header">
-        <h5 style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {task.teamId && (
-            <span 
-              style={{ 
-                fontSize: '12px',
-                background: '#00ffff',
-                color: '#000',
-                padding: '2px 6px',
-                borderRadius: '10px',
-                fontWeight: 'bold'
-              }}
-              title="Team Task"
-            >
-              👥
-            </span>
-          )}
-          {task.title}
-        </h5>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+          {/* Completion Checkbox */}
+          <button
+            onClick={handleToggleComplete}
+            disabled={isCompleting}
+            className="task-checkbox"
+            title={completed ? "Mark as incomplete" : "Mark as complete"}
+            style={{
+              width: '20px',
+              height: '20px',
+              border: '2px solid #00ffff',
+              borderRadius: '4px',
+              background: completed ? '#48bb78' : 'transparent',
+              cursor: isCompleting ? 'wait' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              transition: 'all 0.2s',
+            }}
+          >
+            {completed && <span style={{ color: 'white', fontSize: '14px' }}>✓</span>}
+          </button>
+
+          <h5 style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '4px', 
+            margin: 0,
+            textDecoration: completed ? 'line-through' : 'none',
+            flex: 1
+          }}>
+            {task.teamId && (
+              <span 
+                style={{ 
+                  fontSize: '12px',
+                  background: '#00ffff',
+                  color: '#000',
+                  padding: '2px 6px',
+                  borderRadius: '10px',
+                  fontWeight: 'bold'
+                }}
+                title="Team Task"
+              >
+                👥
+              </span>
+            )}
+            {task.title}
+          </h5>
+        </div>
+
         <button
           className="delete"
           onClick={() => onDelete(task)}
