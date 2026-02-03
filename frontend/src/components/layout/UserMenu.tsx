@@ -91,7 +91,7 @@ export default function UserMenu() {
         
         <Avatar
           src={user.avatar && user.avatar.length > 1 ? `${env.BASE_URL}${user.avatar}` : null}
-          name={user.name}
+          name={user?.name || 'User'}
           size="medium"
           onClick={() => setOpen(!open)}
         />
@@ -108,11 +108,11 @@ export default function UserMenu() {
               <div className="user-info">
                 <Avatar
                   src={user.avatar && user.avatar.length > 1 ? `${env.BASE_URL}${user.avatar}` : null}
-                  name={user.name}
+                  name={user?.name || 'User'}
                   size="large"
                 />
                 <div className="user-details">
-                  <div className="user-name">{user.name}</div>
+                  <div className="user-name">{user?.name || 'User'}</div>
                   <div className="user-email">{user.email}</div>
                   {user.level && user.level > 1 && (
                     <div style={{ fontSize: "12px", color: "var(--accent)", marginTop: "4px" }}>
