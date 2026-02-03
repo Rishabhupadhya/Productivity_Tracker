@@ -7,6 +7,20 @@ export const errorMiddleware = (
   res: Response,
   _next: NextFunction
 ) => {
-  logger.error(err.message);
-  res.status(500).json({ message: err.message });
+  // Log full error details for debugging
+  logger.error(err.stack || err.message);
+  
+  // Never expose error details in production
+  if (process.env.NODE_ENV === 'production') {
+    res.status(500).json({ 
+      success: false,
+      message: 'An internal server error occurred' 
+    });
+  } else {
+    res.status(500).json({ 
+      success: false,
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
 };

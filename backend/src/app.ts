@@ -14,13 +14,36 @@ import { apiRateLimiter } from "./middleware/rate-limiter.middleware";
 
 export const app = express();
 
+// Restrict CORS to specific domains only
+const allowedOrigins = [
+  process.env.NODE_ENV === 'development' ? 'http://localhost:5173' : null,
+  'https://momentum12.vercel.app',
+  // Only allow YOUR specific preview deployments
+  /^https:\/\/momentum12-.*\.vercel\.app$/
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://momentum12.vercel.app',
-    /\.vercel\.app$/  // Allow all Vercel preview deployments
-  ],
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is allowed
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') return allowed === origin;
+      if (allowed instanceof RegExp) return allowed.test(origin);
+      return false;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 86400 // 24 hours cache
 }));
 app.use(express.json());
 

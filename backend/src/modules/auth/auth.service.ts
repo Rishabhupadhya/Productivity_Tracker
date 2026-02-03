@@ -67,7 +67,12 @@ export const registerUser = async (
 };
 
 export const loginUser = async (email: string, password: string) => {
-  const user = await User.findOne({ email });
+  // Validate input types to prevent NoSQL injection
+  if (typeof email !== 'string' || typeof password !== 'string') {
+    throw new Error('Invalid credentials');
+  }
+  
+  const user = await User.findOne({ email: email.toLowerCase().trim() });
   if (!user) throw new Error("User not found");
 
   if (!user.password) {
