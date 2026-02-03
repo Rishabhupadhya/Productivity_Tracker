@@ -90,7 +90,7 @@ export default function UserMenu() {
         )}
         
         <Avatar
-          src={user.avatar ? `${env.API_URL.replace('/api', '')}${user.avatar}` : null}
+          src={user.avatar && user.avatar.length > 1 ? `${env.BASE_URL}${user.avatar}` : null}
           name={user.name}
           size="medium"
           onClick={() => setOpen(!open)}
@@ -107,7 +107,7 @@ export default function UserMenu() {
             >
               <div className="user-info">
                 <Avatar
-                  src={user.avatar ? `${env.API_URL.replace('/api', '')}${user.avatar}` : null}
+                  src={user.avatar && user.avatar.length > 1 ? `${env.BASE_URL}${user.avatar}` : null}
                   name={user.name}
                   size="large"
                 />

@@ -133,7 +133,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                         <div
                           className="user-avatar"
                           style={{
-                            backgroundImage: `url(${env.API_URL.replace('/api', '')}${activity.userId.avatar})`,
+                            backgroundImage: activity.userId.avatar && activity.userId.avatar.length > 1 ? `url(${env.BASE_URL}${activity.userId.avatar})` : 'none',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center'
                           }}

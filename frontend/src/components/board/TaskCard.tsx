@@ -141,7 +141,7 @@ function TaskCard({
               cursor: 'pointer',
               transition: 'transform 0.2s',
               ...(task.assignedTo.avatar && task.assignedTo.avatar.length > 1 ? {
-                backgroundImage: `url(${env.API_URL.replace('/api', '')}${task.assignedTo.avatar})`,
+                backgroundImage: task.assignedTo.avatar && task.assignedTo.avatar.length > 1 ? `url(${env.BASE_URL}${task.assignedTo.avatar})` : 'none',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               } : {

@@ -34,8 +34,8 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       setWorkStartTime((user as any).workingHours?.start || "09:00");
       setWorkEndTime((user as any).workingHours?.end || "18:00");
       setDefaultDuration((user as any).defaultTaskDuration || "1h");
-      if (user.avatar) {
-        setAvatarPreview(`${env.API_URL.replace('/api', '')}${user.avatar}`);
+      if (user.avatar && user.avatar.length > 1) {
+        setAvatarPreview(`${env.BASE_URL}${user.avatar}`);
       }
     }
   }, [user]);
@@ -82,8 +82,8 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     } catch (error: any) {
       setMessage(error.response?.data?.message || "Failed to upload avatar");
       // Revert preview on error
-      if (user?.avatar) {
-        setAvatarPreview(`${env.API_URL.replace('/api', '')}${user.avatar}`);
+      if (user?.avatar && user.avatar.length > 1) {
+        setAvatarPreview(`${env.BASE_URL}${user.avatar}`);
       } else {
         setAvatarPreview("");
       }
