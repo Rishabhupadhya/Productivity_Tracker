@@ -69,14 +69,14 @@ class OAuthController {
       // Handle user cancellation
       if (error) {
         return res.redirect(
-          `${process.env.FRONTEND_URL}/login?error=oauth_cancelled&provider=google`
+          `${process.env.FRONTEND_URL}/auth/callback?error=oauth_cancelled&provider=google`
         );
       }
 
       // Validate required parameters
       if (!code || !state) {
         return res.redirect(
-          `${process.env.FRONTEND_URL}/login?error=invalid_oauth_response`
+          `${process.env.FRONTEND_URL}/auth/callback?error=invalid_oauth_response`
         );
       }
 
@@ -84,7 +84,7 @@ class OAuthController {
       const storedState = stateStore.get(state as string);
       if (!storedState) {
         return res.redirect(
-          `${process.env.FRONTEND_URL}/login?error=invalid_state_token`
+          `${process.env.FRONTEND_URL}/auth/callback?error=invalid_state_token`
         );
       }
 
@@ -145,12 +145,12 @@ class OAuthController {
       // Handle "account not found" error specifically
       if (error.message === 'NO_ACCOUNT_FOUND') {
         return res.redirect(
-          `${process.env.FRONTEND_URL}/login?error=no_account&message=${encodeURIComponent('Account not found. Please register first.')}`
+          `${process.env.FRONTEND_URL}/auth/callback?error=no_account&message=${encodeURIComponent('Account not found. Please register first.')}`
         );
       }
       
       res.redirect(
-        `${process.env.FRONTEND_URL}/login?error=oauth_failed&provider=google&message=${encodeURIComponent(error.message)}`
+        `${process.env.FRONTEND_URL}/auth/callback?error=oauth_failed&provider=google&message=${encodeURIComponent(error.message)}`
       );
     }
   }

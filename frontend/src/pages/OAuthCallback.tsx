@@ -26,8 +26,13 @@ export default function OAuthCallback() {
 
       if (errorParam) {
         let userFriendlyError = 'Authentication failed';
+        let redirectPath = '/login';
 
         switch (errorParam) {
+          case 'no_account':
+            userFriendlyError = errorMessage ? decodeURIComponent(errorMessage) : 'Account not found. Please register first.';
+            redirectPath = '/login'; // Redirect to login with error
+            break;
           case 'oauth_cancelled':
             userFriendlyError = 'You cancelled the login process';
             break;
@@ -47,10 +52,10 @@ export default function OAuthCallback() {
         setError(userFriendlyError);
         setStatus('error');
         
-        // Redirect to login after 3 seconds
+        // Redirect to appropriate page with error
         setTimeout(() => {
-          navigate('/login', { replace: true });
-        }, 3000);
+          navigate(`${redirectPath}?error=${errorParam}&message=${encodeURIComponent(userFriendlyError)}`, { replace: true });
+        }, 2000);
         
         return;
       }
@@ -85,10 +90,8 @@ export default function OAuthCallback() {
         console.log('Welcome! Your account has been created.');
       }
 
-      // Redirect to dashboard
-      setTimeout(() => {
-        navigate('/dashboard', { replace: true });
-      }, 1000);
+      // Redirect to dashboard immediately
+      navigate('/dashboard', { replace: true });
 
     } catch (err: any) {
       console.error('OAuth callback error:', err);
@@ -96,8 +99,8 @@ export default function OAuthCallback() {
       setStatus('error');
       
       setTimeout(() => {
-        navigate('/login', { replace: true });
-      }, 3000);
+        navigate('/login?error=callback_failed&message=' + encodeURIComponent('Failed to complete authentication'), { replace: true });
+      }, 2000);
     }
   };
 
