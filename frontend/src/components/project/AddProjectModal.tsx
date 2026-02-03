@@ -2,7 +2,7 @@ import { useState } from "react";
 
 interface AddProjectModalProps {
   onClose: () => void;
-  onAdd: (name: string, color: string, icon: string) => void;
+  onAdd: (name: string, color: string, icon: string, description: string, notes: string) => void;
 }
 
 const ICONS = ["📁", "💼", "🚀", "🎯", "⚡", "🔥", "✨", "🎨", "📊", "💡", "🛠️", "📱", "💻", "🌟", "🎪"];
@@ -10,13 +10,15 @@ const COLORS = ["#00ffff", "#ff00ff", "#ffff00", "#00ff00", "#ff0000", "#0000ff"
 
 export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps) {
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [notes, setNotes] = useState("");
   const [selectedColor, setSelectedColor] = useState("#00ffff");
   const [selectedIcon, setSelectedIcon] = useState("📁");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    onAdd(name, selectedColor, selectedIcon);
+    onAdd(name, selectedColor, selectedIcon, description, notes);
     onClose();
   };
 
