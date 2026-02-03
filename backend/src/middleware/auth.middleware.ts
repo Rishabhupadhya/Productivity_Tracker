@@ -32,8 +32,24 @@ export const authMiddleware = (
   }
 
   try {
-    const decoded = jwt.verify(token, env.JWT_SECRET);
-    req.user = decoded;
+    // Verify token without strict issuer/audience to support legacy tokens
+    const decoded = jwt.verify(token, env.JWT_SECRET, {
+      // Don't enforce issuer/audience for backward compatibility
+    }) as any;
+    
+    // Support both old format {id, email} and new format {userId, role}
+    req.user = {
+      id: decoded.id || decoded.userId,
+      userId: decoded.userId || decoded.id,
+      email: decoded.email,
+      role: decoded.role || 'user'
+    };
+    
+    console.log('Auth success:', {
+      userId: req.user.id,
+      path: req.path
+    });
+    
     next();
   } catch (error) {
     console.log('Auth failed: Invalid token', {
