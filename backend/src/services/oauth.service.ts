@@ -185,8 +185,10 @@ export class OAuthService {
       
       await user.save({ session });
 
-      // Log authentication event
-      await AuthLog.create([{
+      await session.commitTransaction();
+
+      // Log authentication event (outside transaction - time-series collections don't support transactions)
+      await AuthLog.create({
         userId: user._id,
         email: user.email,
         eventType: 'oauth_login_success',
@@ -198,9 +200,7 @@ export class OAuthService {
           accountLinked: !!oauthAccount && !isNewUser,
         },
         timestamp: new Date(),
-      }], { session });
-
-      await session.commitTransaction();
+      });
 
       return {
         user: {
@@ -317,8 +317,10 @@ export class OAuthService {
       
       await user.save({ session });
 
-      // Log authentication event
-      await AuthLog.create([{
+      await session.commitTransaction();
+
+      // Log authentication event (outside transaction - time-series collections don't support transactions)
+      await AuthLog.create({
         userId: user._id,
         email: user.email,
         eventType: 'oauth_login_success',
@@ -330,9 +332,7 @@ export class OAuthService {
           accountLinked: true,
         },
         timestamp: new Date(),
-      }], { session });
-
-      await session.commitTransaction();
+      });
 
       return {
         user: {
