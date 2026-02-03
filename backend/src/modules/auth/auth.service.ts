@@ -75,12 +75,38 @@ export const loginUser = async (email: string, password: string) => {
   const user = await User.findOne({ email: email.toLowerCase().trim() });
   if (!user) throw new Error("User not found");
 
+  // Check if account is locked
+  if (user.accountLockedUntil && user.accountLockedUntil > new Date()) {
+    const unlockTime = user.accountLockedUntil.toLocaleTimeString();
+    throw new Error(`Account locked due to multiple failed login attempts. Try again after ${unlockTime}`);
+  }
+
   if (!user.password) {
     throw new Error("This account uses OAuth. Please login with your OAuth provider.");
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error("Invalid credentials");
+  
+  if (!isMatch) {
+    // Increment failed login attempts
+    user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1;
+    
+    // Lock account after 5 failed attempts for 30 minutes
+    if (user.failedLoginAttempts >= 5) {
+      user.accountLockedUntil = new Date(Date.now() + 30 * 60 * 1000);
+      await user.save();
+      throw new Error("Account locked due to multiple failed login attempts. Try again in 30 minutes.");
+    }
+    
+    await user.save();
+    throw new Error("Invalid credentials");
+  }
+
+  // Successful login - reset failed attempts and unlock account
+  user.failedLoginAttempts = 0;
+  user.accountLockedUntil = undefined;
+  user.lastLogin = new Date();
+  await user.save();
 
   const token = signToken({ id: user._id, email: user.email });
   return {

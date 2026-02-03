@@ -1,5 +1,8 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
+import cookieParser from "cookie-parser";
+import csrf from "csurf";
 import authRoutes from "./modules/auth/auth.routes";
 import oauthRoutes from "./modules/oauth/oauth.routes";
 import taskRoutes from "./modules/auth/task/task.routes";
@@ -13,6 +16,31 @@ import { errorMiddleware } from "./middleware/error.middleware";
 import { apiRateLimiter } from "./middleware/rate-limiter.middleware";
 
 export const app = express();
+
+// Security headers - Helmet configuration
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"], // React inline styles
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'"],
+      fontSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      mediaSrc: ["'self'"],
+      frameSrc: ["'none'"],
+    },
+  },
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+  },
+  frameguard: { action: 'deny' },
+  noSniff: true,
+  xssFilter: true
+}));
 
 // Restrict CORS to specific domains only
 const allowedOrigins = [
@@ -42,24 +70,47 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
   maxAge: 86400 // 24 hours cache
 }));
+
+// Body parser
 app.use(express.json());
+
+// Cookie parser - required for HttpOnly cookies
+app.use(cookieParser());
+
+// CSRF protection - applies to state-changing routes
+const csrfProtection = csrf({ 
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  }
+});
+
+// CSRF token endpoint (no CSRF check on this endpoint)
+app.get('/api/csrf-token', (req, res) => {
+  res.json({ csrfToken: (req as any).csrfToken() });
+});
 
 // Apply global rate limiting
 app.use('/api', apiRateLimiter);
 
 // No need to serve static files - using Vercel Blob Storage
 
+// Auth routes - no CSRF on login/register (users don't have tokens yet)
 app.use("/api/auth", authRoutes);
-app.use("/api/oauth", oauthRoutes); // OAuth routes
-app.use("/api/tasks", taskRoutes);
-app.use("/api/team", teamRoutes);
-app.use("/api/profile", profileRoutes);
-app.use("/api/projects", projectRoutes);
-app.use("/api/goals", goalRoutes);
-app.use("/api/habits", habitRoutes);
-app.use("/api/momentum", momentumRoutes);
+// OAuth routes - no CSRF (external flow)
+app.use("/api/oauth", oauthRoutes);
+
+// Protected routes - apply CSRF protection
+app.use("/api/tasks", csrfProtection, taskRoutes);
+app.use("/api/team", csrfProtection, teamRoutes);
+app.use("/api/profile", csrfProtection, profileRoutes);
+app.use("/api/projects", csrfProtection, projectRoutes);
+app.use("/api/goals", csrfProtection, goalRoutes);
+app.use("/api/habits", csrfProtection, habitRoutes);
+app.use("/api/momentum", csrfProtection, momentumRoutes);
 
 app.use(errorMiddleware);

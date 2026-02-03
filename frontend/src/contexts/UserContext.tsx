@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import type { ReactNode } from "react";
-import { loginUser as loginService, registerUser as registerService } from "../services/auth.server";
+import { loginUser as loginService, registerUser as registerService, logoutUser as logoutService } from "../services/auth.server";
 import { getUserProfile as getUserProfileService } from "../services/profile.service";
+import { initializeCSRF } from "../services/api";
 
 interface User {
   id: string;
@@ -24,7 +25,7 @@ interface UserContextType {
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   updateUserData: (data: Partial<User>) => void;
 }
@@ -48,14 +49,22 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch user profile on mount if token exists
+  // Fetch user profile on mount (cookies are sent automatically)
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetchUserProfile();
-    } else {
-      setLoading(false);
-    }
+    const initializeAuth = async () => {
+      try {
+        // Initialize CSRF token
+        await initializeCSRF();
+        
+        // Try to fetch user profile (if cookies exist, backend will authenticate)
+        await fetchUserProfile();
+      } catch (err) {
+        // No valid session, that's okay
+        setLoading(false);
+      }
+    };
+    
+    initializeAuth();
   }, []);
 
   const fetchUserProfile = useCallback(async () => {
@@ -67,9 +76,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     } catch (err: any) {
       console.error("Failed to fetch user profile:", err);
       setError(err.response?.data?.message || "Failed to load user profile");
-      // If token is invalid, clear it
+      // If authentication fails, user stays null
       if (err.response?.status === 401) {
-        localStorage.removeItem("token");
+        setUser(null);
       }
     } finally {
       setLoading(false);
@@ -80,8 +89,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await loginService(email, password);
-      localStorage.setItem("token", data.token);
+      await loginService(email, password);
+      // Cookies are set automatically by backend
       
       // Fetch user profile after successful login
       await fetchUserProfile();
@@ -98,8 +107,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await registerService(name, email, password);
-      localStorage.setItem("token", data.token);
+      await registerService(name, email, password);
+      // Cookies are set automatically by backend
       
       // Fetch user profile after successful registration
       await fetchUserProfile();
@@ -112,10 +121,17 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setError(null);
+  const logout = useCallback(async () => {
+    try {
+      await logoutService();
+      // Cookies are cleared by backend
+      setUser(null);
+      setError(null);
+    } catch (err: any) {
+      console.error("Logout failed:", err);
+      // Even if logout fails, clear local state
+      setUser(null);
+    }
   }, []);
 
   const refreshUser = useCallback(async () => {

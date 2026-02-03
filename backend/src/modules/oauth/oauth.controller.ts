@@ -2,16 +2,73 @@ import { Request, Response } from 'express';
 import { oauthService } from '../../services/oauth.service';
 import { generateToken, generateRefreshToken } from '../../utils/jwt';
 import crypto from 'crypto';
+import { createClient } from 'redis';
 
 /**
  * OAuth Controller
- * Handles OAuth authentication flows
+ * Handles OAuth authentication flows with Redis-backed state storage
  */
 
-// In-memory store for CSRF state tokens (use Redis in production)
+// Redis client for OAuth state storage (production)
+let redisClient: ReturnType<typeof createClient> | null = null;
+
+if (process.env.REDIS_URL) {
+  redisClient = createClient({
+    url: process.env.REDIS_URL,
+    socket: {
+      reconnectStrategy: (retries: number) => Math.min(retries * 50, 500),
+    },
+  });
+
+  redisClient.connect().catch((err: Error) => {
+    console.error('OAuth Redis connection failed:', err);
+    redisClient = null;
+  });
+}
+
+// In-memory fallback for development
 const stateStore = new Map<string, { createdAt: number; redirectUrl?: string; mode?: string }>();
 
-// Clean up expired states every 10 minutes
+// OAuth state storage functions
+async function storeState(state: string, data: { createdAt: number; redirectUrl?: string; mode?: string }) {
+  if (redisClient) {
+    try {
+      await redisClient.setEx(`oauth:state:${state}`, 600, JSON.stringify(data)); // 10 min expiry
+    } catch (error) {
+      console.error('Redis setEx failed, falling back to memory:', error);
+      stateStore.set(state, data);
+    }
+  } else {
+    stateStore.set(state, data);
+  }
+}
+
+async function getState(state: string): Promise<{ createdAt: number; redirectUrl?: string; mode?: string } | null> {
+  if (redisClient) {
+    try {
+      const data = await redisClient.get(`oauth:state:${state}`);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Redis get failed, falling back to memory:', error);
+      return stateStore.get(state) || null;
+    }
+  } else {
+    return stateStore.get(state) || null;
+  }
+}
+
+async function deleteState(state: string) {
+  if (redisClient) {
+    try {
+      await redisClient.del(`oauth:state:${state}`);
+    } catch (error) {
+      console.error('Redis del failed:', error);
+    }
+  }
+  stateStore.delete(state);
+}
+
+// Clean up expired in-memory states every 10 minutes (backup for dev)
 setInterval(() => {
   const now = Date.now();
   const expirationTime = 10 * 60 * 1000; // 10 minutes
@@ -35,8 +92,8 @@ class OAuthController {
       const redirectUrl = req.query.redirect as string || '/dashboard';
       const mode = req.query.mode as string || 'login'; // 'login' or 'register'
       
-      // Store state with timestamp and mode
-      stateStore.set(state, {
+      // Store state with timestamp and mode (Redis or memory)
+      await storeState(state, {
         createdAt: Date.now(),
         redirectUrl,
         mode, // Store whether this is login or registration
@@ -81,7 +138,7 @@ class OAuthController {
       }
 
       // Verify CSRF state token
-      const storedState = stateStore.get(state as string);
+      const storedState = await getState(state as string);
       if (!storedState) {
         return res.redirect(
           `${process.env.FRONTEND_URL}/auth/callback?error=invalid_state_token`
@@ -89,7 +146,7 @@ class OAuthController {
       }
 
       // Delete used state token
-      stateStore.delete(state as string);
+      await deleteState(state as string);
 
       // Get client info for audit log
       const ipAddress = (req.headers['x-forwarded-for'] as string)?.split(',')[0] 

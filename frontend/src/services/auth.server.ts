@@ -10,6 +10,8 @@ export const registerUser = async (
     email,
     password
   });
+  // NOTE: Tokens are now stored in HttpOnly cookies automatically
+  // No need to handle tokens in response body
   return response.data;
 };
 
@@ -18,5 +20,13 @@ export const loginUser = async (email: string, password: string) => {
     email,
     password
   });
+  // NOTE: Tokens are now stored in HttpOnly cookies automatically
+  // No need to handle tokens in response body
+  return response.data;
+};
+
+export const logoutUser = async () => {
+  const response = await api.post("/auth/logout");
+  // Cookies are cleared by backend
   return response.data;
 };
