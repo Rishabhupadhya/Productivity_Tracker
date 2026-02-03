@@ -1,13 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { memo } from "react";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Goals from "./pages/Goals";
 import Habits from "./pages/Habits";
 import Momentum from "./pages/Momentum";
+import OAuthCallback from "./pages/OAuthCallback";
 import { useUser } from "./contexts/UserContext";
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useUser();
   
   if (loading) {
@@ -41,14 +43,20 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
   
   return user ? <>{children}</> : <Navigate to="/login" />;
-}
+});
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }}
+    >
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
         <Route
           path="/dashboard"
           element={

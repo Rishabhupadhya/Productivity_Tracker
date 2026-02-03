@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { useTeam } from "../../contexts/TeamContext";
 import { getTeamActivity } from "../../services/activity.service";
 import "./activityPanel.css";
@@ -26,13 +26,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (activeTeam) {
-      loadActivities();
-    }
-  }, [activeTeam]);
-
-  const loadActivities = async () => {
+  const loadActivities = useCallback(async () => {
     if (!activeTeam) return;
     try {
       setLoading(true);
@@ -43,9 +37,15 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTeam]);
 
-  const getActionText = (activity: Activity) => {
+  useEffect(() => {
+    if (activeTeam) {
+      loadActivities();
+    }
+  }, [activeTeam, loadActivities]);
+
+  const getActionText = useCallback((activity: Activity) => {
     const { action, details } = activity;
     
     switch (action) {
@@ -66,9 +66,9 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
       default:
         return action;
     }
-  };
+  }, []);
 
-  const getActionIcon = (action: string) => {
+  const getActionIcon = useCallback((action: string) => {
     switch (action) {
       case "team_created": return "🎉";
       case "task_created": return "📝";
@@ -79,9 +79,9 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
       case "member_removed": return "👋";
       default: return "📌";
     }
-  };
+  }, []);
 
-  const formatTime = (timestamp: string) => {
+  const formatTime = useCallback((timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
@@ -94,7 +94,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
-  };
+  }, []);
 
   if (!activeTeam) {
     return (

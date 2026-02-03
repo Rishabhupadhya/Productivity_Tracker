@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import authRoutes from "./modules/auth/auth.routes";
+import oauthRoutes from "./modules/oauth/oauth.routes";
 import taskRoutes from "./modules/auth/task/task.routes";
 import teamRoutes from "./modules/auth/team/team.routes";
 import profileRoutes from "./modules/auth/profile/profile.routes";
@@ -9,6 +10,7 @@ import goalRoutes from "./modules/auth/goal/goal.routes";
 import habitRoutes from "./modules/auth/habit/habit.routes";
 import momentumRoutes from "./modules/auth/momentum/momentum.routes";
 import { errorMiddleware } from "./middleware/error.middleware";
+import { apiRateLimiter } from "./middleware/rate-limiter.middleware";
 
 export const app = express();
 
@@ -22,9 +24,13 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Apply global rate limiting
+app.use('/api', apiRateLimiter);
+
 // No need to serve static files - using Vercel Blob Storage
 
 app.use("/api/auth", authRoutes);
+app.use("/api/oauth", oauthRoutes); // OAuth routes
 app.use("/api/tasks", taskRoutes);
 app.use("/api/team", teamRoutes);
 app.use("/api/profile", profileRoutes);

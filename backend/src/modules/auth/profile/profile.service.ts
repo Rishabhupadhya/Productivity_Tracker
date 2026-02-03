@@ -90,6 +90,10 @@ export const changePassword = async (
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
 
+  if (!user.password) {
+    throw new Error("Cannot change password for OAuth-only accounts");
+  }
+
   const isMatch = await bcrypt.compare(currentPassword, user.password);
   if (!isMatch) throw new Error("Current password is incorrect");
 

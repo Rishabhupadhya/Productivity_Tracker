@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import GoogleSSOButton from "../components/auth/GoogleSSOButton";
 import "./auth.css";
 
 export default function Login() {
@@ -35,6 +36,17 @@ export default function Login() {
         </div>
 
         {error && <div className="auth-error">{error}</div>}
+
+        {/* Google SSO Button */}
+        <GoogleSSOButton 
+          onError={(err) => setError(err)}
+          redirectUrl="/dashboard"
+        />
+
+        {/* Divider */}
+        <div className="auth-divider">
+          <span>or continue with email</span>
+        </div>
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="auth-input-group">

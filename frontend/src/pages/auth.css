@@ -163,6 +163,36 @@
   text-decoration: underline;
 }
 
+/* OAuth Divider */
+.auth-divider {
+  position: relative;
+  text-align: center;
+  margin: 28px 0;
+}
+
+.auth-divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-divider span {
+  position: relative;
+  display: inline-block;
+  padding: 0 16px;
+  background: rgba(26, 26, 26, 0.9);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 1;
+}
+
 /* Responsive Design */
 @media (max-width: 480px) {
   .auth-card {

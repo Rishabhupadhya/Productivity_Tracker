@@ -61,6 +61,10 @@ export const loginUser = async (email: string, password: string) => {
   const user = await User.findOne({ email });
   if (!user) throw new Error("Invalid credentials");
 
+  if (!user.password) {
+    throw new Error("This account uses OAuth. Please login with your OAuth provider.");
+  }
+
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new Error("Invalid credentials");
 

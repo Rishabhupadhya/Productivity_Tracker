@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import AppLayout from "../components/layout/AppLayout";
 import CalendarBoard from "../components/board/CalendarBoard";
 
@@ -21,7 +21,10 @@ export default function Dashboard() {
   }, []);
 
   // Show calendar only on My Work and Teams views
-  const showCalendar = currentView === "My Work" || currentView === "Teams";
+  const showCalendar = useMemo(() => 
+    currentView === "My Work" || currentView === "Teams",
+    [currentView]
+  );
   
   console.log("Dashboard render - currentView:", currentView, "showCalendar:", showCalendar);
 

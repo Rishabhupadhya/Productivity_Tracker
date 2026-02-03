@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
+import { memo } from "react";
 import { cardVariants } from "../../utils/motionVariants";
 import "./task.css";
 
-export default function TaskCard({
+function TaskCard({
   task,
   onDelete,
   draggable = true
@@ -94,3 +95,17 @@ export default function TaskCard({
     </motion.div>
   );
 }
+
+export default memo(TaskCard, (prevProps, nextProps) => {
+  return (
+    prevProps.task._id === nextProps.task._id &&
+    prevProps.task.title === nextProps.task.title &&
+    prevProps.task.day === nextProps.task.day &&
+    prevProps.task.startTime === nextProps.task.startTime &&
+    prevProps.task.duration === nextProps.task.duration &&
+    prevProps.task.teamId === nextProps.task.teamId &&
+    prevProps.task.assignedTo?.name === nextProps.task.assignedTo?.name &&
+    prevProps.task.assignedTo?.avatar === nextProps.task.assignedTo?.avatar &&
+    prevProps.draggable === nextProps.draggable
+  );
+});

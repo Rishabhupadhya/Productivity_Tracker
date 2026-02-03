@@ -5,15 +5,24 @@ import CurrentTimeLine from "./CurrentTimeLine";
 import MobileDateSelector from "../ui/MobileDateSelector";
 import { useTasks } from "../../hooks/useTasks";
 import { useUser } from "../../contexts/UserContext";
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import "./board.css";
 import { useSelectedDate } from "../../hooks/useSelectedDate";
 import { getWeekDays, formatDate } from "../../utils/date";
 
 export default function CalendarBoard() {
-  const { tasks, moveTask, deleteTask, undoTask, undoDelete } = useTasks();
+  const { tasks, moveTask: moveTaskOriginal, deleteTask: deleteTaskOriginal, undoTask, undoDelete } = useTasks();
   const { user } = useUser();
   const selectedDate = useSelectedDate();
+  
+  // Memoize handlers to prevent re-creating functions
+  const moveTask = useCallback((taskId: string, day: string, startTime?: string) => {
+    moveTaskOriginal(taskId, day, startTime);
+  }, [moveTaskOriginal]);
+
+  const deleteTask = useCallback((task: any) => {
+    deleteTaskOriginal(task);
+  }, [deleteTaskOriginal]);
   
   // Get settings with defaults
   const settings = user?.settings || {};
@@ -39,6 +48,19 @@ export default function CalendarBoard() {
     : typeof selectedDate === 'string' 
     ? selectedDate 
     : formatDate(new Date());
+
+  // Memoize drag handlers to prevent function re-creation
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    if (enableDragDrop) e.preventDefault();
+  }, [enableDragDrop]);
+
+  const createDropHandler = useCallback((dateStr: string, slot: string) => {
+    return (e: React.DragEvent) => {
+      if (!enableDragDrop) return;
+      const taskId = e.dataTransfer.getData("taskId");
+      moveTask(taskId, dateStr, slot);
+    };
+  }, [enableDragDrop, moveTask]);
 
   return (
     <>
@@ -67,17 +89,15 @@ export default function CalendarBoard() {
                 <div className="column-body">
                   {isToday && showCurrentTimeline && <CurrentTimeLine />}
 
-                  {TIME_SLOTS.map((slot) => (
-                    <div
-                      key={slot}
-                      className="time-slot"
-                      onDragOver={(e) => enableDragDrop && e.preventDefault()}
-                      onDrop={(e) => {
-                        if (!enableDragDrop) return;
-                        const taskId = e.dataTransfer.getData("taskId");
-                        moveTask(taskId, dateStr, slot);
-                      }}
-                    >
+                  {TIME_SLOTS.map((slot) => {
+                    const dropHandler = createDropHandler(dateStr, slot);
+                    return (
+                      <div
+                        key={slot}
+                        className="time-slot"
+                        onDragOver={handleDragOver}
+                        onDrop={dropHandler}
+                      >
                       <span className="slot-label">{slot}</span>
 
                       {tasks
@@ -92,8 +112,9 @@ export default function CalendarBoard() {
                             draggable={enableDragDrop}
                           />
                         ))}
-                    </div>
-                  ))}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             );

@@ -143,36 +143,3 @@
     padding: 1px 6px;
   }
 }
-  }
-
-  .footer-content {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
-  }
-
-  .footer-left,
-  .footer-right {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .footer-left {
-    font-size: 12px;
-  }
-
-  .footer-right {
-    font-size: 12px;
-  }
-
-  .footer-separator {
-    display: none;
-  }
-}
-
-@media (max-width: 480px) {
-  .footer-tagline {
-    display: none;
-  }
-}

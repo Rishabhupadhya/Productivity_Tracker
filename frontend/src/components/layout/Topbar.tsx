@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import AddTaskModal from "../task/AddTaskModal";
@@ -44,11 +44,11 @@ export default function Topbar({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleLogoClick = () => {
+  const handleLogoClick = useCallback(() => {
     navigate('/dashboard');
-  };
+  }, [navigate]);
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
     setInternalSelectedDate(newDate);
 
@@ -61,7 +61,15 @@ export default function Topbar({
         detail: newDate,
       })
     );
-  };
+  }, [onDateChange]);
+
+  const handleOpenModal = useCallback(() => {
+    setOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setOpen(false);
+  }, []);
 
   return (
     <>
@@ -133,7 +141,7 @@ export default function Topbar({
           {showTaskControls && !isMobileView && (
             <div className="topbar-controls">
               <Button 
-                onClick={() => setOpen(true)}
+                onClick={handleOpenModal}
                 className="add-task-btn"
                 title="Add Task"
               >
@@ -170,7 +178,7 @@ export default function Topbar({
       {/* ADD TASK MODAL */}
       <AnimatePresence>
         {open && showTaskControls && (
-          <AddTaskModal onClose={() => setOpen(false)} />
+          <AddTaskModal onClose={handleCloseModal} />
         )}
       </AnimatePresence>
     </>

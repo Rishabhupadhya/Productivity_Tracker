@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import type { ReactNode } from "react";
 import { loginUser as loginService, registerUser as registerService } from "../services/auth.server";
 import { getUserProfile as getUserProfileService } from "../services/profile.service";
@@ -112,21 +112,21 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     setUser(null);
     setError(null);
-  };
+  }, []);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     await fetchUserProfile();
-  };
+  }, [fetchUserProfile]);
 
-  const updateUserData = (data: Partial<User>) => {
+  const updateUserData = useCallback((data: Partial<User>) => {
     setUser(prev => prev ? { ...prev, ...data } : null);
-  };
+  }, []);
 
-  const value: UserContextType = {
+  const value: UserContextType = useMemo(() => ({
     user,
     loading,
     error,
@@ -135,7 +135,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     logout,
     refreshUser,
     updateUserData,
-  };
+  }), [user, loading, error, login, register, logout, refreshUser, updateUserData]);
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 };

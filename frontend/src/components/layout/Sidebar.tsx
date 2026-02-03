@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useTeam } from "../../contexts/TeamContext";
 import TeamPanel from "../team/TeamPanel";
@@ -40,16 +40,16 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
     }
   }, [location.pathname]);
 
-  const handleTeamSwitch = async (teamId: string | null) => {
+  const handleTeamSwitch = useCallback(async (teamId: string | null) => {
     try {
       await switchTeam(teamId);
       window.dispatchEvent(new CustomEvent('teamChanged'));
     } catch (error) {
       console.error("Failed to switch team:", error);
     }
-  };
+  }, [switchTeam]);
 
-  const handleCreateTeam = async (e: React.FormEvent) => {
+  const handleCreateTeam = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTeamName.trim()) return;
     
@@ -61,31 +61,18 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
     } catch (error) {
       console.error("Failed to create team:", error);
     }
-  };
+  }, [newTeamName, createTeam]);
 
-  useEffect(() => {
-    loadProjects();
-    loadPendingInvites();
-  }, []);
-
-  useEffect(() => {
-    const handleTeamChange = () => {
-      loadPendingInvites();
-    };
-    window.addEventListener('teamChanged', handleTeamChange);
-    return () => window.removeEventListener('teamChanged', handleTeamChange);
-  }, []);
-
-  const loadPendingInvites = async () => {
+  const loadPendingInvites = useCallback(async () => {
     try {
       const invites = await getPendingInvites();
       setPendingInvites(invites.filter((inv: any) => inv.invite));
     } catch (error) {
       console.error("Failed to load pending invites:", error);
     }
-  };
+  }, []);
 
-  const handleAcceptInvite = async (teamId: string) => {
+  const handleAcceptInvite = useCallback(async (teamId: string) => {
     try {
       await acceptTeamInvite(teamId);
       await loadPendingInvites();
@@ -97,27 +84,27 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
       console.error("Failed to accept invite:", error);
       alert('Failed to accept invite. Please try again.');
     }
-  };
+  }, [loadPendingInvites, refreshTeams]);
 
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
       const data = await getUserProjects();
       setProjects(data);
     } catch (error) {
       console.error("Failed to load projects:", error);
     }
-  };
+  }, []);
 
-  const handleAddProject = async (name: string, color: string, icon: string) => {
+  const handleAddProject = useCallback(async (name: string, color: string, icon: string) => {
     try {
       await createProject({ name, color, icon });
       await loadProjects();
     } catch (error) {
       console.error("Failed to create project:", error);
     }
-  };
+  }, [loadProjects]);
 
-  const handleDeleteProject = async (projectId: string, e: React.MouseEvent) => {
+  const handleDeleteProject = useCallback(async (projectId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm("Delete this project?")) return;
     
@@ -127,7 +114,20 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
     } catch (error) {
       console.error("Failed to delete project:", error);
     }
-  };
+  }, [loadProjects]);
+
+  useEffect(() => {
+    loadProjects();
+    loadPendingInvites();
+  }, [loadProjects, loadPendingInvites]);
+
+  useEffect(() => {
+    const handleTeamChange = () => {
+      loadPendingInvites();
+    };
+    window.addEventListener('teamChanged', handleTeamChange);
+    return () => window.removeEventListener('teamChanged', handleTeamChange);
+  }, [loadPendingInvites]);
 
   const Item = ({ label }: { label: string }) => (
     <a

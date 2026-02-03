@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from "react";
 import type { ReactNode } from "react";
 import {
   getUserTeams,
@@ -40,13 +40,9 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
   const { user } = useUser();
 
   // Load teams when user is available
-  useEffect(() => {
-    if (user) {
-      loadTeams();
-    }
-  }, [user]);
-
-  const loadTeams = async () => {
+  const loadTeams = useCallback(async () => {
+    if (!user) return;
+    
     try {
       setLoading(true);
       setError(null);
@@ -66,29 +62,37 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
-  const createTeam = async (name: string) => {
+  useEffect(() => {
+    if (user) {
+      loadTeams();
+    }
+  }, [user, loadTeams]);
+
+  const createTeam = useCallback(async (name: string) => {
     try {
       setError(null);
       const newTeam = await createTeamService(name);
-      setTeams([...teams, newTeam]);
+      setTeams(prev => [...prev, newTeam]);
       setActiveTeam(newTeam);
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || "Failed to create team";
       setError(errorMessage);
       throw new Error(errorMessage);
     }
-  };
+  }, []);
 
-  const switchTeam = async (teamId: string | null) => {
+  const switchTeam = useCallback(async (teamId: string | null) => {
     try {
       setError(null);
       await switchTeamService(teamId);
       
       if (teamId) {
-        const team = teams.find(t => t._id === teamId);
-        setActiveTeam(team || null);
+        setActiveTeam(prevTeams => {
+          const team = teams.find(t => t._id === teamId);
+          return team || null;
+        });
       } else {
         setActiveTeam(null);
       }
@@ -97,13 +101,13 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
       setError(errorMessage);
       throw new Error(errorMessage);
     }
-  };
+  }, [teams]);
 
-  const refreshTeams = async () => {
+  const refreshTeams = useCallback(async () => {
     await loadTeams();
-  };
+  }, [loadTeams]);
 
-  const value: TeamContextType = {
+  const value: TeamContextType = useMemo(() => ({
     teams,
     activeTeam,
     loading,
@@ -111,7 +115,7 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
     createTeam,
     switchTeam,
     refreshTeams,
-  };
+  }), [teams, activeTeam, loading, error, createTeam, switchTeam, refreshTeams]);
 
   return <TeamContext.Provider value={value}>{children}</TeamContext.Provider>;
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Sidebar from "./Sidebar";
@@ -43,14 +43,41 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("viewChanged", handleViewChange);
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     localStorage.removeItem("token");
     navigate("/login");
-  };
+  }, [navigate]);
+
+  const toggleMobileMenu = useCallback(() => {
+    setMobileMenuOpen(prev => !prev);
+  }, []);
+
+  const closeMobileMenu = useCallback(() => {
+    setMobileMenuOpen(false);
+  }, []);
+
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prev => !prev);
+  }, []);
+
+  const handleShowTaskModal = useCallback(() => {
+    setShowTaskModal(true);
+  }, []);
+
+  const handleCloseTaskModal = useCallback(() => {
+    setShowTaskModal(false);
+  }, []);
 
   // Show task controls only on My Work and Teams views, and not on tracker routes
-  const isTrackerRoute = ["/finance", "/goals", "/habits"].includes(location.pathname);
-  const showTaskControls = !isTrackerRoute && (currentView === "My Work" || currentView === "Teams");
+  const isTrackerRoute = useMemo(() => 
+    ['/finance', '/goals', '/habits'].includes(location.pathname),
+    [location.pathname]
+  );
+  
+  const showTaskControls = useMemo(() => 
+    !isTrackerRoute && (currentView === "My Work" || currentView === "Teams"),
+    [isTrackerRoute, currentView]
+  );
 
   return (
     <div className="app-layout">
@@ -58,7 +85,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {isMobile && mobileMenuOpen && (
         <div 
           className="mobile-overlay"
-          onClick={() => setMobileMenuOpen(false)}
+          onClick={closeMobileMenu}
         />
       )}
 
@@ -72,11 +99,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       >
         <Sidebar 
           collapsed={sidebarCollapsed && !isMobile} 
-          onNavigate={() => setMobileMenuOpen(false)}
+          onNavigate={closeMobileMenu}
         />
         {!isMobile && (
           <button
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            onClick={toggleSidebar}
             className="sidebar-toggle-btn"
           >
             {sidebarCollapsed ? "›" : "‹"}
@@ -88,7 +115,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Topbar 
           onLogout={handleLogout} 
           showTaskControls={showTaskControls}
-          onMenuClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          onMenuClick={toggleMobileMenu}
           isMobile={isMobile}
         />
         <motion.div 
@@ -106,7 +133,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Floating Action Button for mobile - Add Task */}
         {showTaskControls && isMobile && (
           <FloatingActionButton 
-            onClick={() => setShowTaskModal(true)}
+            onClick={handleShowTaskModal}
             icon="+"
             label="Add Task"
           />
@@ -115,7 +142,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Task Modal */}
         <AnimatePresence>
           {showTaskModal && (
-            <AddTaskModal onClose={() => setShowTaskModal(false)} />
+            <AddTaskModal onClose={handleCloseTaskModal} />
           )}
         </AnimatePresence>
       </div>
