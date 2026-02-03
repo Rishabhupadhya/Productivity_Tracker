@@ -10,8 +10,15 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useUser();
+  const { login, user } = useUser();
   const [searchParams] = useSearchParams();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   // Check for OAuth errors in URL
   useEffect(() => {

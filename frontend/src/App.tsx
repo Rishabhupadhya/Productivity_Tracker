@@ -12,6 +12,9 @@ import { useUser } from "./contexts/UserContext";
 const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useUser();
   
+  // Check if token exists - this prevents redirect during user fetch
+  const token = localStorage.getItem('token');
+  
   if (loading) {
     return (
       <div style={{ 
@@ -42,7 +45,14 @@ const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
     );
   }
   
-  return user ? <>{children}</> : <Navigate to="/login" />;
+  // If no token, redirect to login
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  // If token exists but user not loaded yet (shouldn't happen due to loading check)
+  // Allow render - user will be populated shortly
+  return <>{children}</>;
 });
 
 export default function App() {
