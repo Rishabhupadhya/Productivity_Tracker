@@ -129,7 +129,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                   <div className="activity-icon">{getActionIcon(activity.action)}</div>
                   <div className="activity-content">
                     <div className="activity-user">
-                      {activity.userId.avatar ? (
+                      {activity.userId.avatar && activity.userId.avatar.length > 1 ? (
                         <div
                           className="user-avatar"
                           style={{
