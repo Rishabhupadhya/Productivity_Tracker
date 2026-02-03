@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback, use
 import type { ReactNode } from "react";
 import { loginUser as loginService, registerUser as registerService, logoutUser as logoutService } from "../services/auth.server";
 import { getUserProfile as getUserProfileService } from "../services/profile.service";
-import { initializeCSRF } from "../services/api";
+// import { initializeCSRF } from "../services/api"; // DISABLED - CSRF causing 500 errors
 
 interface User {
   id: string;
@@ -53,10 +53,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Initialize CSRF token
-        await initializeCSRF();
+        // CSRF disabled - was causing 500 errors
+        // await initializeCSRF();
         
-        // Try to fetch user profile (if cookies exist, backend will authenticate)
+        // Try to fetch user profile (if token exists, backend will authenticate)
         await fetchUserProfile();
       } catch (err) {
         // No valid session, that's okay

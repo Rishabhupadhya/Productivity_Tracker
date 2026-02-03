@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
-import csrf from "csurf";
+// import csrf from "csurf"; // DISABLED - causing 500 errors
 import authRoutes from "./modules/auth/auth.routes";
 import oauthRoutes from "./modules/oauth/oauth.routes";
 import taskRoutes from "./modules/auth/task/task.routes";
@@ -13,7 +13,7 @@ import goalRoutes from "./modules/auth/goal/goal.routes";
 import habitRoutes from "./modules/auth/habit/habit.routes";
 import momentumRoutes from "./modules/auth/momentum/momentum.routes";
 import { errorMiddleware } from "./middleware/error.middleware";
-import { apiRateLimiter } from "./middleware/rate-limiter.middleware";
+// import { apiRateLimiter } from "./middleware/rate-limiter.middleware"; // DISABLED - Redis issues
 
 export const app = express();
 
@@ -82,37 +82,37 @@ app.use(express.json());
 // Cookie parser - required for HttpOnly cookies
 app.use(cookieParser());
 
-// Apply global rate limiting
-app.use('/api', apiRateLimiter);
+// RATE LIMITING DISABLED - Causing issues with Redis on Vercel
+// app.use('/api', apiRateLimiter);
 
-// CSRF protection - configure but don't apply globally
-const csrfProtection = csrf({ 
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
-  }
-});
+// CSRF PROTECTION DISABLED - Needs proper frontend implementation
+// const csrfProtection = csrf({ 
+//   cookie: {
+//     httpOnly: true,
+//     secure: process.env.NODE_ENV === 'production',
+//     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+//   }
+// });
 
-// CSRF token endpoint - initialize CSRF only for this route
-app.get('/api/csrf-token', csrfProtection, (req, res) => {
-  res.json({ csrfToken: (req as any).csrfToken() });
-});
+// CSRF token endpoint - DISABLED
+// app.get('/api/csrf-token', csrfProtection, (req, res) => {
+//   res.json({ csrfToken: (req as any).csrfToken() });
+// });
 
 // No need to serve static files - using Vercel Blob Storage
 
-// Auth routes - NO CSRF (user doesn't have token yet)
+// Auth routes
 app.use("/api/auth", authRoutes);
-// OAuth routes - NO CSRF (external flow)
+// OAuth routes
 app.use("/api/oauth", oauthRoutes);
 
-// Protected routes - apply CSRF protection
-app.use("/api/tasks", csrfProtection, taskRoutes);
-app.use("/api/team", csrfProtection, teamRoutes);
-app.use("/api/profile", csrfProtection, profileRoutes);
-app.use("/api/projects", csrfProtection, projectRoutes);
-app.use("/api/goals", csrfProtection, goalRoutes);
-app.use("/api/habits", csrfProtection, habitRoutes);
-app.use("/api/momentum", csrfProtection, momentumRoutes);
+// Protected routes - CSRF DISABLED (was causing 500 errors)
+app.use("/api/tasks", taskRoutes);
+app.use("/api/team", teamRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/goals", goalRoutes);
+app.use("/api/habits", habitRoutes);
+app.use("/api/momentum", momentumRoutes);
 
 app.use(errorMiddleware);
