@@ -126,7 +126,7 @@ function TaskCard({
         {task.assignedTo && (
           <div 
             className="assignee-avatar" 
-            title={`Assigned to: ${task.assignedTo.name}`}
+            title={`Assigned to: ${task.assignedTo?.name || 'Unassigned'}`}
             style={{
               position: 'relative',
               width: '28px',
@@ -140,8 +140,8 @@ function TaskCard({
               fontWeight: 'bold',
               cursor: 'pointer',
               transition: 'transform 0.2s',
-              ...(task.assignedTo.avatar && task.assignedTo.avatar.length > 1 ? {
-                backgroundImage: task.assignedTo.avatar && task.assignedTo.avatar.length > 1 ? `url(${env.BASE_URL}${task.assignedTo.avatar})` : 'none',
+              ...(task.assignedTo?.avatar && task.assignedTo.avatar.length > 1 ? {
+                backgroundImage: `url(${env.BASE_URL}${task.assignedTo.avatar})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               } : {
@@ -152,7 +152,7 @@ function TaskCard({
             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
             onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           >
-            {!task.assignedTo.avatar && task.assignedTo.name.charAt(0).toUpperCase()}
+            {!task.assignedTo?.avatar && (task.assignedTo?.name?.charAt(0)?.toUpperCase() || '?')}
           </div>
         )}
       </div>
