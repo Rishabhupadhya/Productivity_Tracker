@@ -236,6 +236,141 @@ export class OAuthService {
   }
 
   /**
+   * Login with OAuth (Login flow - only existing users)
+   * Rejects if user doesn't exist
+   */
+  async loginWithOAuth(
+    provider: 'google' | 'microsoft' | 'okta',
+    userInfo: OAuthUserInfo,
+    ipAddress: string,
+    userAgent: string
+  ) {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Check if OAuth account already exists
+      let oauthAccount = await OAuthAccount.findOne({
+        provider,
+        providerId: userInfo.providerId,
+      }).session(session);
+
+      let user;
+
+      if (oauthAccount) {
+        // Existing OAuth account - get user
+        user = await User.findById(oauthAccount.userId).session(session);
+        
+        if (!user || !user.isActive) {
+          throw new Error('User account is inactive or not found');
+        }
+
+        // Update last login
+        oauthAccount.lastLogin = new Date();
+        await oauthAccount.save({ session });
+      } else {
+        // Check if user exists with this email
+        user = await User.findOne({ 
+          email: userInfo.email.toLowerCase() 
+        }).session(session);
+
+        if (!user) {
+          // User doesn't exist - reject login
+          throw new Error('NO_ACCOUNT_FOUND');
+        }
+
+        if (!user.isActive) {
+          throw new Error('User account is inactive');
+        }
+
+        // Account linking - existing user, add OAuth account
+        console.log(`Linking ${provider} account to existing user: ${user.email}`);
+        
+        // Update user's auth method if they were email/password only
+        if (user.authMethod === 'email_password') {
+          user.authMethod = 'oauth';
+        }
+
+        // Create OAuth account record
+        oauthAccount = new OAuthAccount({
+          userId: user._id,
+          provider,
+          providerId: userInfo.providerId,
+          email: userInfo.email.toLowerCase(),
+          name: userInfo.name,
+          picture: userInfo.picture,
+          lastLogin: new Date(),
+          isActive: true,
+        });
+
+        await oauthAccount.save({ session });
+      }
+
+      // Update user last login
+      user.lastLogin = new Date();
+      user.failedLoginAttempts = 0;
+      user.accountLockedUntil = undefined;
+      
+      if (!user.emailVerified && userInfo.emailVerified) {
+        user.emailVerified = true;
+      }
+      
+      await user.save({ session });
+
+      // Log authentication event
+      await AuthLog.create([{
+        userId: user._id,
+        email: user.email,
+        eventType: 'oauth_login_success',
+        authMethod: provider,
+        ipAddress,
+        userAgent,
+        metadata: {
+          isNewUser: false,
+          accountLinked: true,
+        },
+        timestamp: new Date(),
+      }], { session });
+
+      await session.commitTransaction();
+
+      return {
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          avatar: user.avatar,
+          role: user.role,
+          emailVerified: user.emailVerified,
+        },
+        isNewUser: false,
+      };
+    } catch (error: any) {
+      await session.abortTransaction();
+      
+      // Log failed login attempt
+      if (error.message === 'NO_ACCOUNT_FOUND') {
+        await AuthLog.create({
+          email: userInfo.email,
+          eventType: 'oauth_login_failed',
+          authMethod: provider,
+          ipAddress,
+          userAgent,
+          success: false,
+          metadata: {
+            reason: 'Account not found',
+          },
+          timestamp: new Date(),
+        });
+      }
+
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  /**
    * Revoke OAuth Access
    * Called when user disconnects OAuth provider
    */

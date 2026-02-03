@@ -7,13 +7,15 @@ interface GoogleSSOButtonProps {
   onError?: (error: string) => void;
   redirectUrl?: string;
   disabled?: boolean;
+  mode?: 'login' | 'register'; // Add mode prop
 }
 
 export default function GoogleSSOButton({ 
   onSuccess: _onSuccess, 
   onError,
   redirectUrl = '/dashboard',
-  disabled = false 
+  disabled = false,
+  mode = 'login' // Default to login
 }: GoogleSSOButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +27,10 @@ export default function GoogleSSOButton({
 
       // Request OAuth URL from backend
       const response = await api.get('/oauth/google', {
-        params: { redirect: redirectUrl }
+        params: { 
+          redirect: redirectUrl,
+          mode: mode // Send login or register mode
+        }
       });
 
       const { authUrl, state } = response.data;

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import GoogleSSOButton from "../components/auth/GoogleSSOButton";
 import "./auth.css";
@@ -11,6 +11,19 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useUser();
+  const [searchParams] = useSearchParams();
+
+  // Check for OAuth errors in URL
+  useEffect(() => {
+    const errorParam = searchParams.get('error');
+    const messageParam = searchParams.get('message');
+    
+    if (errorParam === 'no_account') {
+      setError(messageParam || 'Account not found. Please register first.');
+    } else if (errorParam) {
+      setError(messageParam || 'Authentication failed. Please try again.');
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +48,18 @@ export default function Login() {
           <p className="auth-tagline">Consistency that compounds</p>
         </div>
 
-        {error && <div className="auth-error">{error}</div>}
+        {error && (
+          <div className="auth-error">
+            {error}
+            {error.includes('Account not found') && (
+              <div style={{ marginTop: '8px' }}>
+                <Link to="/register" style={{ color: 'inherit', textDecoration: 'underline' }}>
+                  Create an account →
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Google SSO Button */}
         <GoogleSSOButton 

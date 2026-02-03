@@ -9,7 +9,7 @@ import crypto from 'crypto';
  */
 
 // In-memory store for CSRF state tokens (use Redis in production)
-const stateStore = new Map<string, { createdAt: number; redirectUrl?: string }>();
+const stateStore = new Map<string, { createdAt: number; redirectUrl?: string; mode?: string }>();
 
 // Clean up expired states every 10 minutes
 setInterval(() => {
@@ -33,11 +33,13 @@ class OAuthController {
       // Generate CSRF state token
       const state = crypto.randomBytes(32).toString('hex');
       const redirectUrl = req.query.redirect as string || '/dashboard';
+      const mode = req.query.mode as string || 'login'; // 'login' or 'register'
       
-      // Store state with timestamp
+      // Store state with timestamp and mode
       stateStore.set(state, {
         createdAt: Date.now(),
         redirectUrl,
+        mode, // Store whether this is login or registration
       });
 
       // Get Google OAuth URL
@@ -98,13 +100,32 @@ class OAuthController {
       // Verify Google token and get user info
       const userInfo = await oauthService.verifyGoogleToken(code as string);
 
-      // Find or create user
-      const { user, isNewUser } = await oauthService.findOrCreateOAuthUser(
-        'google',
-        userInfo,
-        ipAddress,
-        userAgent
-      );
+      // Check mode: login vs register
+      const mode = storedState.mode || 'login';
+
+      let user, isNewUser;
+      
+      if (mode === 'register') {
+        // Registration flow: create user if doesn't exist
+        const result = await oauthService.findOrCreateOAuthUser(
+          'google',
+          userInfo,
+          ipAddress,
+          userAgent
+        );
+        user = result.user;
+        isNewUser = result.isNewUser;
+      } else {
+        // Login flow: only allow existing users
+        const result = await oauthService.loginWithOAuth(
+          'google',
+          userInfo,
+          ipAddress,
+          userAgent
+        );
+        user = result.user;
+        isNewUser = false;
+      }
 
       // Generate JWT tokens for our app
       const accessToken = generateToken(user.id.toString(), user.role);
@@ -120,6 +141,14 @@ class OAuthController {
       res.redirect(frontendUrl.toString());
     } catch (error: any) {
       console.error('Google OAuth callback failed:', error);
+      
+      // Handle "account not found" error specifically
+      if (error.message === 'NO_ACCOUNT_FOUND') {
+        return res.redirect(
+          `${process.env.FRONTEND_URL}/login?error=no_account&message=${encodeURIComponent('Account not found. Please register first.')}`
+        );
+      }
+      
       res.redirect(
         `${process.env.FRONTEND_URL}/login?error=oauth_failed&provider=google&message=${encodeURIComponent(error.message)}`
       );
