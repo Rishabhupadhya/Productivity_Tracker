@@ -17,45 +17,50 @@ export const createGoal = async (
     linkedFinanceCategory?: string;
   }
 ) => {
-  const user = await User.findById(userId);
-  if (!user) throw new Error("User not found");
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
 
-  const goalData: any = {
-    userId: new Types.ObjectId(userId),
-    title: data.title,
-    description: data.description || "",
-    type: data.type,
-    targetValue: data.targetValue,
-    unit: data.unit || getDefaultUnit(data.type),
-    targetDate: data.targetDate,
-    milestones: data.milestones || [],
-    linkedHabits: data.linkedHabits?.map(id => new Types.ObjectId(id)) || [],
-    linkedFinanceCategory: data.linkedFinanceCategory
-  };
+    const goalData: any = {
+      userId: new Types.ObjectId(userId),
+      title: data.title,
+      description: data.description || "",
+      type: data.type,
+      targetValue: data.targetValue,
+      unit: data.unit || getDefaultUnit(data.type),
+      targetDate: data.targetDate,
+      milestones: data.milestones || [],
+      linkedHabits: data.linkedHabits?.map(id => new Types.ObjectId(id)) || [],
+      linkedFinanceCategory: data.linkedFinanceCategory
+    };
 
-  if (user.activeTeamId) {
-    goalData.teamId = user.activeTeamId;
+    if (user.activeTeamId) {
+      goalData.teamId = user.activeTeamId;
+    }
+
+    const goal = await Goal.create(goalData);
+
+    // Log activity
+    if (user.activeTeamId) {
+      await logActivity({
+        teamId: user.activeTeamId.toString(),
+        userId,
+        action: "goal_created",
+        targetType: "goal",
+        targetId: goal._id.toString(),
+        details: {
+          title: data.title,
+          type: data.type,
+          targetValue: data.targetValue
+        }
+      });
+    }
+
+    return goal;
+  } catch (error) {
+    console.error("Error in createGoal:", error);
+    throw new Error(`Failed to create goal: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  const goal = await Goal.create(goalData);
-
-  // Log activity
-  if (user.activeTeamId) {
-    await logActivity({
-      teamId: user.activeTeamId.toString(),
-      userId,
-      action: "goal_created",
-      targetType: "goal",
-      targetId: goal._id.toString(),
-      details: {
-        title: data.title,
-        type: data.type,
-        targetValue: data.targetValue
-      }
-    });
-  }
-
-  return goal;
 };
 
 const getDefaultUnit = (type: GoalType): string => {
@@ -69,25 +74,30 @@ const getDefaultUnit = (type: GoalType): string => {
 };
 
 export const getUserGoals = async (userId: string, status?: string) => {
-  const user = await User.findById(userId);
-  if (!user) throw new Error("User not found");
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
 
-  const query: any = {
-    $or: [
-      { userId, teamId: { $exists: false } },
-      { userId, teamId: null }
-    ]
-  };
+    const query: any = {
+      $or: [
+        { userId, teamId: { $exists: false } },
+        { userId, teamId: null }
+      ]
+    };
 
-  if (user.activeTeamId) {
-    query.$or.push({ teamId: user.activeTeamId });
+    if (user.activeTeamId) {
+      query.$or.push({ teamId: user.activeTeamId });
+    }
+
+    if (status) {
+      query.status = status;
+    }
+
+    return Goal.find(query).sort({ createdAt: -1 });
+  } catch (error) {
+    console.error("Error in getUserGoals:", error);
+    throw new Error(`Failed to get goals: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  if (status) {
-    query.status = status;
-  }
-
-  return Goal.find(query).sort({ createdAt: -1 });
 };
 
 export const updateGoalProgress = async (

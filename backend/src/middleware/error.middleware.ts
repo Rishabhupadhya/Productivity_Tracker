@@ -3,24 +3,24 @@ import { logger } from "../utils/logger";
 
 export const errorMiddleware = (
   err: Error,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction
 ) => {
-  // Log full error details for debugging
-  logger.error(err.stack || err.message);
+  // Log full error details for debugging with request info
+  logger.error('Error occurred:', {
+    path: req.path,
+    method: req.method,
+    error: err.message,
+    stack: err.stack
+  });
   
-  // Never expose error details in production
-  if (process.env.NODE_ENV === 'production') {
-    res.status(500).json({ 
-      success: false,
-      message: 'An internal server error occurred' 
-    });
-  } else {
-    res.status(500).json({ 
-      success: false,
-      message: err.message,
-      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
-    });
-  }
+  // Return error message in all environments for debugging
+  res.status(500).json({ 
+    success: false,
+    message: err.message,
+    path: req.path,
+    // Only include stack in development
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
 };

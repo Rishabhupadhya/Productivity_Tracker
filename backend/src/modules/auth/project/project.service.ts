@@ -27,23 +27,28 @@ export const createProject = async (
 };
 
 export const getUserProjects = async (userId: string) => {
-  const user = await User.findById(userId);
-  if (!user) throw new Error("User not found");
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
 
-  // Get personal projects or team projects
-  const query: any = {
-    $or: [
-      { userId, teamId: { $exists: false } },
-      { userId, teamId: null }
-    ]
-  };
+    // Get personal projects or team projects
+    const query: any = {
+      $or: [
+        { userId, teamId: { $exists: false } },
+        { userId, teamId: null }
+      ]
+    };
 
-  // If user has active team, also get team projects
-  if (user.activeTeamId) {
-    query.$or.push({ teamId: user.activeTeamId });
+    // If user has active team, also get team projects
+    if (user.activeTeamId) {
+      query.$or.push({ teamId: user.activeTeamId });
+    }
+
+    return Project.find(query).sort({ createdAt: -1 });
+  } catch (error) {
+    console.error("Error in getUserProjects:", error);
+    throw new Error(`Failed to get projects: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  return Project.find(query).sort({ createdAt: -1 });
 };
 
 export const updateProject = async (

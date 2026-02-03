@@ -16,46 +16,56 @@ export const createHabit = async (
     linkedGoals?: string[];
   }
 ) => {
-  const user = await User.findById(userId);
-  if (!user) throw new Error("User not found");
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
 
-  const habitData: any = {
-    userId: new Types.ObjectId(userId),
-    name: data.name,
-    description: data.description || "",
-    frequency: data.frequency,
-    timesPerWeek: data.timesPerWeek,
-    graceDays: data.graceDays ?? 1,
-    linkedGoals: data.linkedGoals?.map(id => new Types.ObjectId(id)) || []
-  };
+    const habitData: any = {
+      userId: new Types.ObjectId(userId),
+      name: data.name,
+      description: data.description || "",
+      frequency: data.frequency,
+      timesPerWeek: data.timesPerWeek,
+      graceDays: data.graceDays ?? 1,
+      linkedGoals: data.linkedGoals?.map(id => new Types.ObjectId(id)) || []
+    };
 
-  if (user.activeTeamId) {
-    habitData.teamId = user.activeTeamId;
+    if (user.activeTeamId) {
+      habitData.teamId = user.activeTeamId;
+    }
+
+    return Habit.create(habitData);
+  } catch (error) {
+    console.error("Error in createHabit:", error);
+    throw new Error(`Failed to create habit: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  return Habit.create(habitData);
 };
 
 export const getUserHabits = async (userId: string, includeInactive = false) => {
-  const user = await User.findById(userId);
-  if (!user) throw new Error("User not found");
+  try {
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
 
-  const query: any = {
-    $or: [
-      { userId, teamId: { $exists: false } },
-      { userId, teamId: null }
-    ]
-  };
+    const query: any = {
+      $or: [
+        { userId, teamId: { $exists: false } },
+        { userId, teamId: null }
+      ]
+    };
 
-  if (user.activeTeamId) {
-    query.$or.push({ teamId: user.activeTeamId });
+    if (user.activeTeamId) {
+      query.$or.push({ teamId: user.activeTeamId });
+    }
+
+    if (!includeInactive) {
+      query.isActive = true;
+    }
+
+    return Habit.find(query).sort({ createdAt: -1 });
+  } catch (error) {
+    console.error("Error in getUserHabits:", error);
+    throw new Error(`Failed to get habits: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
-
-  if (!includeInactive) {
-    query.isActive = true;
-  }
-
-  return Habit.find(query).sort({ createdAt: -1 });
 };
 
 export const completeHabit = async (habitId: string, userId: string, date?: Date, notes?: string) => {
