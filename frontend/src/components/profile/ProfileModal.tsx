@@ -8,6 +8,11 @@ import "./profile.css";
 
 export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const { user, refreshUser } = useUser();
+  
+  // Don't render if user is not loaded
+  if (!user) {
+    return null;
+  }
   const [name, setName] = useState("");
   const [timezone, setTimezone] = useState("UTC");
   const [workStartTime, setWorkStartTime] = useState("09:00");

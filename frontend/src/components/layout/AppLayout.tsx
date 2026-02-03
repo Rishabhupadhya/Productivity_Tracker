@@ -25,12 +25,48 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   // Redirect to login if not authenticated after loading
   useEffect(() => {
     if (!userLoading && !user) {
-      const timer = setTimeout(() => {
-        navigate('/login', { replace: true });
-      }, 1500);
-      return () => clearTimeout(timer);
+      console.log('No user after loading - redirecting to login');
+      navigate('/login', { replace: true });
     }
   }, [userLoading, user, navigate]);
+
+  // Show loading state while user context is initializing
+  if (userLoading) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        backgroundColor: 'var(--bg-app)',
+        color: 'var(--text-secondary)'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '24px', marginBottom: '16px' }}>⏳</div>
+          <div>Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // If not loading but no user, show message (redirect will happen via useEffect above)
+  if (!user) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        backgroundColor: 'var(--bg-app)',
+        color: 'var(--text-secondary)',
+        flexDirection: 'column',
+        gap: '16px'
+      }}>
+        <div style={{ fontSize: '24px' }}>🔐</div>
+        <div>Redirecting to login...</div>
+      </div>
+    );
+  }
 
   useEffect(() => {
     const handleResize = () => {

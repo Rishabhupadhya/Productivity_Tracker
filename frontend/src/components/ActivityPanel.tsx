@@ -129,21 +129,21 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                   <div className="activity-icon">{getActionIcon(activity.action)}</div>
                   <div className="activity-content">
                     <div className="activity-user">
-                      {activity.userId.avatar && activity.userId.avatar.length > 1 ? (
+                      {activity.userId && activity.userId.avatar && activity.userId.avatar.length > 1 ? (
                         <div
                           className="user-avatar"
                           style={{
-                            backgroundImage: activity.userId.avatar && activity.userId.avatar.length > 1 ? `url(${env.BASE_URL}${activity.userId.avatar})` : 'none',
+                            backgroundImage: `url(${env.BASE_URL}${activity.userId.avatar})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center'
                           }}
                         />
                       ) : (
                         <div className="user-avatar default">
-                          {activity.userId.name.charAt(0).toUpperCase()}
+                          {activity.userId?.name?.charAt(0)?.toUpperCase() || '?'}
                         </div>
                       )}
-                      <span className="user-name">{activity.userId.name}</span>
+                      <span className="user-name">{activity.userId?.name || 'Unknown User'}</span>
                     </div>
                     <div className="activity-text">{getActionText(activity)}</div>
                     <div className="activity-time">{formatTime(activity.timestamp)}</div>
