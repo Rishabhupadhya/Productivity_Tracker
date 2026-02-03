@@ -115,9 +115,9 @@ export default function AddTaskModal({ onClose }: { onClose: () => void }) {
               }}
             >
               <option value="">Select member...</option>
-              {teamMembers.map((member) => (
+              {teamMembers.filter(member => member && member._id).map((member) => (
                 <option key={member._id} value={member._id}>
-                  {member.name} - {member.email}
+                  {member?.name || 'Unknown'} - {member?.email || ''}
                 </option>
               ))}
             </select>

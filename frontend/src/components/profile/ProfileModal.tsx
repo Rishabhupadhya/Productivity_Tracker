@@ -34,7 +34,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
     if (user) {
       console.log('User data in ProfileModal:', user);
       console.log('Team role:', (user as any).teamRole);
-      setName(user.name);
+      setName(user.name || '');
       setTimezone((user as any).timezone || "UTC");
       setWorkStartTime((user as any).workingHours?.start || "09:00");
       setWorkEndTime((user as any).workingHours?.end || "18:00");

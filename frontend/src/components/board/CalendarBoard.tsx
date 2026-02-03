@@ -11,7 +11,7 @@ import { useSelectedDate } from "../../hooks/useSelectedDate";
 import { getWeekDays, formatDate } from "../../utils/date";
 
 export default function CalendarBoard() {
-  const { tasks, moveTask: moveTaskOriginal, deleteTask: deleteTaskOriginal, undoTask, undoDelete } = useTasks();
+  const { tasks, moveTask: moveTaskOriginal, deleteTask: deleteTaskOriginal, undoTask, undoDelete, refreshTasks } = useTasks();
   const { user } = useUser();
   const selectedDate = useSelectedDate();
   

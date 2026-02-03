@@ -168,6 +168,7 @@ export default memo(TaskCard, (prevProps, nextProps) => {
     prevProps.task.startTime === nextProps.task.startTime &&
     prevProps.task.duration === nextProps.task.duration &&
     prevProps.task.teamId === nextProps.task.teamId &&
+    prevProps.task.completed === nextProps.task.completed &&
     prevProps.task.assignedTo?.name === nextProps.task.assignedTo?.name &&
     prevProps.task.assignedTo?.avatar === nextProps.task.assignedTo?.avatar &&
     prevProps.draggable === nextProps.draggable

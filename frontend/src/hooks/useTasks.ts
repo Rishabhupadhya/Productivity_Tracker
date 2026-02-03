@@ -113,6 +113,7 @@ export function useTasks() {
     moveTask,
     deleteTask,
     undoTask,
-    undoDelete
+    undoDelete,
+    refreshTasks: loadTasks
   };
 }

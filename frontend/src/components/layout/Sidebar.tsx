@@ -240,7 +240,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                   color: "#00ffff",
                   textAlign: "center"
                 }}>
-                  <span>✓ Viewing: <strong>{activeTeam.name || 'Unnamed Team'}</strong></span>
+                  <span>✓ Viewing: <strong>{activeTeam?.name || 'Unnamed Team'}</strong></span>
                 </div>
                 <button
                   onClick={() => setShowTeamPanel(true)}
@@ -305,8 +305,8 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
               📊
             </a>
             <div style={{ borderTop: "1px solid #333", margin: "8px 0" }}></div>
-            {projects.map(project => (
-              <a key={project._id} onClick={() => handleProjectClick(project)} title={project.name}>📁</a>
+            {projects.filter(p => p && p._id).map(project => (
+              <a key={project._id} onClick={() => handleProjectClick(project)} title={project?.name || 'Project'}>📁</a>
             ))}
             <div style={{ borderTop: "1px solid #333", margin: "8px 0" }}></div>
             <a className={active === "Habits" ? "active" : ""} onClick={() => { setActive("Habits"); navigate("/habits"); }} title="Habit Tracker">✅</a>
@@ -397,7 +397,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 +
               </button>
             </p>
-        {projects.map(project => (
+        {projects.filter(p => p && p._id).map(project => (
           <a
             key={project._id}
             onClick={() => handleProjectClick(project)}
@@ -405,12 +405,12 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              color: project.color,
+              color: project?.color || 'var(--text-primary)',
               cursor: "pointer"
             }}
           >
             <span>
-              {project.icon} {project.name}
+              {project?.icon || '📁'} {project?.name || 'Project'}
             </span>
             <button
               onClick={(e) => handleDeleteProject(project._id, e)}

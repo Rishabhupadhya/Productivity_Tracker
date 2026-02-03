@@ -196,7 +196,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
                             fontWeight: "bold",
                             fontSize: "16px"
                           }}>
-                            {member.userId?.name?.charAt(0).toUpperCase() || "?"}
+                            {member.userId?.name?.charAt(0)?.toUpperCase() || "?"}
                           </div>
                           <div>
                             <div style={{ color: "var(--text-primary)", fontWeight: "var(--font-medium)" }}>
