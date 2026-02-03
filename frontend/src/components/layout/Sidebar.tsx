@@ -95,9 +95,9 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
     }
   }, []);
 
-  const handleAddProject = useCallback(async (name: string, color: string, icon: string) => {
+  const handleAddProject = useCallback(async (name: string, color: string, icon: string, description: string, notes: string) => {
     try {
-      await createProject({ name, color, icon });
+      await createProject({ name, color, icon, description, notes });
       await loadProjects();
     } catch (error) {
       console.error("Failed to create project:", error);

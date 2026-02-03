@@ -5,8 +5,11 @@ export interface Project {
   userId: string;
   name: string;
   description?: string;
+  notes?: string;
   color?: string;
   icon?: string;
+  completed: boolean;
+  completedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -28,4 +31,9 @@ export const updateProject = async (projectId: string, updates: Partial<Project>
 
 export const deleteProject = async (projectId: string): Promise<void> => {
   await api.delete(`/projects/${projectId}`);
+};
+
+export const toggleProjectComplete = async (projectId: string, completed: boolean): Promise<Project> => {
+  const response = await api.patch(`/projects/${projectId}/complete`, { completed });
+  return response.data;
 };

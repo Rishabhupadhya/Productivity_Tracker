@@ -6,13 +6,17 @@ export const createProject = async (
   userId: string,
   name: string,
   color: string = "#00ffff",
-  icon: string = "📁"
+  icon: string = "📁",
+  description: string = "",
+  notes: string = ""
 ) => {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
 
   const projectData: any = {
     name,
+    description,
+    notes,
     color,
     icon,
     userId: new Types.ObjectId(userId)
@@ -54,8 +58,14 @@ export const getUserProjects = async (userId: string) => {
 export const updateProject = async (
   projectId: string,
   userId: string,
-  updates: { name?: string; color?: string; icon?: string }
+  updates: { name?: string; description?: string; notes?: string; color?: string; icon?: string; completed?: boolean }
 ) => {
+  // If marking as completed, set completedAt
+  if (updates.completed === true) {
+    (updates as any).completedAt = new Date();
+  } else if (updates.completed === false) {
+    (updates as any).completedAt = null;
+  }
   const project = await Project.findById(projectId);
   if (!project) throw new Error("Project not found");
 

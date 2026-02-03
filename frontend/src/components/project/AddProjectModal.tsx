@@ -38,7 +38,7 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "20px" }}>
             <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px" }}>
-              Project Name
+              Project Name *
             </label>
             <input
               type="text"
@@ -53,6 +53,48 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
                 border: "1px solid #00ffff", 
                 borderRadius: "4px", 
                 color: "#00ffff"
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "20px" }}>
+            <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px" }}>
+              Description
+            </label>
+            <input
+              type="text"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Brief description of the project"
+              style={{ 
+                width: "100%", 
+                padding: "10px", 
+                background: "#0a0a0a", 
+                border: "1px solid #00ffff", 
+                borderRadius: "4px", 
+                color: "#00ffff"
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "20px" }}>
+            <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px" }}>
+              Notes
+            </label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Add any notes or details about this project..."
+              rows={3}
+              style={{ 
+                width: "100%", 
+                padding: "10px", 
+                background: "#0a0a0a", 
+                border: "1px solid #00ffff", 
+                borderRadius: "4px", 
+                color: "#00ffff",
+                fontFamily: "inherit",
+                resize: "vertical"
               }}
             />
           </div>

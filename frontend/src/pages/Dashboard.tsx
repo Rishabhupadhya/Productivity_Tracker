@@ -44,9 +44,9 @@ export default function Dashboard() {
           gap: "16px"
         }}>
           <div style={{ fontSize: "48px" }}>📁</div>
-          <div>Project view: {currentView}</div>
+          <div>Project: {currentView}</div>
           <div style={{ fontSize: "14px", color: "#666" }}>
-            {projectId ? `Project ID: ${projectId}` : "Select a project to view tasks"}
+            {projectId ? "View and manage project tasks below" : "Select a project to view tasks"}
           </div>
         </div>
       )}
