@@ -6,9 +6,9 @@ import { registerUser, loginUser } from "./auth.service";
 const getCookieOptions = () => ({
   httpOnly: true, // Prevents JavaScript access
   secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-  sameSite: 'lax' as const, // CSRF protection
-  path: '/',
-  domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
+  sameSite: 'none' as const, // Required for cross-site cookies
+  path: '/'
+  // Don't set domain - let browser handle it automatically
 });
 
 // Input validation middleware
