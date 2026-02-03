@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { X } from "lucide-react";
 import { updateProject } from "../../services/project.service";
 import type { Project } from "../../services/project.service";
 import "./projectDetailModal.css";
@@ -55,7 +54,7 @@ const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             <h2>{project.name}</h2>
           </div>
           <button className="close-button" onClick={onClose}>
-            <X size={20} />
+            ×
           </button>
         </div>
 
