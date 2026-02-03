@@ -55,7 +55,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
       }}>
         <div className="modal-header">
           <h2 style={{ color: "var(--text-primary)" }}>
-            📊 My Activity{activeTeam ? ` - ${activeTeam.name}` : ""}
+            📊 My Activity{activeTeam ? ` - ${activeTeam?.name || 'Team'}` : ""}
           </h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>

@@ -55,7 +55,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
           params: {
             email: inviteEmail,
             to_name: inviteEmail.split('@')[0],
-            title: `Join ${activeTeam.name}`,
+            title: `Join ${activeTeam?.name || 'Team'}`,
             invite_link: `${window.location.origin}/teams/${activeTeam._id}/accept`,
           }
         });
@@ -66,7 +66,7 @@ export default function TeamPanel({ onClose }: { onClose: () => void }) {
           {
             email: inviteEmail,
             to_name: inviteEmail.split('@')[0],
-            title: `Join ${activeTeam.name}`,
+            title: `Join ${activeTeam?.name || 'Team'}`,
             invite_link: `${window.location.origin}/teams/${activeTeam._id}/accept`,
           }
         );

@@ -224,7 +224,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
               <option value="personal">👤 Personal Team</option>
               {teams.map(team => (
                 <option key={team._id} value={team._id}>
-                  👥 {team.name}
+                  👥 {team?.name || 'Unnamed Team'}
                 </option>
               ))}
             </select>
@@ -240,7 +240,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                   color: "#00ffff",
                   textAlign: "center"
                 }}>
-                  <span>✓ Viewing: <strong>{activeTeam.name}</strong></span>
+                  <span>✓ Viewing: <strong>{activeTeam?.name || 'Team'}</strong></span>
                 </div>
                 <button
                   onClick={() => setShowTeamPanel(true)}
