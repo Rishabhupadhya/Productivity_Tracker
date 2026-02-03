@@ -49,17 +49,25 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch user profile on mount (cookies are sent automatically)
+  // Fetch user profile on mount (only if token exists)
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // CSRF disabled - was causing 500 errors
-        // await initializeCSRF();
+        // Check if token exists in localStorage first
+        const token = localStorage.getItem('token');
         
-        // Try to fetch user profile (if token exists, backend will authenticate)
+        if (!token) {
+          // No token - user is not logged in
+          console.log('No token in localStorage - user not authenticated');
+          setLoading(false);
+          return;
+        }
+        
+        // Token exists - fetch user profile
+        console.log('Token found, fetching user profile...');
         await fetchUserProfile();
       } catch (err) {
-        // No valid session, that's okay
+        console.error('Auth initialization failed:', err);
         setLoading(false);
       }
     };
@@ -73,19 +81,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setError(null);
       const userData = await getUserProfileService();
       setUser(userData);
+      console.log('User profile loaded successfully:', userData.name);
     } catch (err: any) {
       console.error("Failed to fetch user profile:", err);
       
-      // If authentication fails (401 or 403), clear user and token
+      // If authentication fails (401 or 403), clear token and user
       if (err.response?.status === 401 || err.response?.status === 403) {
-        console.log('Auth failed with 401/403 - clearing token and redirecting');
+        console.log('Auth failed with 401/403 - token is invalid');
         localStorage.removeItem('token');
         setUser(null);
         setError('Session expired. Please log in again.');
-        // Redirect to login if not already there
-        if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
-          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
-        }
       } else {
         setError(err.response?.data?.message || "Failed to load user profile");
         setUser(null);
