@@ -19,6 +19,15 @@ export const authMiddleware = (
     token = req.cookies.accessToken;
   }
 
+  // Debug logging
+  console.log('🔐 Auth middleware:', {
+    path: req.path,
+    hasCookies: !!req.cookies,
+    cookieKeys: req.cookies ? Object.keys(req.cookies) : [],
+    hasAccessToken: !!token,
+    origin: req.headers.origin
+  });
+
   if (!token) {
     return res.status(401).json({ 
       success: false,
@@ -31,6 +40,7 @@ export const authMiddleware = (
     req.user = decoded;
     next();
   } catch (error) {
+    console.error('❌ Token verification failed:', error);
     res.status(401).json({ 
       success: false,
       message: "Invalid or expired token" 

@@ -92,6 +92,9 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       await loginService(email, password);
       // Cookies are set automatically by backend
       
+      // Small delay to ensure cookies are set before fetching profile
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       // Fetch user profile after successful login
       await fetchUserProfile();
       // Don't set loading to false here - page will navigate away

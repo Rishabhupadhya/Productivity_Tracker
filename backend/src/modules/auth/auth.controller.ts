@@ -54,15 +54,23 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const { name, email, password } = req.body;
     const result = await registerUser(name, email, password);
     
+    const cookieOptions = getCookieOptions();
+    
     // Set HttpOnly cookies instead of sending tokens in response
     res.cookie('accessToken', result.token, {
-      ...getCookieOptions(),
+      ...cookieOptions,
       maxAge: 15 * 60 * 1000 // 15 minutes
     });
     
     res.cookie('refreshToken', result.token, {
-      ...getCookieOptions(),
+      ...cookieOptions,
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+    });
+    
+    console.log('✅ Cookies set for registration:', {
+      secure: cookieOptions.secure,
+      sameSite: cookieOptions.sameSite,
+      httpOnly: cookieOptions.httpOnly
     });
     
     res.status(201).json({ 
@@ -97,15 +105,25 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const { email, password } = req.body;
     const result = await loginUser(email, password);
     
+    const cookieOptions = getCookieOptions();
+    
     // Set HttpOnly cookies instead of sending tokens in response
     res.cookie('accessToken', result.token, {
-      ...getCookieOptions(),
+      ...cookieOptions,
       maxAge: 15 * 60 * 1000 // 15 minutes
     });
     
     res.cookie('refreshToken', result.token, {
-      ...getCookieOptions(),
+      ...cookieOptions,
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+    });
+    
+    console.log('✅ Cookies set for login:', {
+      email: result.user.email,
+      secure: cookieOptions.secure,
+      sameSite: cookieOptions.sameSite,
+      httpOnly: cookieOptions.httpOnly,
+      origin: req.headers.origin
     });
     
     res.status(200).json({ 
