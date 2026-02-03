@@ -90,14 +90,10 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
       await loginService(email, password);
-      // Cookies are set automatically by backend
-      
-      // Small delay to ensure cookies are set before fetching profile
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Token is stored in localStorage by service
       
       // Fetch user profile after successful login
       await fetchUserProfile();
-      // Don't set loading to false here - page will navigate away
     } catch (err: any) {
       setLoading(false);
       const errorMessage = err.response?.data?.message || err.message || "Login failed";

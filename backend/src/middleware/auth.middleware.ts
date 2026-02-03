@@ -11,22 +11,13 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  // Try to get token from Authorization header first (for mobile apps)
+  // Get token from Authorization header (PRIMARY METHOD)
   let token = req.headers.authorization?.split(" ")[1];
   
-  // Fall back to cookies (for web browsers) - PRIMARY METHOD NOW
+  // Fall back to cookies if needed
   if (!token && req.cookies) {
     token = req.cookies.accessToken;
   }
-
-  // Debug logging
-  console.log('🔐 Auth middleware:', {
-    path: req.path,
-    hasCookies: !!req.cookies,
-    cookieKeys: req.cookies ? Object.keys(req.cookies) : [],
-    hasAccessToken: !!token,
-    origin: req.headers.origin
-  });
 
   if (!token) {
     return res.status(401).json({ 
@@ -40,7 +31,6 @@ export const authMiddleware = (
     req.user = decoded;
     next();
   } catch (error) {
-    console.error('❌ Token verification failed:', error);
     res.status(401).json({ 
       success: false,
       message: "Invalid or expired token" 

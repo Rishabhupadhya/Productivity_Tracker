@@ -3,7 +3,7 @@ import { env } from "../config/env";
 
 const api = axios.create({
   baseURL: env.API_URL,
-  withCredentials: true // Send cookies with requests (HttpOnly cookies for auth)
+  withCredentials: true // Keep for CSRF cookies
 });
 
 // Fetch CSRF token and add to requests
@@ -19,8 +19,14 @@ export const initializeCSRF = async () => {
   }
 };
 
-// Add CSRF token to state-changing requests
+// Add Authorization header from localStorage
 api.interceptors.request.use((config) => {
+  // Add JWT token from localStorage
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  
   // Add CSRF token to POST, PUT, PATCH, DELETE requests
   if (csrfToken && config.method && ['post', 'put', 'patch', 'delete'].includes(config.method.toLowerCase())) {
     config.headers['X-CSRF-Token'] = csrfToken;

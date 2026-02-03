@@ -10,8 +10,12 @@ export const registerUser = async (
     email,
     password
   });
-  // NOTE: Tokens are now stored in HttpOnly cookies automatically
-  // No need to handle tokens in response body
+  
+  // Store token in localStorage for cross-domain authentication
+  if (response.data.token) {
+    localStorage.setItem('token', response.data.token);
+  }
+  
   return response.data;
 };
 
@@ -20,13 +24,20 @@ export const loginUser = async (email: string, password: string) => {
     email,
     password
   });
-  // NOTE: Tokens are now stored in HttpOnly cookies automatically
-  // No need to handle tokens in response body
+  
+  // Store token in localStorage for cross-domain authentication
+  if (response.data.token) {
+    localStorage.setItem('token', response.data.token);
+  }
+  
   return response.data;
 };
 
 export const logoutUser = async () => {
-  const response = await api.post("/auth/logout");
-  // Cookies are cleared by backend
-  return response.data;
+  try {
+    await api.post("/auth/logout");
+  } finally {
+    // Clear token from localStorage
+    localStorage.removeItem('token');
+  }
 };

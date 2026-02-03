@@ -54,30 +54,12 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const { name, email, password } = req.body;
     const result = await registerUser(name, email, password);
     
-    const cookieOptions = getCookieOptions();
-    
-    // Set HttpOnly cookies instead of sending tokens in response
-    res.cookie('accessToken', result.token, {
-      ...cookieOptions,
-      maxAge: 15 * 60 * 1000 // 15 minutes
-    });
-    
-    res.cookie('refreshToken', result.token, {
-      ...cookieOptions,
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-    });
-    
-    console.log('✅ Cookies set for registration:', {
-      secure: cookieOptions.secure,
-      sameSite: cookieOptions.sameSite,
-      httpOnly: cookieOptions.httpOnly
-    });
-    
+    // Return tokens in response for localStorage (cross-domain compatible)
     res.status(201).json({ 
       success: true,
       message: 'Registration successful',
+      token: result.token,
       user: result.user
-      // NOTE: Tokens NOT sent in response body (security improvement)
     });
   } catch (error: any) {
     if (error.message === 'User already exists') {
@@ -105,32 +87,12 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const { email, password } = req.body;
     const result = await loginUser(email, password);
     
-    const cookieOptions = getCookieOptions();
-    
-    // Set HttpOnly cookies instead of sending tokens in response
-    res.cookie('accessToken', result.token, {
-      ...cookieOptions,
-      maxAge: 15 * 60 * 1000 // 15 minutes
-    });
-    
-    res.cookie('refreshToken', result.token, {
-      ...cookieOptions,
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-    });
-    
-    console.log('✅ Cookies set for login:', {
-      email: result.user.email,
-      secure: cookieOptions.secure,
-      sameSite: cookieOptions.sameSite,
-      httpOnly: cookieOptions.httpOnly,
-      origin: req.headers.origin
-    });
-    
+    // Return tokens in response for localStorage (cross-domain compatible)
     res.status(200).json({ 
       success: true,
       message: 'Login successful',
+      token: result.token,
       user: result.user
-      // NOTE: Tokens NOT sent in response body (security improvement)
     });
   } catch (error: any) {
     if (error.message === 'User not found') {
@@ -156,10 +118,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const logout = async (req: Request, res: Response) => {
-  // Clear authentication cookies
-  res.clearCookie('accessToken', getCookieOptions());
-  res.clearCookie('refreshToken', getCookieOptions());
-  
+  // Client will clear localStorage
   res.status(200).json({
     success: true,
     message: 'Logged out successfully'

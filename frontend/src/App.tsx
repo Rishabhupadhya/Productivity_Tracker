@@ -42,9 +42,9 @@ const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
     );
   }
   
-  // If no user after loading, redirect to login
-  // (Cookies are checked automatically by backend)
-  if (!user) {
+  // Check if user is authenticated (user object or token in localStorage)
+  const token = localStorage.getItem('token');
+  if (!user && !token) {
     return <Navigate to="/login" replace />;
   }
   
