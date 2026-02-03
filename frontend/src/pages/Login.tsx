@@ -32,10 +32,10 @@ export default function Login() {
 
     try {
       await login(email, password);
-      navigate("/dashboard");
+      // Navigate immediately after successful login
+      navigate("/dashboard", { replace: true });
     } catch (err: any) {
       setError(err.message || "Login failed. Please check your credentials.");
-    } finally {
       setLoading(false);
     }
   };

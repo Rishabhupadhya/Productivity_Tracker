@@ -85,12 +85,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       
       // Fetch user profile after successful login
       await fetchUserProfile();
+      // Don't set loading to false here - page will navigate away
     } catch (err: any) {
+      setLoading(false);
       const errorMessage = err.response?.data?.message || err.message || "Login failed";
       setError(errorMessage);
       throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -103,12 +103,12 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       
       // Fetch user profile after successful registration
       await fetchUserProfile();
+      // Don't set loading to false here - page will navigate away
     } catch (err: any) {
+      setLoading(false);
       const errorMessage = err.response?.data?.message || err.message || "Registration failed";
       setError(errorMessage);
       throw new Error(errorMessage);
-    } finally {
-      setLoading(false);
     }
   };
 

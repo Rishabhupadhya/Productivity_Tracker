@@ -54,12 +54,21 @@ export const registerUser = async (
     }
   }
 
-  return signToken({ id: user._id, email: user.email });
+  const token = signToken({ id: user._id, email: user.email });
+  return {
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar
+    }
+  };
 };
 
 export const loginUser = async (email: string, password: string) => {
   const user = await User.findOne({ email });
-  if (!user) throw new Error("Invalid credentials");
+  if (!user) throw new Error("User not found");
 
   if (!user.password) {
     throw new Error("This account uses OAuth. Please login with your OAuth provider.");
@@ -68,5 +77,14 @@ export const loginUser = async (email: string, password: string) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) throw new Error("Invalid credentials");
 
-  return signToken({ id: user._id, email: user.email });
+  const token = signToken({ id: user._id, email: user.email });
+  return {
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar
+    }
+  };
 };

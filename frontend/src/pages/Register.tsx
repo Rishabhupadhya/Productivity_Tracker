@@ -20,10 +20,10 @@ export default function Register() {
 
     try {
       await register(name, email, password);
-      navigate("/dashboard");
+      // Navigate immediately after successful registration
+      navigate("/dashboard", { replace: true });
     } catch (err: any) {
       setError(err.message || "Registration failed. Please try again.");
-    } finally {
       setLoading(false);
     }
   };
