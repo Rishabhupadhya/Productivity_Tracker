@@ -13,7 +13,7 @@ import "./layout.css";
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { loading: userLoading } = useUser();
+  const { loading: userLoading, user } = useUser();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currentView, setCurrentView] = useState("My Work");
@@ -21,6 +21,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Detect mobile screen
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  // Redirect to login if not authenticated after loading
+  useEffect(() => {
+    if (!userLoading && !user) {
+      const timer = setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [userLoading, user, navigate]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -96,6 +106,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <div style={{ fontSize: '24px', marginBottom: '16px' }}>⏳</div>
           <div>Loading...</div>
         </div>
+      </div>
+    );
+  }
+
+  // If not loading but no user, redirect to login
+  if (!user) {
+    return (
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        backgroundColor: 'var(--bg-app)',
+        color: 'var(--text-secondary)',
+        flexDirection: 'column',
+        gap: '16px'
+      }}>
+        <div style={{ fontSize: '24px' }}>🔐</div>
+        <div>Redirecting to login...</div>
       </div>
     );
   }

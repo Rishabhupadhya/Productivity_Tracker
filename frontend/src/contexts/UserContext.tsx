@@ -75,9 +75,19 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setUser(userData);
     } catch (err: any) {
       console.error("Failed to fetch user profile:", err);
-      setError(err.response?.data?.message || "Failed to load user profile");
-      // If authentication fails, user stays null
-      if (err.response?.status === 401) {
+      
+      // If authentication fails (401 or 403), clear user and token
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        console.log('Auth failed with 401/403 - clearing token and redirecting');
+        localStorage.removeItem('token');
+        setUser(null);
+        setError('Session expired. Please log in again.');
+        // Redirect to login if not already there
+        if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+        }
+      } else {
+        setError(err.response?.data?.message || "Failed to load user profile");
         setUser(null);
       }
     } finally {
@@ -89,9 +99,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      await loginService(email, password);
+      const response = await loginService(email, password);
       // Token is stored in localStorage by service
       
+      // Verify token was saved before fetching profile
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Failed to save authentication token');
+      }
+      
+      console.log('Login successful, token saved');
       // Fetch user profile after successful login
       await fetchUserProfile();
     } catch (err: any) {
