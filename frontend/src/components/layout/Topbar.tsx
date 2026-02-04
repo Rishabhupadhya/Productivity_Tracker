@@ -169,13 +169,19 @@ function Topbar({
                     color: 'var(--text-primary)',
                     cursor: 'pointer',
                     borderRadius: 'var(--radius-sm)',
-                    fontSize: '16px',
+                    fontSize: '18px',
                     display: 'flex',
                     alignItems: 'center',
-                    transition: 'background 0.2s',
+                    transition: 'all 0.2s',
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-tertiary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--bg-tertiary)';
+                    e.currentTarget.style.color = 'var(--accent)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                  }}
                 >
                   ◀
                 </button>
@@ -185,14 +191,14 @@ function Topbar({
                   title="Go to Today"
                   style={{
                     padding: '8px 16px',
-                    background: 'var(--accent-primary)',
+                    background: 'var(--accent)',
                     border: 'none',
-                    color: '#000',
+                    color: 'var(--text-inverse)',
                     cursor: 'pointer',
                     borderRadius: 'var(--radius-sm)',
                     fontSize: '14px',
-                    fontWeight: '600',
-                    transition: 'opacity 0.2s',
+                    fontWeight: '700',
+                    transition: 'all 0.2s',
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
                   onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
@@ -210,13 +216,19 @@ function Topbar({
                     color: 'var(--text-primary)',
                     cursor: 'pointer',
                     borderRadius: 'var(--radius-sm)',
-                    fontSize: '16px',
+                    fontSize: '18px',
                     display: 'flex',
                     alignItems: 'center',
-                    transition: 'background 0.2s',
+                    transition: 'all 0.2s',
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-tertiary)'}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--bg-tertiary)';
+                    e.currentTarget.style.color = 'var(--accent)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                  }}
                 >
                   ▶
                 </button>

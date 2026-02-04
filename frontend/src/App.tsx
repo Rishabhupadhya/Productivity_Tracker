@@ -8,18 +8,19 @@ import Habits from "./pages/Habits";
 import Momentum from "./pages/Momentum";
 import OAuthCallback from "./pages/OAuthCallback";
 import { useUser } from "./contexts/UserContext";
+import AppLayout from "./components/layout/AppLayout";
 
 const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useUser();
-  
+
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh', 
-        background: '#0b0f14', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        background: '#0b0f14',
         color: '#00ffff',
         flexDirection: 'column',
         gap: '20px'
@@ -41,13 +42,13 @@ const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
       </div>
     );
   }
-  
+
   // Check if user is authenticated (user object or token in localStorage)
   const token = localStorage.getItem('token');
   if (!user && !token) {
     return <Navigate to="/login" replace />;
   }
-  
+
   return <>{children}</>;
 });
 
@@ -63,39 +64,20 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/auth/callback" element={<OAuthCallback />} />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/goals"
-          element={
-            <ProtectedRoute>
-              <Goals />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/habits"
-          element={
-            <ProtectedRoute>
-              <Habits />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/momentum"
-          element={
-            <ProtectedRoute>
-              <Momentum />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+
+        {/* Core App Layout and Protection */}
+        <Route element={
+          <ProtectedRoute>
+            <AppLayout children={null} />
+          </ProtectedRoute>
+        }>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/goals" element={<Goals />} />
+          <Route path="/habits" element={<Habits />} />
+          <Route path="/momentum" element={<Momentum />} />
+        </Route>
+
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </BrowserRouter>
   );

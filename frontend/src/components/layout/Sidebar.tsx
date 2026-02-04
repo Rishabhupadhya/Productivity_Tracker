@@ -142,10 +142,11 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
   useEffect(() => {
     const handleTeamChange = () => {
       loadPendingInvites();
+      loadProjects();
     };
     window.addEventListener('teamChanged', handleTeamChange);
     return () => window.removeEventListener('teamChanged', handleTeamChange);
-  }, [loadPendingInvites]);
+  }, [loadPendingInvites, loadProjects]);
 
   const Item = ({ label }: { label: string }) => (
     <a

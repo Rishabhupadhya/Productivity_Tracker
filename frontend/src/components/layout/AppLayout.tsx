@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "../../contexts/UserContext";
 import Sidebar from "./Sidebar";
@@ -154,7 +154,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             onClick={toggleSidebar}
             className="sidebar-toggle-btn"
           >
-            {sidebarCollapsed ? "›" : "‹"}
+            {sidebarCollapsed ? "❯" : "❮"}
           </button>
         )}
       </div>
@@ -174,7 +174,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           exit="exit"
           variants={pageVariants}
         >
-          {children}
+          {children || <Outlet />}
         </motion.div>
         <Footer />
 

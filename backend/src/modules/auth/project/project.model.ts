@@ -29,4 +29,7 @@ const ProjectSchema = new Schema<IProject>(
   { timestamps: true }
 );
 
+ProjectSchema.index({ userId: 1, completed: 1 });
+ProjectSchema.index({ teamId: 1, completed: 1 });
+
 export const Project = mongoose.model<IProject>("Project", ProjectSchema);
