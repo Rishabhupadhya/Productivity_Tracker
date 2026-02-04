@@ -69,7 +69,12 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
   const loadPendingInvites = useCallback(async () => {
     try {
       const invites = await getPendingInvites();
-      setPendingInvites(invites.filter((inv: any) => inv.invite));
+      if (Array.isArray(invites)) {
+        setPendingInvites(invites.filter((inv: any) => inv && inv.invite));
+      } else {
+        console.warn("loadPendingInvites: received non-array data", invites);
+        setPendingInvites([]);
+      }
     } catch (error) {
       console.error("Failed to load pending invites:", error);
     }
@@ -92,7 +97,12 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
   const loadProjects = useCallback(async () => {
     try {
       const data = await getUserProjects();
-      setProjects(data);
+      if (Array.isArray(data)) {
+        setProjects(data);
+      } else {
+        console.warn("loadProjects: received non-array data", data);
+        setProjects([]);
+      }
     } catch (error) {
       console.error("Failed to load projects:", error);
     }
@@ -223,7 +233,7 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
               }}
             >
               <option value="personal">👤 Personal Team</option>
-              {teams.filter(team => team && team._id).map(team => (
+              {Array.isArray(teams) && teams.filter(team => team && team._id).map(team => (
                 <option key={team._id} value={team._id}>
                   👥 {team?.name || 'Unnamed Team'}
                 </option>
@@ -306,7 +316,7 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
               📊
             </a>
             <div style={{ borderTop: "1px solid #333", margin: "8px 0" }}></div>
-            {projects.filter(p => p && p._id).map(project => (
+            {Array.isArray(projects) && projects.filter(p => p && p._id).map(project => (
               <a key={project._id} onClick={() => handleProjectClick(project)} title={project?.name || 'Project'}>📁</a>
             ))}
             <div style={{ borderTop: "1px solid #333", margin: "8px 0" }}></div>
@@ -398,7 +408,7 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
                 +
               </button>
             </p>
-            {projects.filter(p => p && p._id).map(project => (
+            {Array.isArray(projects) && projects.filter(p => p && p._id).map(project => (
               <a
                 key={project._id}
                 onClick={() => handleProjectClick(project)}

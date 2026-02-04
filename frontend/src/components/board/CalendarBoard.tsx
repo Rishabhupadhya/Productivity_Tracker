@@ -53,8 +53,13 @@ export default function CalendarBoard() {
   // This prevents filtered calculations in every single slot
   const taskMap = useMemo(() => {
     const map: Record<string, Record<string, any[]>> = {};
+    if (!Array.isArray(tasks)) {
+      console.warn("CalendarBoard: tasks is not an array", tasks);
+      return map;
+    }
+
     tasks.forEach(task => {
-      if (!task.day || !task.startTime) return;
+      if (!task || !task.day || !task.startTime) return;
       if (!map[task.day]) map[task.day] = {};
       if (!map[task.day][task.startTime]) map[task.day][task.startTime] = [];
       map[task.day][task.startTime].push(task);

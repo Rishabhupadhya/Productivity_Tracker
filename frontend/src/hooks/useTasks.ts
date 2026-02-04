@@ -13,35 +13,41 @@ export function useTasks() {
   const [undoTask, setUndoTask] = useState<any | null>(null);
   const deleteTimer = useRef<any>(null);
 
-  const getCurrentUserId = () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) return null;
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      return payload.userId;
-    } catch {
-      return null;
-    }
-  };
 
   const filterTasks = useCallback((taskList: any[], view: string) => {
-    const userId = getCurrentUserId();
-    
+    if (!Array.isArray(taskList)) {
+      console.warn("filterTasks: taskList is not an array", taskList);
+      setTasks([]);
+      return;
+    }
+
     if (view === "My Work") {
       // Show only personal tasks (no teamId)
-      setTasks(taskList.filter(t => !t.teamId));
+      setTasks(taskList.filter(t => t && !t.teamId));
     } else if (view === "Teams") {
       // Show only team tasks (with teamId)
-      setTasks(taskList.filter(t => t.teamId));
+      setTasks(taskList.filter(t => t && t.teamId));
     } else {
       setTasks(taskList);
     }
   }, []);
 
   const loadTasks = useCallback(async () => {
-    const fetchedTasks = await fetchTasks();
-    setAllTasks(fetchedTasks);
-    filterTasks(fetchedTasks, currentView);
+    try {
+      const fetchedTasks = await fetchTasks();
+      if (Array.isArray(fetchedTasks)) {
+        setAllTasks(fetchedTasks);
+        filterTasks(fetchedTasks, currentView);
+      } else {
+        console.warn("loadTasks: received non-array data", fetchedTasks);
+        setAllTasks([]);
+        setTasks([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch tasks:", error);
+      setAllTasks([]);
+      setTasks([]);
+    }
   }, [currentView, filterTasks]);
 
   useEffect(() => {
@@ -76,7 +82,7 @@ export function useTasks() {
 
   const moveTask = useCallback(async (taskId: string, day: string, startTime?: string) => {
     await moveTaskApi(taskId, day, startTime);
-    const updatedAllTasks = allTasks.map((t) => 
+    const updatedAllTasks = allTasks.map((t) =>
       t._id === taskId ? { ...t, day, ...(startTime && { startTime }) } : t
     );
     setAllTasks(updatedAllTasks);

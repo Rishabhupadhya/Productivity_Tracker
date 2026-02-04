@@ -42,18 +42,24 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
   // Load teams when user is available
   const loadTeams = useCallback(async () => {
     if (!user) return;
-    
+
     try {
       setLoading(true);
       setError(null);
       const userTeams = await getUserTeams();
-      setTeams(userTeams);
+      if (Array.isArray(userTeams)) {
+        setTeams(userTeams);
 
-      // Set active team from user's activeTeamId
-      if (user?.activeTeamId) {
-        const active = userTeams.find((t: any) => t._id === user.activeTeamId);
-        setActiveTeam(active || null);
+        // Set active team from user's activeTeamId
+        if (user?.activeTeamId) {
+          const active = userTeams.find((t: any) => t._id === user.activeTeamId);
+          setActiveTeam(active || null);
+        } else {
+          setActiveTeam(null);
+        }
       } else {
+        console.warn("loadTeams: received non-array data", userTeams);
+        setTeams([]);
         setActiveTeam(null);
       }
     } catch (err: any) {
@@ -87,12 +93,10 @@ export const TeamProvider: React.FC<TeamProviderProps> = ({ children }) => {
     try {
       setError(null);
       await switchTeamService(teamId);
-      
+
       if (teamId) {
-        setActiveTeam(prevTeams => {
-          const team = teams.find(t => t._id === teamId);
-          return team || null;
-        });
+        const team = teams.find(t => t._id === teamId);
+        setActiveTeam(team || null);
       } else {
         setActiveTeam(null);
       }

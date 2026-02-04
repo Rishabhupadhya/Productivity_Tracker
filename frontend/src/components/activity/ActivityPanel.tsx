@@ -16,12 +16,19 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
     try {
       setLoading(true);
       // If activeTeam is set, get team-specific activities, otherwise get all user activities
-      const data = activeTeam 
+      const data = activeTeam
         ? await getTeamActivity(activeTeam._id, true)
         : await getUserActivity();
-      setActivities(data);
+
+      if (Array.isArray(data)) {
+        setActivities(data);
+      } else {
+        console.warn("loadActivity: received non-array data", data);
+        setActivities([]);
+      }
     } catch (error) {
       console.error("Failed to load activity:", error);
+      setActivities([]);
     } finally {
       setLoading(false);
     }
@@ -46,8 +53,8 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ 
-        background: "var(--bg-secondary)", 
+      <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{
+        background: "var(--bg-secondary)",
         border: "1px solid var(--border-default)",
         maxWidth: "700px",
         maxHeight: "80vh",
@@ -65,9 +72,9 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
               Loading activity...
             </div>
           ) : activities.length === 0 ? (
-            <div style={{ 
-              textAlign: "center", 
-              color: "var(--text-muted)", 
+            <div style={{
+              textAlign: "center",
+              color: "var(--text-muted)",
               padding: "60px 20px",
               background: "var(--bg-tertiary)",
               borderRadius: "var(--radius-lg)",
@@ -124,22 +131,22 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                       borderRadius: "var(--radius-md)",
                       border: "1px solid var(--border-default)"
                     }}>
-                      <div style={{ 
-                        display: "flex", 
-                        justifyContent: "space-between", 
+                      <div style={{
+                        display: "flex",
+                        justifyContent: "space-between",
                         alignItems: "flex-start",
                         marginBottom: "8px"
                       }}>
                         <div>
-                          <span style={{ 
-                            color: "var(--text-primary)", 
+                          <span style={{
+                            color: "var(--text-primary)",
                             fontWeight: "var(--font-medium)",
                             fontSize: "var(--text-base)"
                           }}>
                             {activity.action}
                           </span>
                           {activity.targetType && (
-                            <span style={{ 
+                            <span style={{
                               marginLeft: "8px",
                               padding: "2px 8px",
                               background: "var(--bg-elevated)",
@@ -152,13 +159,13 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                             </span>
                           )}
                         </div>
-                        <time style={{ 
-                          color: "var(--text-muted)", 
+                        <time style={{
+                          color: "var(--text-muted)",
                           fontSize: "var(--text-xs)",
                           whiteSpace: "nowrap"
                         }}>
-                          {new Date(activity.createdAt).toLocaleDateString('en-IN', { 
-                            month: 'short', 
+                          {new Date(activity.createdAt).toLocaleDateString('en-IN', {
+                            month: 'short',
                             day: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit'
@@ -167,7 +174,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                       </div>
 
                       {activity.details && Object.keys(activity.details).length > 0 && (
-                        <div style={{ 
+                        <div style={{
                           marginTop: "8px",
                           paddingTop: "8px",
                           borderTop: "1px solid var(--border-default)",
