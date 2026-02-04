@@ -12,6 +12,7 @@ import projectRoutes from "./modules/auth/project/project.routes";
 import goalRoutes from "./modules/auth/goal/goal.routes";
 import habitRoutes from "./modules/auth/habit/habit.routes";
 import momentumRoutes from "./modules/auth/momentum/momentum.routes";
+import cronRoutes from "./modules/auth/cron/cron.routes";
 import { errorMiddleware } from "./middleware/error.middleware";
 // import { apiRateLimiter } from "./middleware/rate-limiter.middleware"; // DISABLED - Redis issues
 
@@ -116,5 +117,6 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/goals", goalRoutes);
 app.use("/api/habits", habitRoutes);
 app.use("/api/momentum", momentumRoutes);
+app.use("/api/cron", cronRoutes);
 
 app.use(errorMiddleware);

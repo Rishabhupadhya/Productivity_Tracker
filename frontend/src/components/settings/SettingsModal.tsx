@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useUser } from "../../contexts/UserContext";
-import { updateSettings } from "../../services/profile.service";
+import { updateSettings, testEmailNotification } from "../../services/profile.service";
 import { modalBackdropVariants, modalContentVariants } from "../../utils/motionVariants";
 import "./settings.css";
 
@@ -17,8 +17,9 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
     taskReminders: true,
     dailySummary: false
   });
-  
+
   const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -53,8 +54,21 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
     }
   };
 
+  const handleTestEmail = async () => {
+    setTesting(true);
+    setMessage("");
+    try {
+      const result = await testEmailNotification();
+      setMessage(result.message || "Test email sent!");
+    } catch (error: any) {
+      setMessage(error.response?.data?.message || "Failed to send test email. Check server logs.");
+    } finally {
+      setTesting(false);
+    }
+  };
+
   return (
-    <motion.div 
+    <motion.div
       className="modal-backdrop"
       initial="initial"
       animate="animate"
@@ -62,7 +76,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
       variants={modalBackdropVariants}
       onClick={onClose}
     >
-      <motion.div 
+      <motion.div
         className="settings-modal"
         variants={modalContentVariants}
         onClick={(e) => e.stopPropagation()}
@@ -81,14 +95,14 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
         <div className="settings-content">
           <section className="settings-section">
             <h3>📅 Calendar</h3>
-            
+
             <div className="setting-item">
               <div className="setting-info">
                 <label>Week starts on</label>
                 <p>Choose which day your calendar week starts</p>
               </div>
-              <select 
-                value={settings.weekStartDay} 
+              <select
+                value={settings.weekStartDay}
                 onChange={(e) => handleChange("weekStartDay", Number(e.target.value))}
               >
                 <option value={0}>Sunday</option>
@@ -101,8 +115,8 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
                 <label>Time format</label>
                 <p>Display time in 12-hour or 24-hour format</p>
               </div>
-              <select 
-                value={settings.timeFormat} 
+              <select
+                value={settings.timeFormat}
                 onChange={(e) => handleChange("timeFormat", e.target.value)}
               >
                 <option value="12h">12-hour</option>
@@ -116,8 +130,8 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
                 <p>Display a line indicating the current time</p>
               </div>
               <label className="toggle">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.showCurrentTimeline}
                   onChange={() => handleToggle("showCurrentTimeline")}
                 />
@@ -130,15 +144,15 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
 
           <section className="settings-section">
             <h3>🎯 Productivity</h3>
-            
+
             <div className="setting-item">
               <div className="setting-info">
                 <label>Enable undo delete</label>
                 <p>Allow undoing task deletions within 5 seconds</p>
               </div>
               <label className="toggle">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.enableUndoDelete}
                   onChange={() => handleToggle("enableUndoDelete")}
                 />
@@ -152,8 +166,8 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
                 <p>Drag tasks to reschedule them</p>
               </div>
               <label className="toggle">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.enableDragDrop}
                   onChange={() => handleToggle("enableDragDrop")}
                 />
@@ -167,8 +181,8 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
                 <p>Hide tasks not scheduled for today</p>
               </div>
               <label className="toggle">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.focusMode}
                   onChange={() => handleToggle("focusMode")}
                 />
@@ -181,15 +195,15 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
 
           <section className="settings-section">
             <h3>🔔 Notifications</h3>
-            
+
             <div className="setting-item">
               <div className="setting-info">
                 <label>Task reminders</label>
                 <p>Receive reminders for upcoming tasks</p>
               </div>
               <label className="toggle">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.taskReminders}
                   onChange={() => handleToggle("taskReminders")}
                 />
@@ -203,13 +217,29 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
                 <p>Get a summary of your tasks each morning</p>
               </div>
               <label className="toggle">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   checked={settings.dailySummary}
                   onChange={() => handleToggle("dailySummary")}
                 />
                 <span className="toggle-slider"></span>
               </label>
+            </div>
+
+            <div className="setting-item">
+              <div className="setting-info">
+                <label>Test Connection</label>
+                <p>Send a test email to verify setup</p>
+              </div>
+              <button
+                type="button"
+                className="btn-secondary"
+                style={{ padding: '6px 12px', fontSize: '12px', width: 'auto' }}
+                onClick={handleTestEmail}
+                disabled={testing}
+              >
+                {testing ? "Testing..." : "Test Now"}
+              </button>
             </div>
           </section>
         </div>

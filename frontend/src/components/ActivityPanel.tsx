@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback, memo } from "react";
-import { useTeam } from "../../contexts/TeamContext";
-import { getTeamActivity } from "../../services/activity.service";
-import { env } from "../../config/env";
+import { useState, useEffect, useCallback } from "react";
+import { useTeam } from "../contexts/TeamContext";
+import { getTeamActivity } from "../services/activity.service";
+import { getAvatarUrl } from "../utils/avatar";
 import "./activityPanel.css";
 
 interface Activity {
@@ -14,12 +14,13 @@ interface Activity {
   };
   details: {
     taskTitle?: string;
+    projectName?: string;
     memberName?: string;
     memberEmail?: string;
     changes?: string;
     role?: string;
   };
-  timestamp: string;
+  createdAt: string;
 }
 
 export default function ActivityPanel({ onClose }: { onClose: () => void }) {
@@ -31,7 +32,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
     if (!activeTeam) return;
     try {
       setLoading(true);
-      const data = await getTeamActivity(activeTeam._id);
+      const data = await getTeamActivity(activeTeam._id) as any[];
       setActivities(data);
     } catch (error) {
       console.error("Failed to load activities:", error);
@@ -48,10 +49,16 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
 
   const getActionText = useCallback((activity: Activity) => {
     const { action, details } = activity;
-    
+
     switch (action) {
       case "team_created":
         return "created the team";
+      case "project_created":
+        return `created project "${details.projectName}"`;
+      case "project_updated":
+        return `updated project "${details.projectName}" - ${details.changes}`;
+      case "project_deleted":
+        return `deleted project "${details.projectName}"`;
       case "task_created":
         return `created task "${details.taskTitle}"`;
       case "task_updated":
@@ -72,6 +79,9 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
   const getActionIcon = useCallback((action: string) => {
     switch (action) {
       case "team_created": return "🎉";
+      case "project_created": return "📂";
+      case "project_updated": return "💼";
+      case "project_deleted": return "🗑️";
       case "task_created": return "📝";
       case "task_updated": return "✏️";
       case "task_deleted": return "🗑️";
@@ -129,11 +139,11 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                   <div className="activity-icon">{getActionIcon(activity.action)}</div>
                   <div className="activity-content">
                     <div className="activity-user">
-                      {activity.userId && activity.userId.avatar && activity.userId.avatar.length > 1 ? (
+                      {activity.userId && activity.userId.avatar ? (
                         <div
                           className="user-avatar"
                           style={{
-                            backgroundImage: `url(${env.BASE_URL}${activity.userId.avatar})`,
+                            backgroundImage: `url(${getAvatarUrl(activity.userId.avatar)})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center'
                           }}
@@ -146,7 +156,7 @@ export default function ActivityPanel({ onClose }: { onClose: () => void }) {
                       <span className="user-name">{activity.userId?.name || 'Unknown User'}</span>
                     </div>
                     <div className="activity-text">{getActionText(activity)}</div>
-                    <div className="activity-time">{formatTime(activity.timestamp)}</div>
+                    <div className="activity-time">{formatTime(activity.createdAt)}</div>
                   </div>
                 </div>
               ))}

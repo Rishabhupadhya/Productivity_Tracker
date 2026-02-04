@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useUser } from "../../contexts/UserContext";
 import { updateProfile, changePassword, uploadAvatar } from "../../services/profile.service";
-import { env } from "../../config/env";
+import { getAvatarUrl } from "../../utils/avatar";
 import { modalBackdropVariants, modalContentVariants } from "../../utils/motionVariants";
 import "./profile.css";
 
 export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const { user, refreshUser } = useUser();
-  
+
   // Don't render if user is not loaded
   if (!user) {
     return null;
@@ -19,15 +19,15 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
   const [workEndTime, setWorkEndTime] = useState("18:00");
   const [defaultDuration, setDefaultDuration] = useState("1h");
   const [avatarPreview, setAvatarPreview] = useState<string>("");
-  
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -39,8 +39,8 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       setWorkStartTime((user as any).workingHours?.start || "09:00");
       setWorkEndTime((user as any).workingHours?.end || "18:00");
       setDefaultDuration((user as any).defaultTaskDuration || "1h");
-      if (user.avatar && user.avatar.length > 1) {
-        setAvatarPreview(`${env.BASE_URL}${user.avatar}`);
+      if (user.avatar) {
+        setAvatarPreview(getAvatarUrl(user.avatar) || "");
       }
     }
   }, [user]);
@@ -79,16 +79,16 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       await uploadAvatar(file);
       await refreshUser();
       setMessage("Avatar updated successfully!");
-      
+
       // Dispatch event to update avatar across the app
       window.dispatchEvent(new CustomEvent('avatarUpdated'));
-      
+
       setTimeout(() => setMessage(""), 3000);
     } catch (error: any) {
       setMessage(error.response?.data?.message || "Failed to upload avatar");
       // Revert preview on error
-      if (user?.avatar && user.avatar.length > 1) {
-        setAvatarPreview(`${env.BASE_URL}${user.avatar}`);
+      if (user?.avatar) {
+        setAvatarPreview(getAvatarUrl(user.avatar) || "");
       } else {
         setAvatarPreview("");
       }
@@ -108,10 +108,10 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
         defaultTaskDuration: defaultDuration
       };
       console.log('Saving profile with data:', profileData);
-      
+
       const result = await updateProfile(profileData);
       console.log('Profile update result:', result);
-      
+
       await refreshUser();
       setMessage("Profile updated successfully!");
       setTimeout(() => setMessage(""), 3000);
@@ -162,7 +162,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
    */
 
   return (
-    <motion.div 
+    <motion.div
       className="modal-backdrop"
       initial="initial"
       animate="animate"
@@ -170,7 +170,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
       variants={modalBackdropVariants}
       onClick={onClose}
     >
-      <motion.div 
+      <motion.div
         className="profile-modal"
         variants={modalContentVariants}
         onClick={(e) => e.stopPropagation()}
@@ -190,10 +190,10 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
           <section className="profile-section">
             <div className="avatar-section">
               <div className="avatar-container">
-                <div 
-                  className="avatar-display clickable" 
+                <div
+                  className="avatar-display clickable"
                   onClick={handleAvatarClick}
-                  style={avatarPreview ? { 
+                  style={avatarPreview ? {
                     backgroundImage: `url(${avatarPreview})`,
                     backgroundSize: 'cover',
                     backgroundPosition: 'center'
@@ -229,7 +229,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
 
           <section className="profile-section">
             <h3>Personal Information</h3>
-            
+
             <div className="form-group">
               <label>Full Name</label>
               <input
@@ -271,7 +271,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
 
           <section className="profile-section">
             <h3>Work Preferences</h3>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label>Working Hours Start</label>
@@ -301,8 +301,8 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
               </select>
             </div>
 
-            <button 
-              className="btn-primary" 
+            <button
+              className="btn-primary"
               onClick={handleSaveProfile}
               disabled={saving}
             >
@@ -314,7 +314,7 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
 
           <section className="profile-section">
             <h3>Security</h3>
-            
+
             <div className="form-group">
               <label>Current Password</label>
               <input
@@ -345,8 +345,8 @@ export default function ProfileModal({ onClose }: { onClose: () => void }) {
               />
             </div>
 
-            <button 
-              className="btn-secondary" 
+            <button
+              className="btn-secondary"
               onClick={handleChangePassword}
               disabled={saving || !currentPassword || !newPassword}
             >

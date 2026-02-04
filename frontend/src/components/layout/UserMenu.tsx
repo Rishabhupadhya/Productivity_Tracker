@@ -5,8 +5,8 @@ import { useUser } from "../../contexts/UserContext";
 import ProfileModal from "../profile/ProfileModal";
 import SettingsModal from "../settings/SettingsModal";
 import Avatar from "../ui/Avatar";
-import { env } from "../../config/env";
 import { dropdownVariants } from "../../utils/motionVariants";
+import { getAvatarUrl } from "../../utils/avatar";
 import "./userMenu.css";
 
 export default function UserMenu() {
@@ -22,7 +22,7 @@ export default function UserMenu() {
     const handleAvatarUpdate = () => {
       refreshUser();
     };
-    
+
     window.addEventListener('avatarUpdated', handleAvatarUpdate);
     return () => window.removeEventListener('avatarUpdated', handleAvatarUpdate);
   }, [refreshUser]);
@@ -72,10 +72,10 @@ export default function UserMenu() {
       <div className="user-menu" ref={menuRef}>
         {/* Show XP and Level */}
         {user.level && user.level > 1 && (
-          <div style={{ 
-            marginRight: "12px", 
-            fontSize: "14px", 
-            color: "var(--accent)", 
+          <div style={{
+            marginRight: "12px",
+            fontSize: "14px",
+            color: "var(--accent)",
             fontWeight: "bold",
             display: "flex",
             alignItems: "center",
@@ -88,9 +88,9 @@ export default function UserMenu() {
             )}
           </div>
         )}
-        
+
         <Avatar
-          src={user.avatar && user.avatar.length > 1 ? `${env.BASE_URL}${user.avatar}` : null}
+          src={getAvatarUrl(user.avatar)}
           name={user?.name || 'User'}
           size="medium"
           onClick={() => setOpen(!open)}
@@ -98,7 +98,7 @@ export default function UserMenu() {
 
         <AnimatePresence>
           {open && (
-            <motion.div 
+            <motion.div
               className="user-dropdown"
               initial="initial"
               animate="animate"
@@ -107,7 +107,7 @@ export default function UserMenu() {
             >
               <div className="user-info">
                 <Avatar
-                  src={user.avatar && user.avatar.length > 1 ? `${env.BASE_URL}${user.avatar}` : null}
+                  src={getAvatarUrl(user.avatar)}
                   name={user?.name || 'User'}
                   size="large"
                 />
@@ -130,11 +130,11 @@ export default function UserMenu() {
               <button className="menu-item" onClick={() => { setOpen(false); setShowSettings(true); }}>
                 <span>⚙️</span> Settings
               </button>
-              
+
               {user.settings?.userType && (
-                <div className="menu-item" style={{ 
-                  cursor: 'default', 
-                  fontSize: '12px', 
+                <div className="menu-item" style={{
+                  cursor: 'default',
+                  fontSize: '12px',
                   color: 'var(--text-muted)',
                   padding: '8px 16px'
                 }}>

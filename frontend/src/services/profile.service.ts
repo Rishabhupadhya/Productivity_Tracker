@@ -23,11 +23,15 @@ export const changePassword = async (currentPassword: string, newPassword: strin
 export const uploadAvatar = async (file: File) => {
   const formData = new FormData();
   formData.append("avatar", file);
-  
+
   const res = await api.post("/profile/avatar", formData, {
     headers: {
       "Content-Type": "multipart/form-data"
     }
   });
+  return res.data;
+};
+export const testEmailNotification = async () => {
+  const res = await api.post("/profile/test-email");
   return res.data;
 };
