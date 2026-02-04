@@ -17,6 +17,8 @@ export interface IUser extends Document {
   lastLogin?: Date;
   failedLoginAttempts: number;
   accountLockedUntil?: Date;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   momentum: {
     today: number;
     week: number;
@@ -50,30 +52,32 @@ const UserSchema = new Schema<IUser>(
     timezone: { type: String, default: "UTC" },
     xp: { type: Number, default: 0 },
     level: { type: Number, default: 1 },
-    role: { 
-      type: String, 
+    role: {
+      type: String,
       enum: ['user', 'admin', 'manager'],
       default: 'user',
       index: true
     },
-    authMethod: { 
-      type: String, 
+    authMethod: {
+      type: String,
       enum: ['email_password', 'oauth'],
       default: 'email_password',
       index: true
     },
-    emailVerified: { 
-      type: Boolean, 
-      default: false 
+    emailVerified: {
+      type: Boolean,
+      default: false
     },
-    isActive: { 
-      type: Boolean, 
+    isActive: {
+      type: Boolean,
       default: true,
       index: true
     },
     lastLogin: { type: Date },
     failedLoginAttempts: { type: Number, default: 0 },
     accountLockedUntil: { type: Date },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
     momentum: {
       today: { type: Number, default: 0 },
       week: { type: Number, default: 0 },

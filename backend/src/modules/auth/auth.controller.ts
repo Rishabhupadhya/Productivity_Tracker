@@ -1,6 +1,72 @@
 import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
-import { registerUser, loginUser } from "./auth.service";
+import { registerUser, loginUser, requestPasswordReset, resetPassword } from "./auth.service";
+
+export const forgotPasswordValidation = [
+  body('email')
+    .trim()
+    .isEmail().withMessage('Valid email required')
+    .normalizeEmail(),
+];
+
+export const resetPasswordValidation = [
+  body('token').notEmpty().withMessage('Token is required'),
+  body('password')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/).withMessage('Password must contain uppercase, lowercase, and number')
+];
+
+export const requestReset = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
+    const { email } = req.body;
+    const token = await requestPasswordReset(email);
+
+    // In a real app, you'd send an email here. 
+    // For this project, we'll return the token so the user can see it (or simulate the link)
+    res.status(200).json({
+      success: true,
+      message: 'Password reset token generated',
+      // We expose it for ease of testing in this dev environment
+      resetToken: token
+    });
+  } catch (error: any) {
+    if (error.message === 'User not found') {
+      // Security best practice: don't reveal if user exists
+      return res.status(200).json({
+        success: true,
+        message: 'If an account exists with that email, a reset token has been generated.'
+      });
+    }
+    next(error);
+  }
+};
+
+export const reset = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
+    }
+
+    const { token, password } = req.body;
+    await resetPassword(token, password);
+
+    res.status(200).json({
+      success: true,
+      message: 'Password has been reset successfully'
+    });
+  } catch (error: any) {
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 
 // Cookie options for secure token storage
 const getCookieOptions = () => {
@@ -44,18 +110,18 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     // Validate input
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
         message: 'Validation failed',
-        errors: errors.array() 
+        errors: errors.array()
       });
     }
 
     const { name, email, password } = req.body;
     const result = await registerUser(name, email, password);
-    
+
     // Return tokens in response for localStorage (cross-domain compatible)
-    res.status(201).json({ 
+    res.status(201).json({
       success: true,
       message: 'Registration successful',
       token: result.token,
@@ -77,18 +143,18 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     // Validate input
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         success: false,
         message: 'Validation failed',
-        errors: errors.array() 
+        errors: errors.array()
       });
     }
 
     const { email, password } = req.body;
     const result = await loginUser(email, password);
-    
+
     // Return tokens in response for localStorage (cross-domain compatible)
-    res.status(200).json({ 
+    res.status(200).json({
       success: true,
       message: 'Login successful',
       token: result.token,
