@@ -53,7 +53,10 @@ export const testEmail = async (req: AuthRequest, res: Response, next: NextFunct
   try {
     const connectionOk = await testEmailConnection();
     if (!connectionOk) {
-      return res.status(500).json({ success: false, message: "Email transporter connection failed" });
+      return res.status(500).json({
+        success: false,
+        message: "Email connection failed. This usually means the email/password in .env is incorrect or Gmail is blocking the connection."
+      });
     }
 
     const user = await User.findById(req.user.id);

@@ -7,23 +7,22 @@ const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 const EMAIL_FROM = process.env.EMAIL_FROM || EMAIL_USER;
 const EMAIL_SERVICE = process.env.EMAIL_SERVICE || "gmail";
 
-// Create reusable transporter
+// Create reusable transporter with explicit SMTP settings for reliability
 const transporter = nodemailer.createTransport({
-  service: EMAIL_SERVICE,
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // Use SSL/TLS
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASSWORD,
   },
+  // Added for better performance in serverless
+  pool: true,
+  maxConnections: 3,
+  maxMessages: 100
 });
 
-// Verify transporter configuration
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ Email transporter configuration error:", error);
-  } else {
-    console.log("✅ Email server is ready to send messages");
-  }
-});
+// Transporter verification moved to testEmailConnection function to avoid initialization issues in serverless
 
 /**
  * Send task reminder email
@@ -56,9 +55,8 @@ export const sendTaskReminderEmail = async (
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px 10px 0 0; }
           .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-          .task-card { background: white; padding: 20px; border-left: 4px solid ${
-            type === "reminder" ? "#667eea" : "#f56565"
-          }; margin: 20px 0; border-radius: 5px; }
+          .task-card { background: white; padding: 20px; border-left: 4px solid ${type === "reminder" ? "#667eea" : "#f56565"
+      }; margin: 20px 0; border-radius: 5px; }
           .btn { display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
           .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
         </style>
@@ -70,11 +68,10 @@ export const sendTaskReminderEmail = async (
           </div>
           <div class="content">
             <p>Hi ${user.name},</p>
-            <p>${
-              type === "reminder"
-                ? `This is a friendly reminder about your upcoming task:`
-                : `You have an overdue task that needs your attention:`
-            }</p>
+            <p>${type === "reminder"
+        ? `This is a friendly reminder about your upcoming task:`
+        : `You have an overdue task that needs your attention:`
+      }</p>
             
             <div class="task-card">
               <h3>${task.title}</h3>
@@ -83,11 +80,10 @@ export const sendTaskReminderEmail = async (
               ${task.description ? `<p><strong>Details:</strong> ${task.description}</p>` : ""}
             </div>
 
-            <p>${
-              type === "reminder"
-                ? "Don't forget to complete this task on time!"
-                : "Please complete this task as soon as possible."
-            }</p>
+            <p>${type === "reminder"
+        ? "Don't forget to complete this task on time!"
+        : "Please complete this task as soon as possible."
+      }</p>
 
             <a href="${process.env.FRONTEND_URL || "https://momentum12.vercel.app"}/dashboard" class="btn">
               View Dashboard
@@ -250,11 +246,10 @@ export const sendGoalProgressEmail = async (
               ${goal.deadline ? `<p><strong>Deadline:</strong> ${new Date(goal.deadline).toLocaleDateString()}</p>` : ""}
             </div>
 
-            <p>${
-              progressPercentage >= 80
-                ? "You're almost there! Keep pushing to reach your goal! 🚀"
-                : "You're making great progress! Keep up the excellent work! 💪"
-            }</p>
+            <p>${progressPercentage >= 80
+        ? "You're almost there! Keep pushing to reach your goal! 🚀"
+        : "You're making great progress! Keep up the excellent work! 💪"
+      }</p>
 
             <a href="${process.env.FRONTEND_URL || "https://momentum12.vercel.app"}/goals" class="btn">
               View Goals
