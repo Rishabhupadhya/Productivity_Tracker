@@ -2,227 +2,138 @@ import cron from "node-cron";
 import { Task } from "../modules/auth/task/task.model";
 import { Habit } from "../modules/auth/habit/habit.model";
 import { Goal } from "../modules/auth/goal/goal.model";
+import { User } from "../modules/auth/auth.model";
 import {
   sendTaskReminderEmail,
   sendHabitReminderEmail,
   sendGoalProgressEmail,
+  sendDailySummaryEmail,
+  sendUpcomingReminderEmail
 } from "./email.service";
 
-// Email throttle settings
-const EMAIL_COOLDOWN_HOURS = 12; // Don't send more than 1 email per 12 hours
-const GOAL_PROGRESS_THRESHOLD = 80; // Send email at 80% progress
-
 /**
- * Check if enough time has passed since last email
+ * Check if a reminder was already sent for a specific window
  */
-const canSendEmail = (lastEmailSentAt?: Date): boolean => {
-  if (!lastEmailSentAt) return true;
-
-  const hoursSinceLastEmail =
-    (Date.now() - lastEmailSentAt.getTime()) / (1000 * 60 * 60);
-  return hoursSinceLastEmail >= EMAIL_COOLDOWN_HOURS;
+const alreadySentReminder = (item: any, windowMinutes: number): boolean => {
+  return item.lastReminderWindow === windowMinutes;
 };
 
 /**
- * Check and send reminders for incomplete tasks
- * Runs every 15 minutes
+ * Check for tasks starting in exactly 30m or 1h
+ * Runs every 5 minutes
  */
-const checkTaskReminders = async () => {
+const checkUpcomingItemReminders = async () => {
   try {
-    console.log("🔍 Checking task reminders...");
     const now = new Date();
-    const currentDate = now.toISOString().split("T")[0];
-    const currentTime = now.toTimeString().split(" ")[0].substring(0, 5); // HH:mm
+    const todayStr = now.toISOString().split('T')[0];
 
-    // Find incomplete tasks for today
-    const tasks = await Task.find({
-      day: currentDate,
-      completed: false,
-      $or: [
-        { lastEmailSentAt: { $exists: false } },
-        {
-          lastEmailSentAt: {
-            $lt: new Date(Date.now() - EMAIL_COOLDOWN_HOURS * 60 * 60 * 1000),
-          },
-        },
-      ],
-    });
+    // ✅ Only fetch INCOMPLETE tasks for today
+    const tasks = await Task.find({ day: todayStr, completed: false });
 
     for (const task of tasks) {
-      try {
-        // Parse task start time
-        const taskTime = task.startTime; // HH:mm format
-        const taskDateTime = new Date(`${currentDate}T${taskTime}`);
-        const currentDateTime = now;
+      if (!task.startTime) continue;
 
-        // Check if task is overdue (current time > task time + 30 minutes)
-        const overdueThreshold = new Date(taskDateTime.getTime() + 30 * 60 * 1000);
+      const [hours, minutes] = task.startTime.split(':').map(Number);
+      const taskTime = new Date(now);
+      taskTime.setHours(hours, minutes, 0, 0);
 
-        if (currentDateTime > overdueThreshold) {
-          // Task is overdue
-          if (canSendEmail(task.lastEmailSentAt)) {
-            await sendTaskReminderEmail(
-              task.userId.toString(),
-              task,
-              "overdue"
-            );
+      const diffMinutes = Math.round((taskTime.getTime() - now.getTime()) / 60000);
 
-            // Update email tracking
-            await Task.findByIdAndUpdate(task._id, {
-              lastEmailSentAt: now,
-              $inc: { emailsSentCount: 1 },
-              status: "overdue",
-            });
-
-            console.log(`✅ Sent overdue email for task: ${task.title}`);
-          }
-        } else if (currentDateTime >= taskDateTime) {
-          // Task time has arrived, send reminder
-          if (canSendEmail(task.lastEmailSentAt)) {
-            await sendTaskReminderEmail(
-              task.userId.toString(),
-              task,
-              "reminder"
-            );
-
-            // Update email tracking
-            await Task.findByIdAndUpdate(task._id, {
-              lastEmailSentAt: now,
-              $inc: { emailsSentCount: 1 },
-            });
-
-            console.log(`✅ Sent reminder email for task: ${task.title}`);
-          }
-        }
-      } catch (error) {
-        console.error(`❌ Error processing task ${task._id}:`, error);
+      // 1 hour reminder (window: 56 to 65 mins)
+      if (diffMinutes > 55 && diffMinutes <= 65 && !alreadySentReminder(task, 60)) {
+        await sendUpcomingReminderEmail(task.userId.toString(), task, 'task', 60);
+        await Task.findByIdAndUpdate(task._id, { lastReminderWindow: 60 });
+      }
+      // 30 min reminder (window: 26 to 35 mins)
+      else if (diffMinutes > 25 && diffMinutes <= 35 && !alreadySentReminder(task, 30)) {
+        await sendUpcomingReminderEmail(task.userId.toString(), task, 'task', 30);
+        await Task.findByIdAndUpdate(task._id, { lastReminderWindow: 30 });
       }
     }
-
-    console.log(`✅ Task reminder check complete. Processed ${tasks.length} tasks.`);
   } catch (error) {
-    console.error("❌ Error checking task reminders:", error);
+    console.error("❌ Upcoming Task Check Error:", error);
   }
 };
 
 /**
- * Check and send reminders for incomplete habits
- * Runs every 30 minutes
+ * Check for pending tasks at 6 PM (Evening Recap)
  */
-const checkHabitReminders = async () => {
+const checkDailyEveningSummaries = async (force: boolean = false) => {
   try {
-    console.log("🔍 Checking habit reminders...");
     const now = new Date();
-    const today = now.toISOString().split("T")[0];
     const currentHour = now.getHours();
 
-    // Only send habit reminders after 6 PM
-    if (currentHour < 18) {
-      console.log("⏰ Too early for habit reminders (before 6 PM)");
-      return;
-    }
+    // Trigger exactly at 6 PM (18:00) unless forced for testing
+    if (currentHour !== 18 && !force) return;
 
-    // Find active habits that haven't been completed today
-    const habits = await Habit.find({
-      isActive: true,
-      $or: [
-        { lastEmailSentAt: { $exists: false } },
-        {
-          lastEmailSentAt: {
-            $lt: new Date(Date.now() - EMAIL_COOLDOWN_HOURS * 60 * 60 * 1000),
-          },
-        },
-      ],
-    });
+    const todayStr = now.toISOString().split('T')[0];
+    const users = await User.find({ "settings.dailySummary": true });
 
-    for (const habit of habits) {
-      try {
-        // Check if completed today
-        const completedToday = habit.completions.some((c) => {
-          const completionDate = new Date(c.date).toISOString().split("T")[0];
-          return completionDate === today && c.completed;
-        });
+    for (const user of users) {
+      const pendingTasks = await Task.find({
+        userId: user._id,
+        day: todayStr,
+        completed: false
+      });
 
-        if (!completedToday && canSendEmail(habit.lastEmailSentAt)) {
-          await sendHabitReminderEmail(habit.userId.toString(), habit);
-
-          // Update email tracking
-          await Habit.findByIdAndUpdate(habit._id, {
-            lastEmailSentAt: now,
-            $inc: { emailsSentCount: 1 },
-          });
-
-          console.log(`✅ Sent habit reminder email for: ${habit.name}`);
-        }
-      } catch (error) {
-        console.error(`❌ Error processing habit ${habit._id}:`, error);
+      if (pendingTasks.length > 0) {
+        await sendDailySummaryEmail(user._id.toString(), pendingTasks);
       }
     }
-
-    console.log(`✅ Habit reminder check complete. Processed ${habits.length} habits.`);
   } catch (error) {
-    console.error("❌ Error checking habit reminders:", error);
+    console.error("❌ Evening Summary Error:", error);
   }
 };
 
 /**
- * Check and send progress emails for goals
- * Runs once per day at 9 AM
+ * Habits: Evening nudge for incomplete habits
  */
-const checkGoalProgress = async () => {
+const checkHabitReminders = async (force: boolean = false) => {
   try {
-    console.log("🔍 Checking goal progress...");
     const now = new Date();
+    const currentHour = now.getHours();
 
-    // Find goals that are near completion (80-90%)
-    const goals = await Goal.find({
-      status: { $in: ["active", "in_progress"] },
-      $or: [
-        { lastEmailSentAt: { $exists: false } },
-        {
-          lastEmailSentAt: {
-            $lt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 24 hours
-          },
-        },
-      ],
-    });
+    if (currentHour < 18 && !force) return;
 
-    for (const goal of goals) {
-      try {
-        // Calculate progress percentage
-        const progress =
-          goal.targetValue > 0
-            ? (goal.currentValue / goal.targetValue) * 100
-            : 0;
+    const todayStr = now.toISOString().split('T')[0];
+    const habits = await Habit.find({ isActive: true });
 
-        // Send email if progress is between 80-100% and we haven't sent recently
-        if (
-          progress >= GOAL_PROGRESS_THRESHOLD &&
-          progress < 100 &&
-          canSendEmail(goal.lastEmailSentAt)
-        ) {
-          await sendGoalProgressEmail(
-            goal.userId.toString(),
-            goal,
-            Math.round(progress)
-          );
+    for (const habit of habits) {
+      const isDoneToday = habit.completions.some(c =>
+        new Date(c.date).toISOString().split('T')[0] === todayStr && c.completed
+      );
 
-          // Update email tracking
-          await Goal.findByIdAndUpdate(goal._id, {
-            lastEmailSentAt: now,
-            $inc: { emailsSentCount: 1 },
-          });
+      if (!isDoneToday && (!habit.lastEmailSentAt ||
+        new Date(habit.lastEmailSentAt).toISOString().split('T')[0] !== todayStr)) {
 
-          console.log(`✅ Sent goal progress email for: ${goal.title}`);
-        }
-      } catch (error) {
-        console.error(`❌ Error processing goal ${goal._id}:`, error);
+        await sendHabitReminderEmail(habit.userId.toString(), habit);
+        await Habit.findByIdAndUpdate(habit._id, { lastEmailSentAt: now });
       }
     }
-
-    console.log(`✅ Goal progress check complete. Processed ${goals.length} goals.`);
   } catch (error) {
-    console.error("❌ Error checking goal progress:", error);
+    console.error("❌ Habit Check Error:", error);
+  }
+};
+
+/**
+ * Goals: Progress alerts
+ */
+const checkGoalAlerts = async () => {
+  try {
+    const goals = await Goal.find({ status: "active" });
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    for (const goal of goals) {
+      const progress = (goal.currentValue / goal.targetValue) * 100;
+      if (progress >= 80 && progress < 100) {
+        if (!goal.lastEmailSentAt || new Date(goal.lastEmailSentAt).toISOString().split('T')[0] !== todayStr) {
+          await sendGoalProgressEmail(goal.userId.toString(), goal, Math.round(progress));
+          await Goal.findByIdAndUpdate(goal._id, { lastEmailSentAt: new Date() });
+        }
+      }
+    }
+  } catch (error) {
+    console.error("❌ Goal Check Error:", error);
   }
 };
 
@@ -230,30 +141,29 @@ const checkGoalProgress = async () => {
  * Initialize all cron jobs
  */
 export const initializeScheduler = () => {
-  console.log("🚀 Initializing notification scheduler...");
+  console.log("🚀 Initializing Notification Scheduler...");
 
-  // Check task reminders every 15 minutes
-  cron.schedule("*/15 * * * *", checkTaskReminders);
-  console.log("✅ Task reminder cron job scheduled (every 15 minutes)");
+  // Task Alerts (30m/1h) - Every 5m
+  cron.schedule("*/5 * * * *", checkUpcomingItemReminders);
 
-  // Check habit reminders every 30 minutes (after 6 PM)
-  cron.schedule("*/30 * * * *", checkHabitReminders);
-  console.log("✅ Habit reminder cron job scheduled (every 30 minutes after 6 PM)");
+  // Evening Recap (6 PM) - Every hour check
+  cron.schedule("0 * * * *", () => checkDailyEveningSummaries(false));
 
-  // Check goal progress once per day at 9 AM
-  cron.schedule("0 9 * * *", checkGoalProgress);
-  console.log("✅ Goal progress cron job scheduled (daily at 9 AM)");
+  // Habit Evening Nudge - Every 30m starting at 6 PM
+  cron.schedule("*/30 18-23 * * *", () => checkHabitReminders(false));
 
-  console.log("✅ All notification schedulers initialized successfully");
+  // Goal Progress - Daily at 9 AM
+  cron.schedule("0 9 * * *", checkGoalAlerts);
 };
 
 /**
- * Run all checks immediately (for testing)
+ * Core manual trigger for testing
  */
-export const runAllChecksNow = async () => {
-  console.log("🔄 Running all notification checks immediately...");
-  await checkTaskReminders();
-  await checkHabitReminders();
-  await checkGoalProgress();
-  console.log("✅ All checks completed");
+export const runAllChecksNow = async (force: boolean = false) => {
+  console.log(`🔄 Triggering notifications (force=${force})...`);
+  await checkUpcomingItemReminders();
+  await checkDailyEveningSummaries(force);
+  await checkHabitReminders(force);
+  await checkGoalAlerts();
+  console.log("✅ All checks complete");
 };

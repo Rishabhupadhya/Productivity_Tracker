@@ -11,19 +11,20 @@ export interface ITask extends Document {
   assignedTo?: Types.ObjectId;
   teamId?: Types.ObjectId;
   workspaceId: string;
-  
+
   // Completion tracking
   completed: boolean;
   completedAt?: Date;
   status: TaskStatus;
-  
+
   // Date fields for proper scheduling
   scheduledDate?: Date; // Full date object (optional, auto-set from day)
   scheduledTime?: string; // HH:mm format
-  
+
   // Email notification tracking
   lastEmailSentAt?: Date;
   emailsSentCount: number;
+  lastReminderWindow?: number; // 30 or 60 to prevent double sending
 }
 
 const TaskSchema = new Schema<ITask>(
@@ -36,23 +37,24 @@ const TaskSchema = new Schema<ITask>(
     assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
     teamId: { type: Schema.Types.ObjectId, ref: "Team" },
     workspaceId: { type: String, required: true },
-    
+
     // Completion tracking
     completed: { type: Boolean, default: false },
     completedAt: { type: Date },
-    status: { 
-      type: String, 
-      enum: ["pending", "completed", "overdue"], 
-      default: "pending" 
+    status: {
+      type: String,
+      enum: ["pending", "completed", "overdue"],
+      default: "pending"
     },
-    
+
     // Scheduling (make scheduledDate optional for backwards compatibility)
     scheduledDate: { type: Date },
     scheduledTime: { type: String }, // Optional time
-    
+
     // Email tracking
     lastEmailSentAt: { type: Date },
-    emailsSentCount: { type: Number, default: 0 }
+    emailsSentCount: { type: Number, default: 0 },
+    lastReminderWindow: { type: Number } // 30, 60
   },
   { timestamps: true }
 );
@@ -63,7 +65,7 @@ TaskSchema.index({ status: 1, scheduledDate: 1 });
 TaskSchema.index({ completed: 1, scheduledDate: 1 });
 
 // Pre-save hook to ensure scheduledDate is set
-TaskSchema.pre('save', function(next) {
+TaskSchema.pre('save', function (next) {
   if (!this.scheduledDate && this.day) {
     this.scheduledDate = new Date(this.day);
     this.scheduledDate.setHours(0, 0, 0, 0);

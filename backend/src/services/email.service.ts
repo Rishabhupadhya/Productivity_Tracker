@@ -293,3 +293,101 @@ export const testEmailConnection = async () => {
     return false;
   }
 };
+
+/**
+ * Send a summary of pending tasks for the day
+ */
+export const sendDailySummaryEmail = async (userId: string, tasks: any[]) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user || !user.email) return;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <body style="font-family: Arial, sans-serif; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
+          <div style="background: #667eea; color: white; padding: 20px; text-align: center;">
+            <h2>🌓 Evening Recap</h2>
+            <p>You have ${tasks.length} tasks remaining for today</p>
+          </div>
+          <div style="padding: 20px;">
+            <p>Hi ${user.name},</p>
+            <p>Here's a quick look at what's still on your plate before the day ends:</p>
+            
+            <div style="background: #fdfdfd; border: 1px solid #f0f0f0; border-radius: 8px; padding: 15px;">
+              ${tasks.map(t => `
+                <div style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                  <strong>• ${t.title}</strong> <span style="color: #666; font-size: 12px;">(${t.startTime})</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <p style="margin-top: 20px;">You've got this! A little push now makes for a better tomorrow.</p>
+            
+            <a href="${process.env.FRONTEND_URL}/dashboard" style="display: block; width: 200px; margin: 20px auto; padding: 12px; background: #667eea; color: white; text-decoration: none; text-align: center; border-radius: 5px;">
+              Go to Dashboard
+            </a>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await transporter.sendMail({
+      from: `"Momentum Tracker" <${EMAIL_FROM}>`,
+      to: user.email,
+      subject: `🌓 Evening Recap: ${tasks.length} tasks remaining`,
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("❌ Daily summary email failed:", error);
+  }
+};
+
+/**
+ * Send reminder for upcoming task/habit/goal (30m or 1h before)
+ */
+export const sendUpcomingReminderEmail = async (userId: string, item: any, type: 'task' | 'habit' | 'goal', minutesLeft: number) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user || !user.email) return;
+
+    const subject = `⚠️ ${item.title || item.name} is starting in ${minutesLeft} minutes!`;
+    const label = type.charAt(0).toUpperCase() + type.slice(1);
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <body style="font-family: Arial, sans-serif; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; border: 1px solid #eee; border-radius: 10px;">
+          <div style="background: #ff9800; color: white; padding: 20px; text-align: center;">
+            <h2>🔔 Quick Alert</h2>
+            <p>Your ${type} starts in ${minutesLeft} minutes</p>
+          </div>
+          <div style="padding: 20px; text-align: center;">
+            <h3 style="color: #333;">${item.title || item.name}</h3>
+            <p>This is a quick <strong>${minutesLeft}-minute</strong> heads up.</p>
+            <p style="color: #666;">${item.description || ''}</p>
+            
+            <a href="${process.env.FRONTEND_URL}/dashboard" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background: #333; color: white; text-decoration: none; border-radius: 4px;">
+              View Details
+            </a>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await transporter.sendMail({
+      from: `"Momentum Tracker" <${EMAIL_FROM}>`,
+      to: user.email,
+      subject,
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("❌ Upcoming reminder email failed:", error);
+  }
+};
