@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { formatDate } from "../../utils/date";
 import "./MobileDateSelector.css";
 
 interface MobileDateSelectorProps {
@@ -10,7 +11,7 @@ export default function MobileDateSelector({ value, onChange }: MobileDateSelect
   const [selectedDate, setSelectedDate] = useState(() => {
     if (value && typeof value === 'string') return value;
     const today = new Date();
-    return today.toISOString().split("T")[0];
+    return formatDate(today);
   });
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export default function MobileDateSelector({ value, onChange }: MobileDateSelect
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
     setSelectedDate(newDate);
-    
+
     if (onChange) {
       onChange(newDate);
     }
@@ -37,9 +38,9 @@ export default function MobileDateSelector({ value, onChange }: MobileDateSelect
   const changeDay = (offset: number) => {
     const current = new Date(selectedDate);
     current.setDate(current.getDate() + offset);
-    const newDate = current.toISOString().split("T")[0];
+    const newDate = formatDate(current);
     setSelectedDate(newDate);
-    
+
     if (onChange) {
       onChange(newDate);
     }
@@ -54,18 +55,18 @@ export default function MobileDateSelector({ value, onChange }: MobileDateSelect
   const formatDisplayDate = (dateStr: string | undefined) => {
     if (!dateStr || typeof dateStr !== 'string' || dateStr === 'Invalid Date') {
       const today = new Date();
-      dateStr = today.toISOString().split("T")[0];
+      dateStr = formatDate(today);
     }
-    
+
     const [year, month, day] = dateStr.split('-').map(Number);
     if (!year || !month || !day) {
       return 'Today';
     }
-    
+
     const date = new Date(year, month - 1, day);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const selected = new Date(year, month - 1, day);
     selected.setHours(0, 0, 0, 0);
 
@@ -85,23 +86,23 @@ export default function MobileDateSelector({ value, onChange }: MobileDateSelect
       return "Yesterday";
     }
 
-    return date.toLocaleDateString("en-US", { 
-      weekday: "short", 
-      month: "short", 
-      day: "numeric" 
+    return date.toLocaleDateString("en-US", {
+      weekday: "short",
+      month: "short",
+      day: "numeric"
     });
   };
 
   return (
     <div className="mobile-date-selector">
-      <button 
+      <button
         className="date-nav-btn"
         onClick={() => changeDay(-1)}
         aria-label="Previous day"
       >
         ‹
       </button>
-      
+
       <div className="date-display">
         <span className="date-label">{formatDisplayDate(selectedDate)}</span>
         <input
@@ -112,7 +113,7 @@ export default function MobileDateSelector({ value, onChange }: MobileDateSelect
         />
       </div>
 
-      <button 
+      <button
         className="date-nav-btn"
         onClick={() => changeDay(1)}
         aria-label="Next day"

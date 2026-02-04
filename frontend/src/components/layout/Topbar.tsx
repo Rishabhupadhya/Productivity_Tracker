@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, memo } from "react";
+import { formatDate } from "../../utils/date";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import AddTaskModal from "../task/AddTaskModal";
@@ -33,8 +34,7 @@ function Topbar({
   const [open, setOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(window.innerWidth <= 767);
   const [internalSelectedDate, setInternalSelectedDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
+    return formatDate(new Date());
   });
 
   const selectedDate = externalSelectedDate || internalSelectedDate;

@@ -5,24 +5,21 @@ export const formatDate = (date: Date) => {
   return `${year}-${month}-${day}`;
 };
 
-export const getWeekDays = (date: Date, weekStartDay: number = 1) => {
+export const getWeekDays = (date: Date, _weekStartDay: number = 1) => {
   // Create a copy to avoid mutating the input date
   const referenceDate = new Date(date);
   referenceDate.setHours(0, 0, 0, 0);
 
-  const currentDay = referenceDate.getDay();
-  const diff = currentDay - weekStartDay;
-  const adjustedDiff = diff < 0 ? diff + 7 : diff;
-
-  // Calculate the start of the week
+  // Instead of finding the Monday of the week, 
+  // we start from the provided date (which will be today on load)
+  // to satisfy the "start with today's date" requirement.
   const weekStart = new Date(referenceDate);
-  weekStart.setDate(referenceDate.getDate() - adjustedDiff);
 
-  // Generate 5 weekdays (Mon-Fri)
+  // Generate 5 days starting from the provided date
   return Array.from({ length: 5 }).map((_, i) => {
     const day = new Date(weekStart);
     day.setDate(weekStart.getDate() + i);
-    day.setHours(0, 0, 0, 0); // Ensure time is always midnight in local timezone
+    day.setHours(0, 0, 0, 0);
     return day;
   });
 };

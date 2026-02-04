@@ -1,13 +1,14 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IActivity extends Document {
-  teamId: Types.ObjectId;
+  teamId?: Types.ObjectId;
   userId: Types.ObjectId;
   action: string;
-  targetType: "task" | "member" | "team" | "transaction" | "goal" | "habit";
+  targetType: "task" | "member" | "team" | "transaction" | "goal" | "habit" | "project";
   targetId?: Types.ObjectId;
   details: {
     taskTitle?: string;
+    projectName?: string;
     memberName?: string;
     memberEmail?: string;
     changes?: string;
@@ -25,31 +26,18 @@ export interface IActivity extends Document {
 
 const ActivitySchema = new Schema<IActivity>(
   {
-    teamId: { type: Schema.Types.ObjectId, ref: "Team", required: true, index: true },
+    teamId: { type: Schema.Types.ObjectId, ref: "Team", required: false, index: true },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    action: { 
-      type: String, 
-      required: true,
-      enum: [
-        "task_created",
-        "task_updated", 
-        "task_deleted",
-        "member_invited",
-        "member_joined",
-        "member_removed",
-        "team_created",
-        "finance_transaction_added",
-        "finance_budget_set",
-        "goal_created",
-        "goal_completed",
-        "habit_completed",
-        "habit_streak_milestone"
-      ]
+    action: {
+      type: String,
+      required: true
+      // Enum removed to support dynamic project/task actions
     },
-    targetType: { type: String, enum: ["task", "member", "team", "transaction", "goal", "habit"], required: true },
+    targetType: { type: String, enum: ["task", "member", "team", "transaction", "goal", "habit", "project"], required: true },
     targetId: { type: Schema.Types.ObjectId },
     details: {
       taskTitle: String,
+      projectName: String,
       memberName: String,
       memberEmail: String,
       changes: String,

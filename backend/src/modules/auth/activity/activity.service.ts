@@ -2,7 +2,7 @@ import { Activity } from "./activity.model";
 import { Types } from "mongoose";
 
 export const logActivity = async (data: {
-  teamId: string;
+  teamId?: string;
   userId: string;
   action: string;
   targetType: string;
@@ -10,15 +10,20 @@ export const logActivity = async (data: {
   details?: any;
 }) => {
   try {
-    await Activity.create({
-      teamId: new Types.ObjectId(data.teamId),
+    const activityData: any = {
       userId: new Types.ObjectId(data.userId),
       action: data.action,
       targetType: data.targetType,
       targetId: data.targetId ? new Types.ObjectId(data.targetId) : undefined,
       details: data.details || {},
       timestamp: new Date()
-    });
+    };
+
+    if (data.teamId && data.teamId !== "") {
+      activityData.teamId = new Types.ObjectId(data.teamId);
+    }
+
+    await Activity.create(activityData);
   } catch (error) {
     console.error("Failed to log activity:", error);
   }
