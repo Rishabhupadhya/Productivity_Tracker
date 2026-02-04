@@ -1,6 +1,7 @@
 import { Project } from "./project.model";
 import { User } from "../auth.model";
 import { Types } from "mongoose";
+import { logActivity } from "../activity/activity.service";
 
 export const createProject = async (
   userId: string,
@@ -27,7 +28,19 @@ export const createProject = async (
     projectData.teamId = user.activeTeamId;
   }
 
-  return Project.create(projectData);
+  const project = await Project.create(projectData);
+
+  // Log activity
+  await logActivity({
+    teamId: projectData.teamId?.toString() || "",
+    userId,
+    action: "project_created",
+    targetType: "project",
+    targetId: project._id.toString(),
+    details: { projectName: name }
+  });
+
+  return project;
 };
 
 export const getUserProjects = async (userId: string) => {
@@ -74,7 +87,21 @@ export const updateProject = async (
     throw new Error("Not authorized");
   }
 
-  return Project.findByIdAndUpdate(projectId, { $set: updates }, { new: true });
+  const updatedProject = await Project.findByIdAndUpdate(projectId, { $set: updates }, { new: true });
+
+  // Log activity
+  if (updatedProject) {
+    await logActivity({
+      teamId: project.teamId?.toString() || "",
+      userId,
+      action: updates.completed !== undefined ? (updates.completed ? "project_completed" : "project_uncompleted") : "project_updated",
+      targetType: "project",
+      targetId: projectId,
+      details: { projectName: updatedProject.name, changes: Object.keys(updates).join(", ") }
+    });
+  }
+
+  return updatedProject;
 };
 
 export const deleteProject = async (projectId: string, userId: string) => {
@@ -86,5 +113,19 @@ export const deleteProject = async (projectId: string, userId: string) => {
     throw new Error("Not authorized");
   }
 
-  return Project.findByIdAndDelete(projectId);
+  const deletedProject = await Project.findByIdAndDelete(projectId);
+
+  // Log activity
+  if (deletedProject) {
+    await logActivity({
+      teamId: project.teamId?.toString() || "",
+      userId,
+      action: "project_deleted",
+      targetType: "project",
+      targetId: projectId,
+      details: { projectName: deletedProject.name }
+    });
+  }
+
+  return deletedProject;
 };

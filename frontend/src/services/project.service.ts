@@ -25,7 +25,7 @@ export const createProject = async (projectData: Partial<Project>): Promise<Proj
 };
 
 export const updateProject = async (projectId: string, updates: Partial<Project>): Promise<Project> => {
-  const response = await api.put(`/projects/${projectId}`, updates);
+  const response = await api.patch(`/projects/${projectId}`, updates);
   return response.data;
 };
 

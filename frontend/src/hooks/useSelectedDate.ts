@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { formatDate } from "../utils/date";
 
 /**
  * Custom hook for managing the selected date in the calendar
@@ -39,7 +40,7 @@ export function navigateToToday() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   window.dispatchEvent(
-    new CustomEvent("date-change", { detail: today.toISOString() })
+    new CustomEvent("date-change", { detail: formatDate(today) })
   );
 }
 
@@ -55,7 +56,7 @@ export function navigateToPreviousDay(currentDate?: Date) {
   baseDate.setDate(baseDate.getDate() - 1);
 
   window.dispatchEvent(
-    new CustomEvent("date-change", { detail: baseDate.toISOString() })
+    new CustomEvent("date-change", { detail: formatDate(baseDate) })
   );
 }
 
@@ -71,7 +72,7 @@ export function navigateToNextDay(currentDate?: Date) {
   baseDate.setDate(baseDate.getDate() + 1);
 
   window.dispatchEvent(
-    new CustomEvent("date-change", { detail: baseDate.toISOString() })
+    new CustomEvent("date-change", { detail: formatDate(baseDate) })
   );
 }
 
@@ -84,6 +85,6 @@ export function navigateToDate(date: Date | string) {
 
 
   window.dispatchEvent(
-    new CustomEvent("date-change", { detail: targetDate.toISOString() })
+    new CustomEvent("date-change", { detail: formatDate(targetDate) })
   );
 }

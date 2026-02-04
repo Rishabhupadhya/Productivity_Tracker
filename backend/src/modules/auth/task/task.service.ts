@@ -14,11 +14,11 @@ export const createTask = async (
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
 
-  const taskData: any = { 
-    title, 
-    duration, 
-    day, 
-    startTime, 
+  const taskData: any = {
+    title,
+    duration,
+    day,
+    startTime,
     userId,
     assignedTo: assignedTo || userId,
     workspaceId: user.workspaceId,
@@ -42,17 +42,15 @@ export const createTask = async (
 
   const task = await Task.create(taskData);
 
-  // Log activity if it's a team task
-  if (taskData.teamId) {
-    await logActivity({
-      teamId: taskData.teamId.toString(),
-      userId,
-      action: "task_created",
-      targetType: "task",
-      targetId: task._id.toString(),
-      details: { taskTitle: title }
-    });
-  }
+  // Log activity for all tasks (team or personal)
+  await logActivity({
+    teamId: taskData.teamId?.toString() || "",
+    userId,
+    action: "task_created",
+    targetType: "task",
+    targetId: task._id.toString(),
+    details: { taskTitle: title }
+  });
 
   return task;
 };
@@ -89,10 +87,10 @@ export const updateTaskDay = async (
   if (task.teamId) {
     const team = await Team.findById(task.teamId);
     if (!team) throw new Error("Team not found");
-    
+
     const member = team.members.find(m => m.userId.toString() === userId);
     if (!member) throw new Error("Not authorized");
-    
+
     // Members can only update their assigned tasks, admins can update any
     if (member.role !== "admin" && task.assignedTo?.toString() !== userId) {
       throw new Error("Not authorized");
@@ -110,20 +108,18 @@ export const updateTaskDay = async (
     { new: true }
   );
 
-  // Log activity if it's a team task
-  if (task.teamId) {
-    await logActivity({
-      teamId: task.teamId.toString(),
-      userId,
-      action: "task_updated",
-      targetType: "task",
-      targetId: taskId,
-      details: {
-        taskTitle: task.title,
-        changes: `Moved to ${day}`
-      }
-    });
-  }
+  // Log activity for all tasks
+  await logActivity({
+    teamId: task.teamId?.toString() || "",
+    userId,
+    action: "task_updated",
+    targetType: "task",
+    targetId: taskId,
+    details: {
+      taskTitle: task.title,
+      changes: `Moved to ${day}`
+    }
+  });
 
   return updatedTask;
 };
@@ -136,7 +132,7 @@ export const deleteTask = async (taskId: string, userId: string) => {
   if (task.teamId) {
     const team = await Team.findById(task.teamId);
     if (!team) throw new Error("Team not found");
-    
+
     const member = team.members.find(m => m.userId.toString() === userId);
     if (!member || member.role !== "admin") {
       throw new Error("Only admins can delete team tasks");
@@ -150,17 +146,15 @@ export const deleteTask = async (taskId: string, userId: string) => {
 
   const deletedTask = await Task.findOneAndDelete({ _id: taskId });
 
-  // Log activity if it's a team task
-  if (task.teamId) {
-    await logActivity({
-      teamId: task.teamId.toString(),
-      userId,
-      action: "task_deleted",
-      targetType: "task",
-      targetId: taskId,
-      details: { taskTitle: task.title }
-    });
-  }
+  // Log activity for all tasks
+  await logActivity({
+    teamId: task.teamId?.toString() || "",
+    userId,
+    action: "task_deleted",
+    targetType: "task",
+    targetId: taskId,
+    details: { taskTitle: task.title }
+  });
 
   return deletedTask;
 };
@@ -178,10 +172,10 @@ export const updateTaskSlot = async (
   if (task.teamId) {
     const team = await Team.findById(task.teamId);
     if (!team) throw new Error("Team not found");
-    
+
     const member = team.members.find(m => m.userId.toString() === userId);
     if (!member) throw new Error("Not authorized");
-    
+
     if (member.role !== "admin" && task.assignedTo?.toString() !== userId) {
       throw new Error("Not authorized");
     }
@@ -214,10 +208,10 @@ export const toggleTaskCompletion = async (
   if (task.teamId) {
     const team = await Team.findById(task.teamId);
     if (!team) throw new Error("Team not found");
-    
+
     const member = team.members.find(m => m.userId.toString() === userId);
     if (!member) throw new Error("Not authorized");
-    
+
     // Only assigned user or admin can toggle completion
     if (member.role !== "admin" && task.assignedTo?.toString() !== userId) {
       throw new Error("Not authorized");
@@ -247,17 +241,15 @@ export const toggleTaskCompletion = async (
     { new: true }
   ).populate('assignedTo', 'name email avatar');
 
-  // Log activity if it's a team task
-  if (task.teamId) {
-    await logActivity({
-      teamId: task.teamId.toString(),
-      userId,
-      action: completed ? "task_completed" : "task_uncompleted",
-      targetType: "task",
-      targetId: taskId,
-      details: { taskTitle: task.title }
-    });
-  }
+  // Log activity for all tasks
+  await logActivity({
+    teamId: task.teamId?.toString() || "",
+    userId,
+    action: completed ? "task_completed" : "task_uncompleted",
+    targetType: "task",
+    targetId: taskId,
+    details: { taskTitle: task.title }
+  });
 
   return updatedTask;
 };
