@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
 import { registerUser, loginUser, requestPasswordReset, resetPassword } from "./auth.service";
+import { sendPasswordResetEmail } from "../../services/email.service";
 
 export const forgotPasswordValidation = [
   body('email')
@@ -24,15 +25,14 @@ export const requestReset = async (req: Request, res: Response, next: NextFuncti
     }
 
     const { email } = req.body;
-    const token = await requestPasswordReset(email);
+    const { user, token } = await requestPasswordReset(email);
 
-    // In a real app, you'd send an email here. 
-    // For this project, we'll return the token so the user can see it (or simulate the link)
+    // Send the actual email
+    await sendPasswordResetEmail(user, token);
+
     res.status(200).json({
       success: true,
-      message: 'Password reset token generated',
-      // We expose it for ease of testing in this dev environment
-      resetToken: token
+      message: 'If an account exists with that email, a reset link has been sent.'
     });
   } catch (error: any) {
     if (error.message === 'User not found') {

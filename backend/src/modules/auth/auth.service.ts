@@ -18,7 +18,7 @@ export const requestPasswordReset = async (email: string) => {
   user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
   await user.save();
 
-  return token;
+  return { user, token };
 };
 
 export const resetPassword = async (token: string, newPassword: string) => {

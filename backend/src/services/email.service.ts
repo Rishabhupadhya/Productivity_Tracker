@@ -391,3 +391,70 @@ export const sendUpcomingReminderEmail = async (userId: string, item: any, type:
     console.error("❌ Upcoming reminder email failed:", error);
   }
 };
+
+/**
+ * Send password reset email
+ * @param user User object
+ * @param token Reset token
+ */
+export const sendPasswordResetEmail = async (user: any, token: string) => {
+  try {
+    const resetUrl = `${process.env.FRONTEND_URL || "https://momentum12.vercel.app"}/reset-password?token=${token}`;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #00e5ff; color: #000; padding: 20px; border-radius: 10px 10px 0 0; text-align: center; }
+          .content { background: #fdfdfd; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #eee; }
+          .btn { display: inline-block; padding: 12px 24px; background: #00e5ff; color: #000 !important; text-decoration: none; border-radius: 5px; margin-top: 20px; font-weight: bold; }
+          .footer { text-align: center; margin-top: 30px; color: #888; font-size: 12px; }
+          .token-box { background: #eee; padding: 10px; border-radius: 5px; font-family: monospace; word-break: break-all; margin: 15px 0; font-size: 12px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1 style="margin:0;">Momentum</h1>
+          </div>
+          <div class="content">
+            <h2 style="color: #333; margin-top: 0;">Password Reset Request</h2>
+            <p>Hi ${user.name},</p>
+            <p>We received a request to reset your password for your Momentum account. Click the button below to set a new password:</p>
+            
+            <div style="text-align: center;">
+              <a href="${resetUrl}" class="btn">Reset Password</a>
+            </div>
+
+            <p style="margin-top: 30px;">This link will expire in <strong>1 hour</strong>.</p>
+            <p>If you did not request a password reset, please ignore this email or contact support if you have questions.</p>
+            
+            <p style="font-size: 12px; color: #666; margin-top: 30px;">If the button above doesn't work, copy and paste this URL into your browser:</p>
+            <div class="token-box">${resetUrl}</div>
+
+            <div class="footer">
+              <p>&copy; ${new Date().getFullYear()} Momentum Productivity Tracker</p>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    await transporter.sendMail({
+      from: `"Momentum Tracker" <${EMAIL_FROM}>`,
+      to: user.email,
+      subject: "🔒 Reset Your Momentum Password",
+      html,
+    });
+
+    console.log(`✅ Password reset email sent to ${user.email}`);
+    return true;
+  } catch (error) {
+    console.error("❌ Error sending password reset email:", error);
+    throw error;
+  }
+};
