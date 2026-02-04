@@ -144,8 +144,11 @@
     padding: 0 12px;
     display: flex !important;
     grid-template-columns: none !important;
-    justify-content: space-between;
+    /* ✅ FIX: Don't use space-between - it causes shifts */
+    /* Use explicit positioning instead */
+    justify-content: flex-start;
     align-items: center;
+    gap: 12px;
   }
 
   .app-title h1 {
@@ -166,16 +169,22 @@
   .topbar-left {
     gap: var(--space-sm);
     flex-shrink: 0;
+    /* ✅ FIX: Prevent left section from growing */
+    flex-grow: 0;
     display: flex;
     align-items: center;
+    overflow: hidden; /* Prevent content from pushing other elements */
   }
 
   .topbar-right {
     gap: var(--space-xs);
     flex-shrink: 0;
+    /* ✅ FIX: Anchor to the right side - this is the key fix! */
     margin-left: auto;
     display: flex;
     align-items: center;
+    /* ✅ FIX: Ensure it stays in position when dropdown opens */
+    position: relative;
   }
 
   /* Remove mobile controls row - using FAB instead */

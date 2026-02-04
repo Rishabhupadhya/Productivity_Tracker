@@ -68,14 +68,28 @@ export class OAuthService {
       });
 
       const payload = ticket.getPayload();
-      
+
       if (!payload) {
         throw new Error('Invalid token payload');
       }
 
+      // Validate required fields
+      if (!payload.sub) {
+        throw new Error('Missing user ID in OAuth response');
+      }
+
+      if (!payload.email) {
+        throw new Error('Missing email in OAuth response');
+      }
+
+      // Verify audience matches our client ID (prevent token substitution attacks)
+      if (payload.aud !== process.env.GOOGLE_CLIENT_ID) {
+        throw new Error('Token audience mismatch');
+      }
+
       return {
         providerId: payload.sub,
-        email: payload.email!,
+        email: payload.email,
         emailVerified: payload.email_verified || false,
         name: payload.name || '',
         picture: payload.picture,
@@ -115,7 +129,7 @@ export class OAuthService {
       if (oauthAccount) {
         // Existing OAuth account - get user
         user = await User.findById(oauthAccount.userId).session(session);
-        
+
         if (!user || !user.isActive) {
           throw new Error('User account is inactive or not found');
         }
@@ -125,8 +139,8 @@ export class OAuthService {
         await oauthAccount.save({ session });
       } else {
         // New OAuth login - check if user exists with this email
-        user = await User.findOne({ 
-          email: userInfo.email.toLowerCase() 
+        user = await User.findOne({
+          email: userInfo.email.toLowerCase()
         }).session(session);
 
         if (user) {
@@ -136,10 +150,12 @@ export class OAuthService {
           }
 
           console.log(`Linking ${provider} account to existing user: ${user.email}`);
-          
+
           // Update user's auth method if they were email/password only
           if (user.authMethod === 'email_password') {
             user.authMethod = 'oauth';
+            // Save user first to ensure auth method is updated before creating OAuth account
+            await user.save({ session });
           }
         } else {
           // New user - create account
@@ -174,15 +190,18 @@ export class OAuthService {
         await oauthAccount.save({ session });
       }
 
-      // Update user last login
+      // Update user last login and security fields
       user.lastLogin = new Date();
       user.failedLoginAttempts = 0; // Reset failed attempts
       user.accountLockedUntil = undefined;
-      
+
       if (!user.emailVerified && userInfo.emailVerified) {
         user.emailVerified = true;
       }
-      
+
+      // Save user (only once if we haven't saved after authMethod update)
+      // Note: if authMethod was updated, we already saved the user earlier in the transaction
+      // But these new changes need to be saved too, so we save again here
       await user.save({ session });
 
       await session.commitTransaction();
@@ -215,7 +234,7 @@ export class OAuthService {
       };
     } catch (error: any) {
       await session.abortTransaction();
-      
+
       // Log failed login attempt
       await AuthLog.create({
         email: userInfo.email,
@@ -260,7 +279,7 @@ export class OAuthService {
       if (oauthAccount) {
         // Existing OAuth account - get user
         user = await User.findById(oauthAccount.userId).session(session);
-        
+
         if (!user || !user.isActive) {
           throw new Error('User account is inactive or not found');
         }
@@ -270,8 +289,8 @@ export class OAuthService {
         await oauthAccount.save({ session });
       } else {
         // Check if user exists with this email
-        user = await User.findOne({ 
-          email: userInfo.email.toLowerCase() 
+        user = await User.findOne({
+          email: userInfo.email.toLowerCase()
         }).session(session);
 
         if (!user) {
@@ -285,10 +304,12 @@ export class OAuthService {
 
         // Account linking - existing user, add OAuth account
         console.log(`Linking ${provider} account to existing user: ${user.email}`);
-        
+
         // Update user's auth method if they were email/password only
         if (user.authMethod === 'email_password') {
           user.authMethod = 'oauth';
+          // Save user first to ensure auth method is updated before creating OAuth account
+          await user.save({ session });
         }
 
         // Create OAuth account record
@@ -310,16 +331,19 @@ export class OAuthService {
       user.lastLogin = new Date();
       user.failedLoginAttempts = 0;
       user.accountLockedUntil = undefined;
-      
+
       if (!user.emailVerified && userInfo.emailVerified) {
         user.emailVerified = true;
       }
-      
+
       await user.save({ session });
 
       await session.commitTransaction();
 
       // Log authentication event (outside transaction - time-series collections don't support transactions)
+      // accountLinked should only be true if we just created the OAuth account (not if it already existed)
+      const accountWasLinked = !oauthAccount || oauthAccount.isNew;
+
       await AuthLog.create({
         userId: user._id,
         email: user.email,
@@ -329,7 +353,7 @@ export class OAuthService {
         userAgent,
         metadata: {
           isNewUser: false,
-          accountLinked: true,
+          accountLinked: accountWasLinked,
         },
         timestamp: new Date(),
       });
@@ -347,7 +371,7 @@ export class OAuthService {
       };
     } catch (error: any) {
       await session.abortTransaction();
-      
+
       // Log failed login attempt
       if (error.message === 'NO_ACCOUNT_FOUND') {
         await AuthLog.create({

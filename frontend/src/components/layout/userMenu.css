@@ -2,6 +2,18 @@
   position: relative;
   display: flex;
   align-items: center;
+  /* ✅ FIX: Prevent menu from growing and stay anchored to right */
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+/* ✅ Mobile: Extra constraints to prevent shifting */
+@media (max-width: 767px) {
+  .user-menu {
+    /* Ensure it stays fixed to the right */
+    justify-self: flex-end;
+    align-self: center;
+  }
 }
 
 /* Avatar hover effects */
@@ -52,9 +64,26 @@
   border-radius: var(--radius-lg);
   width: 260px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  /* ✅ FIX: High z-index to appear above everything including status bars */
+  z-index: 10000;
   overflow: hidden;
   animation: slideDown 0.2s ease-out;
+  /* ✅ FIX: Prevent layout shift when dropdown opens */
+  will-change: transform, opacity;
+  /* ✅ FIX: Ensure dropdown doesn't push parent element */
+  pointer-events: auto;
+}
+
+/* ✅ Mobile-specific dropdown positioning */
+@media (max-width: 767px) {
+  .user-dropdown {
+    /* Ensure dropdown aligns to right edge on mobile */
+    right: 0;
+    /* Prevent dropdown from extending beyond viewport */
+    max-width: calc(100vw - 24px);
+    /* Adjust top spacing for mobile header height */
+    top: 52px;
+  }
 }
 
 @keyframes slideDown {
@@ -62,6 +91,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

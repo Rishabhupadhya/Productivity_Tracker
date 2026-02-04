@@ -46,34 +46,32 @@ export function navigateToToday() {
 /**
  * Navigate to previous day
  */
-export function navigateToPreviousDay() {
-  const currentDateStr = localStorage.getItem("selectedDate");
-  const currentDate = currentDateStr ? new Date(currentDateStr) : new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  
+export function navigateToPreviousDay(currentDate?: Date) {
+  // If no date provided, use today
+  const baseDate = currentDate || new Date();
+  baseDate.setHours(0, 0, 0, 0);
+
   // Go back one day
-  currentDate.setDate(currentDate.getDate() - 1);
-  
-  localStorage.setItem("selectedDate", currentDate.toISOString());
+  baseDate.setDate(baseDate.getDate() - 1);
+
   window.dispatchEvent(
-    new CustomEvent("date-change", { detail: currentDate.toISOString() })
+    new CustomEvent("date-change", { detail: baseDate.toISOString() })
   );
 }
 
 /**
  * Navigate to next day
  */
-export function navigateToNextDay() {
-  const currentDateStr = localStorage.getItem("selectedDate");
-  const currentDate = currentDateStr ? new Date(currentDateStr) : new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  
+export function navigateToNextDay(currentDate?: Date) {
+  // If no date provided, use today
+  const baseDate = currentDate || new Date();
+  baseDate.setHours(0, 0, 0, 0);
+
   // Go forward one day
-  currentDate.setDate(currentDate.getDate() + 1);
-  
-  localStorage.setItem("selectedDate", currentDate.toISOString());
+  baseDate.setDate(baseDate.getDate() + 1);
+
   window.dispatchEvent(
-    new CustomEvent("date-change", { detail: currentDate.toISOString() })
+    new CustomEvent("date-change", { detail: baseDate.toISOString() })
   );
 }
 
@@ -83,8 +81,8 @@ export function navigateToNextDay() {
 export function navigateToDate(date: Date | string) {
   const targetDate = typeof date === 'string' ? new Date(date) : date;
   targetDate.setHours(0, 0, 0, 0);
-  
-  localStorage.setItem("selectedDate", targetDate.toISOString());
+
+
   window.dispatchEvent(
     new CustomEvent("date-change", { detail: targetDate.toISOString() })
   );
