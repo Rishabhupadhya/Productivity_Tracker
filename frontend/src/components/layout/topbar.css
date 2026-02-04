@@ -143,12 +143,9 @@
     height: 48px;
     padding: 0 12px;
     display: flex !important;
-    grid-template-columns: none !important;
-    /* ✅ FIX: Don't use space-between - it causes shifts */
-    /* Use explicit positioning instead */
-    justify-content: flex-start;
+    justify-content: space-between !important;
+    /* ✅ Pushes left and right sections apart */
     align-items: center;
-    gap: 12px;
   }
 
   .app-title h1 {
@@ -167,23 +164,18 @@
   }
 
   .topbar-left {
-    gap: var(--space-sm);
-    flex-shrink: 0;
-    flex-grow: 1;
-    /* ✅ FIX: Force growth to push right section */
     display: flex;
     align-items: center;
-    overflow: hidden;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+    min-width: 0;
   }
 
   .topbar-right {
-    gap: var(--space-xs);
-    flex-shrink: 0;
-    margin-left: auto;
-    /* ✅ FIX: Explicit anchor */
     display: flex;
     align-items: center;
-    position: relative;
+    gap: var(--space-xs);
+    flex-shrink: 0;
   }
 
   /* Remove mobile controls row - using FAB instead */

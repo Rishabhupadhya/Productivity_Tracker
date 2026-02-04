@@ -23,29 +23,47 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop" onClick={onClose} style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "rgba(0, 0, 0, 0.8)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 1000
+    }}>
       <div
         className="modal-content"
         onClick={(e) => e.stopPropagation()}
         style={{
           background: "#1a1a1a",
-          padding: "24px",
-          borderRadius: "8px",
+          borderRadius: "12px",
           border: "1px solid #00ffff",
           maxWidth: "450px",
-          width: "90%"
+          width: "95%",
+          maxHeight: "90vh",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.4)"
         }}
       >
-        <h2 style={{ color: "#00ffff", marginBottom: "20px" }}>Add New Project</h2>
-        <form onSubmit={handleSubmit}>
+        <div style={{ padding: "20px 24px", borderBottom: "1px solid #333" }}>
+          <h2 style={{ color: "#00ffff", margin: 0, fontSize: "20px" }}>Add New Project</h2>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", flex: 1, overflow: "hidden" }}>
           <div className="modal-scroll-area" style={{
-            maxHeight: "70vh",
+            padding: "24px",
             overflowY: "auto",
-            paddingRight: "8px",
-            marginBottom: "20px"
+            flex: 1,
+            WebkitOverflowScrolling: "touch"
           }}>
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
                 Project Name *
               </label>
               <input
@@ -56,74 +74,85 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
                 autoFocus
                 style={{
                   width: "100%",
-                  padding: "10px",
+                  padding: "12px",
                   background: "#0a0a0a",
-                  border: "1px solid #00ffff",
-                  borderRadius: "4px",
-                  color: "#00ffff"
+                  border: "1px solid #333",
+                  borderRadius: "8px",
+                  color: "#fff",
+                  fontSize: "16px",
+                  transition: "border-color 0.2s"
                 }}
+                onFocus={(e) => e.target.style.borderColor = "#00ffff"}
+                onBlur={(e) => e.target.style.borderColor = "#333"}
               />
             </div>
 
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
                 Description
               </label>
               <input
                 type="text"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Brief description of the project"
+                placeholder="Brief description"
                 style={{
                   width: "100%",
-                  padding: "10px",
+                  padding: "12px",
                   background: "#0a0a0a",
-                  border: "1px solid #00ffff",
-                  borderRadius: "4px",
-                  color: "#00ffff"
+                  border: "1px solid #333",
+                  borderRadius: "8px",
+                  color: "#fff",
+                  fontSize: "16px"
                 }}
               />
             </div>
 
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
                 Notes
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Add any notes or details about this project..."
+                placeholder="Project notes..."
                 rows={3}
                 style={{
                   width: "100%",
-                  padding: "10px",
+                  padding: "12px",
                   background: "#0a0a0a",
-                  border: "1px solid #00ffff",
-                  borderRadius: "4px",
-                  color: "#00ffff",
+                  border: "1px solid #333",
+                  borderRadius: "8px",
+                  color: "#fff",
                   fontFamily: "inherit",
-                  resize: "vertical"
+                  fontSize: "16px",
+                  resize: "none"
                 }}
               />
             </div>
 
             <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px" }}>
+              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
                 Icon
               </label>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                 {ICONS.map(icon => (
                   <button
                     key={icon}
                     type="button"
                     onClick={() => setSelectedIcon(icon)}
                     style={{
-                      padding: "8px 12px",
+                      width: "44px",
+                      height: "44px",
                       fontSize: "20px",
-                      background: selectedIcon === icon ? "#00ffff" : "#0a0a0a",
+                      background: selectedIcon === icon ? "rgba(0, 255, 255, 0.1)" : "#0a0a0a",
                       border: `1px solid ${selectedIcon === icon ? "#00ffff" : "#333"}`,
-                      borderRadius: "4px",
-                      cursor: "pointer"
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "all 0.2s"
                     }}
                   >
                     {icon}
@@ -132,23 +161,24 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
               </div>
             </div>
 
-            <div style={{ marginBottom: "20px" }}>
-              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px" }}>
+            <div style={{ marginBottom: "10px" }}>
+              <label style={{ display: "block", color: "#00ffff", marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
                 Color
               </label>
-              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                 {COLORS.map(color => (
                   <button
                     key={color}
                     type="button"
                     onClick={() => setSelectedColor(color)}
                     style={{
-                      width: "36px",
-                      height: "36px",
+                      width: "32px",
+                      height: "32px",
                       background: color,
-                      border: selectedColor === color ? "3px solid white" : "1px solid #333",
+                      border: selectedColor === color ? "2px solid white" : "none",
                       borderRadius: "50%",
-                      cursor: "pointer"
+                      cursor: "pointer",
+                      boxShadow: selectedColor === color ? `0 0 10px ${color}` : "none transition all 0.2s"
                     }}
                   />
                 ))}
@@ -156,17 +186,27 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
+          <div style={{
+            display: "flex",
+            gap: "12px",
+            justifyContent: "flex-end",
+            padding: "16px 24px",
+            background: "#1a1a1a",
+            borderTop: "1px solid #333",
+            flexShrink: 0
+          }}>
             <button
               type="button"
               onClick={onClose}
               style={{
-                padding: "8px 16px",
+                flex: 1,
+                padding: "12px",
                 background: "transparent",
-                border: "1px solid #666",
-                borderRadius: "4px",
-                color: "#666",
-                cursor: "pointer"
+                border: "1px solid #333",
+                borderRadius: "8px",
+                color: "#999",
+                cursor: "pointer",
+                fontWeight: "500"
               }}
             >
               Cancel
@@ -175,35 +215,42 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
               type="submit"
               disabled={!name.trim()}
               style={{
-                padding: "8px 16px",
-                background: name.trim() ? "#00ffff" : "#333",
+                flex: 2,
+                padding: "12px",
+                background: name.trim() ? "#00ffff" : "#222",
                 border: "none",
-                borderRadius: "4px",
-                color: name.trim() ? "#000" : "#666",
+                borderRadius: "8px",
+                color: name.trim() ? "#000" : "#555",
                 cursor: name.trim() ? "pointer" : "not-allowed",
-                fontWeight: "bold"
+                fontWeight: "bold",
+                fontSize: "14px"
               }}
             >
               Add Project
             </button>
           </div>
-          <style>{`
-            .modal-scroll-area::-webkit-scrollbar {
-              width: 6px;
-            }
-            .modal-scroll-area::-webkit-scrollbar-track {
-              background: #0a0a0a;
-            }
-            .modal-scroll-area::-webkit-scrollbar-thumb {
-              background: #333;
-              border-radius: 10px;
-            }
-            .modal-scroll-area::-webkit-scrollbar-thumb:hover {
-              background: #444;
-            }
-          `}</style>
         </form>
       </div>
+      <style>{`
+        @media (max-width: 480px) {
+          .modal-content {
+            width: 100% !important;
+            height: 95vh !important;
+            max-height: 95vh !important;
+            border-radius: 20px 20px 0 0 !important;
+            position: fixed !important;
+            bottom: 0 !important;
+            border: none !important;
+            border-top: 1px solid #00ffff !important;
+          }
+          .modal-scroll-area {
+            padding: 20px !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
+
+// Add empty export to satisfy potential build issues
+export { };
