@@ -141,11 +141,13 @@
 @media (max-width: 767px) {
   .topbar {
     height: 48px;
-    padding: 0 12px;
+    padding: 0 16px;
     display: flex !important;
     justify-content: space-between !important;
-    /* ✅ Pushes left and right sections apart */
     align-items: center;
+    gap: 8px;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .app-title h1 {

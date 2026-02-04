@@ -1,5 +1,5 @@
 import { Activity } from "./activity.model";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 export const logActivity = async (data: {
   teamId?: string;
@@ -11,15 +11,27 @@ export const logActivity = async (data: {
 }) => {
   try {
     const activityData: any = {
-      userId: new Types.ObjectId(data.userId),
       action: data.action,
       targetType: data.targetType,
-      targetId: data.targetId ? new Types.ObjectId(data.targetId) : undefined,
       details: data.details || {},
       timestamp: new Date()
     };
 
-    if (data.teamId && data.teamId !== "") {
+    // Safely parse user ID
+    if (mongoose.Types.ObjectId.isValid(data.userId)) {
+      activityData.userId = new Types.ObjectId(data.userId);
+    } else {
+      console.warn("logActivity: Invalid userId", data.userId);
+      return;
+    }
+
+    // Safely parse target ID if provided
+    if (data.targetId && mongoose.Types.ObjectId.isValid(data.targetId)) {
+      activityData.targetId = new Types.ObjectId(data.targetId);
+    }
+
+    // Safely handle optional team ID
+    if (data.teamId && data.teamId !== "" && mongoose.Types.ObjectId.isValid(data.teamId)) {
       activityData.teamId = new Types.ObjectId(data.teamId);
     }
 

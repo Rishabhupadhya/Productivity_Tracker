@@ -1,13 +1,13 @@
 import { User } from "../auth.model";
 import { Team } from "./team.model";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { logActivity } from "../activity/activity.service";
 
 // Helper to check if user is team admin
 export const isTeamAdmin = async (teamId: string, userId: string): Promise<boolean> => {
   const team = await Team.findById(teamId);
   if (!team) return false;
-  
+
   const member = team.members.find(m => m.userId.toString() === userId);
   return member?.role === "admin";
 };
@@ -20,10 +20,14 @@ export const getTeamMembers = async (userId: string) => {
 };
 
 export const getUserInfo = async (userId: string) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    console.warn("getUserInfo: Invalid userId", userId);
+    return null;
+  }
   const user = await User.findById(userId).select('name email avatar workspaceId activeTeamId timezone workingHours defaultTaskDuration settings');
-  
+
   if (!user) return null;
-  
+
   // Get user's role in active team if they have one
   let teamRole = null;
   if (user.activeTeamId) {
@@ -35,7 +39,7 @@ export const getUserInfo = async (userId: string) => {
       }
     }
   }
-  
+
   return {
     ...user.toObject(),
     teamRole
@@ -156,7 +160,7 @@ export const inviteMemberToTeam = async (
   });
 
   await team.save();
-  
+
   // Log activity
   await logActivity({
     teamId,
@@ -168,7 +172,7 @@ export const inviteMemberToTeam = async (
       role
     }
   });
-  
+
   return team;
 };
 
@@ -179,7 +183,7 @@ export const cancelTeamInvite = async (
   email: string
 ) => {
   console.log('cancelTeamInvite called:', { teamId, adminUserId, email });
-  
+
   const team = await Team.findById(teamId);
   if (!team) throw new Error("Team not found");
 
@@ -189,22 +193,22 @@ export const cancelTeamInvite = async (
   // Check if user is admin
   const admin = team.members.find(m => m.userId.toString() === adminUserId);
   console.log('Admin check:', { admin, role: admin?.role });
-  
+
   if (!admin || admin.role !== "admin") {
     throw new Error("Only admins can cancel invites");
   }
 
   // Count before
   const beforeCount = team.invites.length;
-  
+
   // Remove the invite (more flexible - remove by email regardless of status)
   team.invites = team.invites.filter(i => i.email !== email);
-  
+
   console.log('Invites after filter:', { before: beforeCount, after: team.invites.length });
 
   await team.save();
   console.log('Team saved successfully');
-  
+
   return team;
 };
 

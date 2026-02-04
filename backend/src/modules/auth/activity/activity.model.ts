@@ -48,7 +48,7 @@ const ActivitySchema = new Schema<IActivity>(
   { timestamps: false }
 );
 
-// Index for efficient queries
-ActivitySchema.index({ teamId: 1, timestamp: -1 });
+// Index for efficient queries - marked as sparse since teamId is optional
+ActivitySchema.index({ teamId: 1, timestamp: -1 }, { sparse: true });
 
 export const Activity = mongoose.model<IActivity>("Activity", ActivitySchema);

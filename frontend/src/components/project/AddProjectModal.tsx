@@ -178,7 +178,8 @@ export default function AddProjectModal({ onClose, onAdd }: AddProjectModalProps
                       border: selectedColor === color ? "2px solid white" : "none",
                       borderRadius: "50%",
                       cursor: "pointer",
-                      boxShadow: selectedColor === color ? `0 0 10px ${color}` : "none transition all 0.2s"
+                      transition: "all 0.2s",
+                      boxShadow: selectedColor === color ? `0 0 10px ${color}` : "none"
                     }}
                   />
                 ))}
