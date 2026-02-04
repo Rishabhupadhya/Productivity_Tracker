@@ -24,7 +24,7 @@ export default function Login() {
   useEffect(() => {
     const errorParam = searchParams.get('error');
     const messageParam = searchParams.get('message');
-    
+
     if (errorParam === 'no_account') {
       setError(messageParam || 'Account not found. Please register first.');
     } else if (errorParam) {
@@ -69,7 +69,7 @@ export default function Login() {
         )}
 
         {/* Google SSO Button */}
-        <GoogleSSOButton 
+        <GoogleSSOButton
           onError={(err) => setError(err)}
           redirectUrl="/dashboard"
         />
@@ -95,7 +95,12 @@ export default function Login() {
           </div>
 
           <div className="auth-input-group">
-            <label htmlFor="password" className="auth-label">Password</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label htmlFor="password" className="auth-label">Password</label>
+              <Link to="/forgot-password" style={{ fontSize: '12px', color: 'var(--accent)', textDecoration: 'none' }}>
+                Forgot password?
+              </Link>
+            </div>
             <input
               id="password"
               type="password"

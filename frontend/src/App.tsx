@@ -7,6 +7,8 @@ import Goals from "./pages/Goals";
 import Habits from "./pages/Habits";
 import Momentum from "./pages/Momentum";
 import OAuthCallback from "./pages/OAuthCallback";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import { useUser } from "./contexts/UserContext";
 import AppLayout from "./components/layout/AppLayout";
 
@@ -63,6 +65,8 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/callback" element={<OAuthCallback />} />
 
         {/* Core App Layout and Protection */}
