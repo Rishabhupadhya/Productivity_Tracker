@@ -20,11 +20,6 @@ export default function ForgotPassword() {
             const result = await forgotPassword(email);
             setMessage(result.message || "Reset link has been generated.");
             setSubmitted(true);
-
-            // In this dev environment we show the token if available
-            if (result.resetToken) {
-                console.log("Reset Token:", result.resetToken);
-            }
         } catch (err: any) {
             setError(err.response?.data?.message || err.message || "Failed to request password reset.");
         } finally {
