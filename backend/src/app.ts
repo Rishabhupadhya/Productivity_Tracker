@@ -46,22 +46,24 @@ app.use(helmet({
 const allowedOrigins = [
   process.env.NODE_ENV === 'development' ? 'http://localhost:5173' : null,
   'https://momentum12.vercel.app',
-  // Only allow YOUR specific preview deployments
-  /^https:\/\/momentum12-.*\.vercel\.app$/
+  'https://productivity-tracker-jfib.vercel.app',
+  // Allow all vercel subdomains for both project patterns
+  /^https:\/\/momentum12-.*\.vercel\.app$/,
+  /^https:\/\/productivity-tracker-.*\.vercel\.app$/
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
-    
+
     // Check if origin is allowed
     const isAllowed = allowedOrigins.some(allowed => {
       if (typeof allowed === 'string') return allowed === origin;
       if (allowed instanceof RegExp) return allowed.test(origin);
       return false;
     });
-    
+
     if (isAllowed) {
       callback(null, true);
     } else {

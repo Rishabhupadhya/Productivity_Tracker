@@ -30,44 +30,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [userLoading, user, navigate]);
 
-  // Show loading state while user context is initializing
-  if (userLoading) {
-    return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        backgroundColor: 'var(--bg-app)',
-        color: 'var(--text-secondary)'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '24px', marginBottom: '16px' }}>⏳</div>
-          <div>Loading...</div>
-        </div>
-      </div>
-    );
-  }
-
-  // If not loading but no user, show message (redirect will happen via useEffect above)
-  if (!user) {
-    return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        backgroundColor: 'var(--bg-app)',
-        color: 'var(--text-secondary)',
-        flexDirection: 'column',
-        gap: '16px'
-      }}>
-        <div style={{ fontSize: '24px' }}>🔐</div>
-        <div>Redirecting to login...</div>
-      </div>
-    );
-  }
-
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 1024;
@@ -117,12 +79,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Show task controls only on My Work and Teams views, and not on tracker routes
-  const isTrackerRoute = useMemo(() => 
+  const isTrackerRoute = useMemo(() =>
     ['/finance', '/goals', '/habits'].includes(location.pathname),
     [location.pathname]
   );
-  
-  const showTaskControls = useMemo(() => 
+
+  const showTaskControls = useMemo(() =>
     !isTrackerRoute && (currentView === "My Work" || currentView === "Teams"),
     [isTrackerRoute, currentView]
   );
@@ -146,7 +108,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     );
   }
 
-  // If not loading but no user, redirect to login
+  // If not loading but no user, show message (redirect will happen via useEffect above)
   if (!user) {
     return (
       <div style={{
@@ -169,22 +131,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="app-layout">
       {/* Mobile Overlay */}
       {isMobile && mobileMenuOpen && (
-        <div 
+        <div
           className="mobile-overlay"
           onClick={closeMobileMenu}
         />
       )}
 
       {/* Sidebar */}
-      <div 
+      <div
         className={`sidebar-wrapper ${isMobile ? 'mobile' : ''} ${mobileMenuOpen ? 'open' : ''}`}
-        style={{ 
-          width: isMobile ? '280px' : (sidebarCollapsed ? "60px" : "250px"), 
+        style={{
+          width: isMobile ? '280px' : (sidebarCollapsed ? "60px" : "250px"),
           transition: "width 0.3s ease"
         }}
       >
-        <Sidebar 
-          collapsed={sidebarCollapsed && !isMobile} 
+        <Sidebar
+          collapsed={sidebarCollapsed && !isMobile}
           onNavigate={closeMobileMenu}
         />
         {!isMobile && (
@@ -198,13 +160,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       <div className="main-content">
-        <Topbar 
-          onLogout={handleLogout} 
+        <Topbar
+          onLogout={handleLogout}
           showTaskControls={showTaskControls}
           onMenuClick={toggleMobileMenu}
           isMobile={isMobile}
         />
-        <motion.div 
+        <motion.div
           className="content"
           key={location.pathname}
           initial="initial"
@@ -218,7 +180,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
         {/* Floating Action Button for mobile - Add Task */}
         {showTaskControls && isMobile && (
-          <FloatingActionButton 
+          <FloatingActionButton
             onClick={handleShowTaskModal}
             icon="+"
             label="Add Task"

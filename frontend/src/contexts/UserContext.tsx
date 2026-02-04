@@ -55,14 +55,14 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       try {
         // Check if token exists in localStorage first
         const token = localStorage.getItem('token');
-        
+
         if (!token) {
           // No token - user is not logged in
           console.log('No token in localStorage - user not authenticated');
           setLoading(false);
           return;
         }
-        
+
         // Token exists - fetch user profile
         console.log('Token found, fetching user profile...');
         await fetchUserProfile();
@@ -71,7 +71,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         setLoading(false);
       }
     };
-    
+
     initializeAuth();
   }, []);
 
@@ -80,11 +80,16 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setLoading(true);
       setError(null);
       const userData = await getUserProfileService();
-      setUser(userData);
-      console.log('User profile loaded successfully:', userData?.name || 'Unknown');
+      if (userData) {
+        setUser(userData);
+        console.log('User profile loaded successfully:', userData.name);
+      } else {
+        console.warn('User profile API returned empty data');
+        setUser(null);
+      }
     } catch (err: any) {
       console.error("Failed to fetch user profile:", err);
-      
+
       // If authentication fails (401 or 403), clear token and user
       if (err.response?.status === 401 || err.response?.status === 403) {
         console.log('Auth failed with 401/403 - token is invalid');
@@ -106,13 +111,13 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setError(null);
       const response = await loginService(email, password);
       // Token is stored in localStorage by service
-      
+
       // Verify token was saved before fetching profile
       const token = localStorage.getItem('token');
       if (!token) {
         throw new Error('Failed to save authentication token');
       }
-      
+
       console.log('Login successful, token saved');
       // Fetch user profile after successful login
       await fetchUserProfile();
@@ -130,7 +135,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       setError(null);
       await registerService(name, email, password);
       // Cookies are set automatically by backend
-      
+
       // Fetch user profile after successful registration
       await fetchUserProfile();
       // Don't set loading to false here - page will navigate away

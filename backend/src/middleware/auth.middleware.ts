@@ -13,7 +13,7 @@ export const authMiddleware = (
 ) => {
   // Get token from Authorization header (PRIMARY METHOD)
   let token = req.headers.authorization?.split(" ")[1];
-  
+
   // Fall back to cookies if needed
   if (!token && req.cookies) {
     token = req.cookies.accessToken;
@@ -25,9 +25,9 @@ export const authMiddleware = (
       hasCookies: !!req.cookies,
       path: req.path
     });
-    return res.status(401).json({ 
+    return res.status(401).json({
       success: false,
-      message: "Unauthorized - No token provided" 
+      message: "Unauthorized - No token provided"
     });
   }
 
@@ -36,29 +36,37 @@ export const authMiddleware = (
     const decoded = jwt.verify(token, env.JWT_SECRET, {
       // Don't enforce issuer/audience for backward compatibility
     }) as any;
-    
-    // Support both old format {id, email} and new format {userId, role}
+
+    // Support multiple ID formats (id, userId, sub) for cross-service compatibility
     req.user = {
-      id: decoded.id || decoded.userId,
-      userId: decoded.userId || decoded.id,
+      id: decoded.id || decoded.userId || decoded.sub,
+      userId: decoded.userId || decoded.id || decoded.sub,
       email: decoded.email,
       role: decoded.role || 'user'
     };
-    
+
+    if (!req.user.id) {
+      console.log('Auth failed: No user ID in token payload', { path: req.path });
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token payload - missing user identification"
+      });
+    }
+
     console.log('Auth success:', {
       userId: req.user.id,
       path: req.path
     });
-    
+
     next();
   } catch (error) {
     console.log('Auth failed: Invalid token', {
       error: error instanceof Error ? error.message : 'Unknown error',
       path: req.path
     });
-    res.status(401).json({ 
+    res.status(401).json({
       success: false,
-      message: "Invalid or expired token" 
+      message: "Invalid or expired token"
     });
   }
 };

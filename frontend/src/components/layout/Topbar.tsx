@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import AddTaskModal from "../task/AddTaskModal";
 import UserMenu from "./UserMenu";
 import Button from "../ui/Button";
-import { 
-  navigateToToday, 
-  navigateToPreviousDay, 
-  navigateToNextDay 
+import {
+  navigateToToday,
+  navigateToPreviousDay,
+  navigateToNextDay
 } from "../../hooks/useSelectedDate";
 import "./topbar.css";
 
@@ -21,13 +21,13 @@ type TopbarProps = {
   selectedDate?: string;
 };
 
-export default function Topbar({ 
-  showTaskControls = true, 
-  pageTitle, 
-  onMenuClick, 
+function Topbar({
+  showTaskControls = true,
+  pageTitle,
+  onMenuClick,
   isMobile = false,
   onDateChange,
-  selectedDate: externalSelectedDate 
+  selectedDate: externalSelectedDate
 }: TopbarProps) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -83,7 +83,7 @@ export default function Topbar({
           {/* LEFT SECTION - Branding and page title */}
           <div className="topbar-left">
             {isMobile && (
-              <button 
+              <button
                 onClick={onMenuClick}
                 className="hamburger-menu"
                 aria-label="Toggle menu"
@@ -94,8 +94,8 @@ export default function Topbar({
               </button>
             )}
 
-            <div 
-              className="app-title" 
+            <div
+              className="app-title"
               onClick={handleLogoClick}
               style={{
                 cursor: 'pointer',
@@ -238,7 +238,7 @@ export default function Topbar({
                 }}
               />
 
-              <Button 
+              <Button
                 onClick={handleOpenModal}
                 className="add-task-btn"
                 title="Add Task"
@@ -266,3 +266,5 @@ export default function Topbar({
     </>
   );
 }
+
+export default memo(Topbar);

@@ -1,7 +1,7 @@
-// Helper to safely construct base URL
 const getBaseUrl = (): string => {
   if (import.meta.env.PROD) {
-    return 'https://productivity-tracker-jfib.vercel.app';
+    // Dynamically use current origin for zero-config production support
+    return window.location.origin;
   }
   const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
   return apiUrl.replace('/api', '');
@@ -10,7 +10,8 @@ const getBaseUrl = (): string => {
 // Helper to safely construct API URL
 const getApiUrl = (): string => {
   if (import.meta.env.PROD) {
-    return 'https://productivity-tracker-jfib.vercel.app/api';
+    // Dynamically use current origin/api for zero-config production support
+    return `${window.location.origin}/api`;
   }
   return import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
 };

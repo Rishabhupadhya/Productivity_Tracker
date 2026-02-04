@@ -10,7 +10,7 @@ import { getPendingInvites, acceptTeamInvite } from "../../services/team.service
 import type { Project } from "../../services/project.service";
 import "./sidebar.css";
 
-export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) {
+function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [active, setActive] = useState("My Work");
@@ -41,7 +41,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
         setActive("My Work");
       }
     }
-  }, [location.pathname]);
+  }, [location.pathname, active]);
 
   const handleTeamSwitch = useCallback(async (teamId: string | null) => {
     try {
@@ -55,7 +55,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
   const handleCreateTeam = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTeamName.trim()) return;
-    
+
     try {
       await createTeam(newTeamName);
       setNewTeamName("");
@@ -110,7 +110,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
   const handleDeleteProject = useCallback(async (projectId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!confirm("Delete this project?")) return;
-    
+
     try {
       await deleteProject(projectId);
       await loadProjects();
@@ -143,6 +143,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
       onClick={() => {
         setActive(label);
         navigate("/dashboard");
+        if (onNavigate) onNavigate();
         window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: label } }));
       }}
     >
@@ -159,14 +160,14 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
           <div className="section">
             <p style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
               <span>Team Context</span>
-              <button 
+              <button
                 onClick={() => setShowTeamModal(true)}
-                style={{ 
-                  background: "none", 
-                  border: "1px solid #00ffff", 
-                  color: "#00ffff", 
-                  padding: "2px 8px", 
-                  borderRadius: "4px", 
+                style={{
+                  background: "none",
+                  border: "1px solid #00ffff",
+                  color: "#00ffff",
+                  padding: "2px 8px",
+                  borderRadius: "4px",
                   cursor: "pointer",
                   fontSize: "12px"
                 }}
@@ -177,13 +178,13 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
 
             {/* Pending Invites Notification */}
             {pendingInvites.length > 0 && (
-              <div 
+              <div
                 onClick={() => setShowInvitesModal(true)}
-                style={{ 
-                  padding: "10px", 
-                  background: "rgba(255, 100, 0, 0.1)", 
+                style={{
+                  padding: "10px",
+                  background: "rgba(255, 100, 0, 0.1)",
                   border: "1px solid #ff6400",
-                  borderRadius: "6px", 
+                  borderRadius: "6px",
                   fontSize: "13px",
                   marginBottom: "12px",
                   color: "#ff6400",
@@ -206,16 +207,16 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 <span style={{ fontSize: "12px" }}>→</span>
               </div>
             )}
-            
-            <select 
+
+            <select
               value={activeTeam?._id || "personal"}
               onChange={(e) => handleTeamSwitch(e.target.value === "personal" ? null : e.target.value)}
-              style={{ 
-                width: "100%", 
-                padding: "8px", 
-                background: "#1a1a1a", 
-                border: "1px solid #00ffff", 
-                borderRadius: "4px", 
+              style={{
+                width: "100%",
+                padding: "8px",
+                background: "#1a1a1a",
+                border: "1px solid #00ffff",
+                borderRadius: "4px",
                 color: "#00ffff",
                 marginBottom: "16px",
                 cursor: "pointer"
@@ -228,13 +229,13 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 </option>
               ))}
             </select>
-            
+
             {activeTeam && (
               <>
-                <div style={{ 
-                  padding: "8px", 
-                  background: "rgba(0, 255, 255, 0.1)", 
-                  borderRadius: "4px", 
+                <div style={{
+                  padding: "8px",
+                  background: "rgba(0, 255, 255, 0.1)",
+                  borderRadius: "4px",
                   fontSize: "12px",
                   marginBottom: "8px",
                   color: "#00ffff",
@@ -271,9 +272,9 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
         {collapsed ? (
           <>
             <a className={active === "My Work" ? "active" : ""} onClick={() => { setActive("My Work"); navigate("/dashboard"); window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: 'My Work' } })); }} title="My Work">🏠</a>
-            <a 
-              className={active === "Teams" ? "active" : ""} 
-              onClick={() => { setActive("Teams"); navigate("/dashboard"); window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: 'Teams' } })); }} 
+            <a
+              className={active === "Teams" ? "active" : ""}
+              onClick={() => { setActive("Teams"); navigate("/dashboard"); window.dispatchEvent(new CustomEvent('viewChanged', { detail: { view: 'Teams' } })); }}
               title={pendingInvites.length > 0 ? `Teams (${pendingInvites.length} pending invites)` : "Teams"}
               style={{ position: "relative" }}
             >
@@ -297,8 +298,8 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 </span>
               )}
             </a>
-            <a 
-              onClick={() => setShowActivityPanel(true)} 
+            <a
+              onClick={() => setShowActivityPanel(true)}
               title="My Activity"
               style={{ cursor: "pointer" }}
             >
@@ -397,42 +398,42 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 +
               </button>
             </p>
-        {projects.filter(p => p && p._id).map(project => (
-          <a
-            key={project._id}
-            onClick={() => handleProjectClick(project)}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              color: project?.color || 'var(--text-primary)',
-              cursor: "pointer"
-            }}
-          >
-            <span>
-              {project?.icon || '📁'} {project?.name || 'Project'}
-            </span>
-            <button
-              onClick={(e) => handleDeleteProject(project._id, e)}
-              style={{
-                background: "none",
-                border: "none",
-                color: "#666",
-                cursor: "pointer",
-                fontSize: "16px",
-                padding: "2px 4px"
-              }}
-              title="Delete project"
-            >
-              ×
-            </button>
-          </a>
-        ))}
-        {projects.length === 0 && (
-          <div style={{ color: "#666", fontSize: "12px", padding: "8px 16px" }}>
-            No projects yet
-          </div>
-        )}
+            {projects.filter(p => p && p._id).map(project => (
+              <a
+                key={project._id}
+                onClick={() => handleProjectClick(project)}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  color: project?.color || 'var(--text-primary)',
+                  cursor: "pointer"
+                }}
+              >
+                <span>
+                  {project?.icon || '📁'} {project?.name || 'Project'}
+                </span>
+                <button
+                  onClick={(e) => handleDeleteProject(project._id, e)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "#666",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                    padding: "2px 4px"
+                  }}
+                  title="Delete project"
+                >
+                  ×
+                </button>
+              </a>
+            ))}
+            {projects.length === 0 && (
+              <div style={{ color: "#666", fontSize: "12px", padding: "8px 16px" }}>
+                No projects yet
+              </div>
+            )}
 
             <p className="section" style={{ marginTop: "24px" }}>Trackers</p>
             <a
@@ -461,13 +462,13 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
 
       {showTeamModal && (
         <div className="modal-backdrop" onClick={() => setShowTeamModal(false)}>
-          <div 
-            className="modal-content" 
+          <div
+            className="modal-content"
             onClick={(e) => e.stopPropagation()}
-            style={{ 
-              background: "#1a1a1a", 
-              padding: "24px", 
-              borderRadius: "8px", 
+            style={{
+              background: "#1a1a1a",
+              padding: "24px",
+              borderRadius: "8px",
               border: "1px solid #00ffff",
               maxWidth: "400px",
               width: "90%"
@@ -481,13 +482,13 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 onChange={(e) => setNewTeamName(e.target.value)}
                 placeholder="Team name"
                 autoFocus
-                style={{ 
-                  width: "100%", 
-                  padding: "10px", 
-                  marginBottom: "16px", 
-                  background: "#0a0a0a", 
-                  border: "1px solid #00ffff", 
-                  borderRadius: "4px", 
+                style={{
+                  width: "100%",
+                  padding: "10px",
+                  marginBottom: "16px",
+                  background: "#0a0a0a",
+                  border: "1px solid #00ffff",
+                  borderRadius: "4px",
                   color: "#00ffff"
                 }}
               />
@@ -495,11 +496,11 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 <button
                   type="button"
                   onClick={() => setShowTeamModal(false)}
-                  style={{ 
-                    padding: "8px 16px", 
-                    background: "transparent", 
-                    border: "1px solid #666", 
-                    borderRadius: "4px", 
+                  style={{
+                    padding: "8px 16px",
+                    background: "transparent",
+                    border: "1px solid #666",
+                    borderRadius: "4px",
                     color: "#666",
                     cursor: "pointer"
                   }}
@@ -508,11 +509,11 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                 </button>
                 <button
                   type="submit"
-                  style={{ 
-                    padding: "8px 16px", 
-                    background: "#00ffff", 
-                    border: "none", 
-                    borderRadius: "4px", 
+                  style={{
+                    padding: "8px 16px",
+                    background: "#00ffff",
+                    border: "none",
+                    borderRadius: "4px",
                     color: "#000",
                     cursor: "pointer",
                     fontWeight: "bold"
@@ -529,7 +530,7 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
       {showTeamPanel && <TeamPanel onClose={() => setShowTeamPanel(false)} />}
       {showActivityPanel && <ActivityPanel onClose={() => setShowActivityPanel(false)} />}
       {showProjectModal && (
-        <AddProjectModal 
+        <AddProjectModal
           onClose={() => setShowProjectModal(false)}
           onAdd={handleAddProject}
         />
@@ -538,13 +539,13 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
       {/* Pending Invites Modal */}
       {showInvitesModal && (
         <div className="modal-backdrop" onClick={() => setShowInvitesModal(false)}>
-          <div 
-            className="modal-content" 
+          <div
+            className="modal-content"
             onClick={(e) => e.stopPropagation()}
-            style={{ 
-              background: "var(--bg-primary)", 
-              padding: "24px", 
-              borderRadius: "12px", 
+            style={{
+              background: "var(--bg-primary)",
+              padding: "24px",
+              borderRadius: "12px",
               border: "1px solid var(--border)",
               maxWidth: "500px",
               width: "90%",
@@ -552,14 +553,14 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
               overflow: "auto"
             }}
           >
-            <div style={{ 
-              display: "flex", 
-              justifyContent: "space-between", 
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
-              marginBottom: "20px" 
+              marginBottom: "20px"
             }}>
-              <h2 style={{ 
-                color: "var(--accent)", 
+              <h2 style={{
+                color: "var(--accent)",
                 margin: 0,
                 fontSize: "20px",
                 fontWeight: "600"
@@ -635,27 +636,27 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
                         👥
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ 
-                          fontSize: "16px", 
-                          fontWeight: "600", 
+                        <div style={{
+                          fontSize: "16px",
+                          fontWeight: "600",
                           color: "var(--text-primary)",
                           marginBottom: "4px"
                         }}>
                           {invite?.teamName || 'Team Invitation'}
                         </div>
-                        <div style={{ 
-                          fontSize: "13px", 
+                        <div style={{
+                          fontSize: "13px",
                           color: "var(--text-secondary)",
                           marginBottom: "4px"
                         }}>
                           Invited by: {invite?.invitedBy?.name || invite?.invitedBy?.email || "Team Admin"}
                         </div>
-                        <div style={{ 
-                          fontSize: "12px", 
+                        <div style={{
+                          fontSize: "12px",
                           color: "var(--text-muted)"
                         }}>
-                          Role: <span style={{ 
-                            color: "var(--accent)", 
+                          Role: <span style={{
+                            color: "var(--accent)",
                             fontWeight: "500",
                             textTransform: "capitalize"
                           }}>
@@ -703,3 +704,5 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
     </>
   );
 }
+
+export default memo(Sidebar);
