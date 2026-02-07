@@ -19,15 +19,15 @@ function TaskCard({
   const [isCompleting, setIsCompleting] = useState(false);
   const [completed, setCompleted] = useState(task.completed || false);
 
-  const handleToggleComplete = async (e: React.MouseEvent) => {
+  const handleToggleComplete = async (e: React.SyntheticEvent) => {
     e.stopPropagation(); // Prevent drag start
-    
+
     try {
       setIsCompleting(true);
       const newCompletedState = !completed;
       await toggleTaskCompletion(task._id, newCompletedState);
       setCompleted(newCompletedState);
-      
+
       // Notify parent to refresh data
       if (onUpdate) onUpdate();
     } catch (error) {
@@ -39,83 +39,57 @@ function TaskCard({
   };
 
   const getTaskColor = () => {
-    if (completed) return '#48bb7840'; // Green tint for completed
-    if (task.teamId) return '#00ffff20'; // Cyan tint for team tasks
-    return 'transparent';
+    if (completed) return 'rgba(16, 185, 129, 0.1)'; // Success tint
+    if (task.teamId) return 'rgba(59, 130, 246, 0.1)'; // Team tint
+    return 'var(--bg-card)';
   };
 
   return (
     <motion.div
-      className={`task green ${completed ? 'completed-task' : ''}`}
+      className={`task ${completed ? 'completed' : ''}`}
       draggable={draggable && !isCompleting}
-      onDragStart={(e) =>
-        e.dataTransfer.setData("taskId", task._id)
-      }
-      style={{ 
+      onDragStart={(e: any) => e.dataTransfer.setData("taskId", task._id)}
+      style={{
         background: getTaskColor(),
-        opacity: completed ? 0.7 : 1,
-        transition: 'all 0.3s ease'
+        opacity: completed ? 0.6 : 1,
+        borderLeft: `3px solid ${task.teamId ? 'var(--accent-primary)' : (completed ? 'var(--success)' : 'var(--border-strong)')}`,
       }}
       variants={cardVariants}
       initial="initial"
       animate="animate"
-      whileHover="hover"
+      whileHover={{ y: -2, boxShadow: 'var(--shadow-md)', scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
     >
       <div className="task-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
-          {/* Completion Checkbox */}
-          <button
-            onClick={handleToggleComplete}
+        <label className="checkbox-container" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={completed}
+            onChange={handleToggleComplete}
             disabled={isCompleting}
-            className="task-checkbox"
-            title={completed ? "Mark as incomplete" : "Mark as complete"}
-            style={{
-              width: '20px',
-              height: '20px',
-              border: '2px solid #00ffff',
-              borderRadius: '4px',
-              background: completed ? '#48bb78' : 'transparent',
-              cursor: isCompleting ? 'wait' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-              transition: 'all 0.2s',
-            }}
-          >
-            {completed && <span style={{ color: 'white', fontSize: '14px' }}>✓</span>}
-          </button>
+          />
+          <span className="checkmark"></span>
+        </label>
 
-          <h5 style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '4px', 
-            margin: 0,
-            textDecoration: completed ? 'line-through' : 'none',
-            flex: 1
-          }}>
-            {task.teamId && (
-              <span 
-                style={{ 
-                  fontSize: '12px',
-                  background: '#00ffff',
-                  color: '#000',
-                  padding: '2px 6px',
-                  borderRadius: '10px',
-                  fontWeight: 'bold'
-                }}
-                title="Team Task"
-              >
-                👥
-              </span>
-            )}
-            {task.title}
-          </h5>
-        </div>
+        <h5 style={{
+          textDecoration: completed ? 'line-through' : 'none',
+          color: completed ? 'var(--text-secondary)' : 'var(--text-primary)',
+          flex: 1
+        }}>
+          {task.teamId && (
+            <span className="team-badge" title="Team Task">
+              T
+            </span>
+          )}
+          {task.title}
+        </h5>
 
         <button
-          className="delete"
-          onClick={() => onDelete(task)}
+          className="delete-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(task);
+          }}
         >
           ✕
         </button>
@@ -124,33 +98,12 @@ function TaskCard({
       <div className="task-footer">
         <span className="duration">{task.duration}</span>
         {task.assignedTo && (
-          <div 
-            className="assignee-avatar" 
+          <div
+            className="assignee-avatar"
             title={`Assigned to: ${task.assignedTo?.name || 'Unassigned'}`}
             style={{
-              position: 'relative',
-              width: '28px',
-              height: '28px',
-              borderRadius: '50%',
-              border: '2px solid #00ffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'transform 0.2s',
-              ...(task.assignedTo?.avatar && task.assignedTo.avatar.length > 1 ? {
-                backgroundImage: `url(${env.BASE_URL}${task.assignedTo.avatar})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              } : {
-                background: 'linear-gradient(135deg, #00ffff, #00aaaa)',
-                color: '#000',
-              })
+              backgroundImage: task.assignedTo?.avatar ? `url(${env.BASE_URL}${task.assignedTo.avatar})` : undefined,
             }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
           >
             {!task.assignedTo?.avatar && (task.assignedTo?.name?.charAt(0)?.toUpperCase() || '?')}
           </div>

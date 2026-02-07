@@ -175,8 +175,8 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
                 onClick={() => setShowTeamModal(true)}
                 style={{
                   background: "none",
-                  border: "1px solid #00ffff",
-                  color: "#00ffff",
+                  border: "1px solid var(--accent)",
+                  color: "var(--accent)",
                   padding: "2px 8px",
                   borderRadius: "4px",
                   cursor: "pointer",
@@ -226,9 +226,9 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
                 width: "100%",
                 padding: "8px",
                 background: "#1a1a1a",
-                border: "1px solid #00ffff",
+                border: "1px solid var(--accent)",
                 borderRadius: "4px",
-                color: "#00ffff",
+                color: "var(--accent)",
                 marginBottom: "16px",
                 cursor: "pointer"
               }}
@@ -249,7 +249,7 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
                   borderRadius: "4px",
                   fontSize: "12px",
                   marginBottom: "8px",
-                  color: "#00ffff",
+                  color: "var(--accent)",
                   textAlign: "center"
                 }}>
                   <span>✓ Viewing: <strong>{activeTeam?.name || 'Unnamed Team'}</strong></span>
@@ -259,8 +259,8 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
                   style={{
                     width: "100%",
                     background: "none",
-                    border: "1px solid #00ffff",
-                    color: "#00ffff",
+                    border: "1px solid var(--accent)",
+                    color: "var(--accent)",
                     padding: "8px",
                     borderRadius: "4px",
                     cursor: "pointer",
@@ -367,7 +367,7 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
                 width: "100%",
                 background: "none",
                 border: "1px solid rgba(0, 255, 255, 0.3)",
-                color: "#00ffff",
+                color: "var(--accent)",
                 padding: "8px 16px",
                 borderRadius: "4px",
                 cursor: "pointer",
@@ -381,7 +381,7 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
               title="View your activity log"
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = "rgba(0, 255, 255, 0.1)";
-                e.currentTarget.style.borderColor = "#00ffff";
+                e.currentTarget.style.borderColor = "var(--accent)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = "none";
@@ -397,8 +397,8 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
                 onClick={() => setShowProjectModal(true)}
                 style={{
                   background: "none",
-                  border: "1px solid #00ffff",
-                  color: "#00ffff",
+                  border: "1px solid var(--accent)",
+                  color: "var(--accent)",
                   padding: "2px 8px",
                   borderRadius: "4px",
                   cursor: "pointer",
@@ -480,12 +480,12 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
               background: "#1a1a1a",
               padding: "24px",
               borderRadius: "8px",
-              border: "1px solid #00ffff",
+              border: "1px solid var(--accent)",
               maxWidth: "400px",
               width: "90%"
             }}
           >
-            <h2 style={{ color: "#00ffff", marginBottom: "16px" }}>Create New Team</h2>
+            <h2 style={{ color: "var(--accent)", marginBottom: "16px" }}>Create New Team</h2>
             <form onSubmit={handleCreateTeam}>
               <input
                 type="text"
@@ -498,9 +498,9 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
                   padding: "10px",
                   marginBottom: "16px",
                   background: "#0a0a0a",
-                  border: "1px solid #00ffff",
+                  border: "1px solid var(--accent)",
                   borderRadius: "4px",
-                  color: "#00ffff"
+                  color: "var(--accent)"
                 }}
               />
               <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
@@ -522,7 +522,7 @@ function Sidebar({ collapsed = false, onNavigate }: { collapsed?: boolean; onNav
                   type="submit"
                   style={{
                     padding: "8px 16px",
-                    background: "#00ffff",
+                    background: "var(--accent)",
                     border: "none",
                     borderRadius: "4px",
                     color: "#000",

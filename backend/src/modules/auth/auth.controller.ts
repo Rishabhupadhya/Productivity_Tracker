@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { body, validationResult } from "express-validator";
-import { registerUser, loginUser, requestPasswordReset, resetPassword } from "./auth.service";
+import { registerUser, loginUser, requestPasswordReset, resetPassword, loginWithGoogle } from "./auth.service";
 import { sendPasswordResetEmail } from "../../services/email.service";
 
 export const forgotPasswordValidation = [
@@ -180,6 +180,30 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       });
     }
     next(error);
+  }
+};
+
+export const googleAuth = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { token } = req.body; // Expect 'token' from frontend
+
+    if (!token) {
+      return res.status(400).json({ success: false, message: 'Google token is required' });
+    }
+
+    const result = await loginWithGoogle(token);
+
+    res.status(200).json({
+      success: true,
+      message: 'Google login successful',
+      token: result.token,
+      user: result.user
+    });
+  } catch (error: any) {
+    res.status(401).json({
+      success: false,
+      message: error.message || 'Google authentication failed'
+    });
   }
 };
 

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { formatDate } from "../utils/date";
+import { useDate } from "../contexts/DateContext";
 
 /**
  * Custom hook for managing the selected date in the calendar
@@ -7,30 +7,8 @@ import { formatDate } from "../utils/date";
  * Provides navigation functions (today, next, previous)
  */
 export function useSelectedDate() {
-  // Initialize with TODAY (device timezone)
-  const [date, setDate] = useState(() => {
-    const today = new Date();
-    // Reset time to midnight in local timezone to avoid time drift
-    today.setHours(0, 0, 0, 0);
-    return today;
-  });
-
-  useEffect(() => {
-    const handler = (e: any) => {
-      console.log('Date change event received:', e.detail);
-      const newDate = new Date(e.detail);
-      // Ensure we're working in local timezone
-      newDate.setHours(0, 0, 0, 0);
-      console.log('Setting date to:', newDate);
-      setDate(newDate);
-    };
-
-    window.addEventListener("date-change", handler);
-    return () =>
-      window.removeEventListener("date-change", handler);
-  }, []);
-
-  return date;
+  const { selectedDate } = useDate();
+  return selectedDate;
 }
 
 /**

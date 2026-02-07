@@ -4,6 +4,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password?: string; // Optional for OAuth users
+  googleId?: string; // Google Subject ID
   workspaceId: string;
   activeTeamId?: mongoose.Types.ObjectId;
   avatar?: string;
@@ -11,7 +12,7 @@ export interface IUser extends Document {
   xp: number;
   level: number;
   role: 'user' | 'admin' | 'manager';
-  authMethod: 'email_password' | 'oauth';
+  authMethod: 'email_password' | 'oauth' | 'google';
   emailVerified: boolean;
   isActive: boolean;
   lastLogin?: Date;
@@ -46,6 +47,7 @@ const UserSchema = new Schema<IUser>(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, lowercase: true },
     password: { type: String }, // Not required for OAuth users
+    googleId: { type: String, sparse: true, index: true },
     workspaceId: { type: String, required: true, default: "default" },
     activeTeamId: { type: Schema.Types.ObjectId, ref: "Team" },
     avatar: { type: String },
@@ -60,7 +62,7 @@ const UserSchema = new Schema<IUser>(
     },
     authMethod: {
       type: String,
-      enum: ['email_password', 'oauth'],
+      enum: ['email_password', 'oauth', 'google'],
       default: 'email_password',
       index: true
     },

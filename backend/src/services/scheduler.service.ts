@@ -24,30 +24,46 @@ const alreadySentReminder = (item: any, windowMinutes: number): boolean => {
  */
 const checkUpcomingItemReminders = async () => {
   try {
-    const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    const users = await User.find({ isActive: true });
 
-    // ✅ Only fetch INCOMPLETE tasks for today
-    const tasks = await Task.find({ day: todayStr, completed: false });
+    for (const user of users) {
+      if (!user.timezone) continue;
 
-    for (const task of tasks) {
-      if (!task.startTime) continue;
+      // Get user's local time
+      const userNow = new Date(new Date().toLocaleString("en-US", { timeZone: user.timezone }));
+      const userTodayStr = userNow.getFullYear() + '-' +
+        String(userNow.getMonth() + 1).padStart(2, '0') + '-' +
+        String(userNow.getDate()).padStart(2, '0');
 
-      const [hours, minutes] = task.startTime.split(':').map(Number);
-      const taskTime = new Date(now);
-      taskTime.setHours(hours, minutes, 0, 0);
+      // Find pending tasks for this user for THEIR today
+      const tasks = await Task.find({
+        userId: user._id,
+        day: userTodayStr,
+        completed: false
+      });
 
-      const diffMinutes = Math.round((taskTime.getTime() - now.getTime()) / 60000);
+      for (const task of tasks) {
+        if (!task.startTime) continue;
 
-      // 1 hour reminder (window: 56 to 65 mins)
-      if (diffMinutes > 55 && diffMinutes <= 65 && !alreadySentReminder(task, 60)) {
-        await sendUpcomingReminderEmail(task.userId.toString(), task, 'task', 60);
-        await Task.findByIdAndUpdate(task._id, { lastReminderWindow: 60 });
-      }
-      // 30 min reminder (window: 26 to 35 mins)
-      else if (diffMinutes > 25 && diffMinutes <= 35 && !alreadySentReminder(task, 30)) {
-        await sendUpcomingReminderEmail(task.userId.toString(), task, 'task', 30);
-        await Task.findByIdAndUpdate(task._id, { lastReminderWindow: 30 });
+        const [hours, minutes] = task.startTime.split(':').map(Number);
+        const taskTime = new Date(userNow);
+        taskTime.setHours(hours, minutes, 0, 0);
+
+        // Calculate difference in minutes
+        const diffMinutes = Math.round((taskTime.getTime() - userNow.getTime()) / 60000);
+
+        // 1 hour reminder (window: 58 to 62 mins)
+        if (diffMinutes >= 58 && diffMinutes <= 62 && task.lastReminderWindow !== 60) {
+          await sendUpcomingReminderEmail(user._id.toString(), task, 'task', 60);
+          task.lastReminderWindow = 60;
+          await task.save();
+        }
+        // 30 min reminder (window: 28 to 32 mins)
+        else if (diffMinutes >= 28 && diffMinutes <= 32 && task.lastReminderWindow !== 30) {
+          await sendUpcomingReminderEmail(user._id.toString(), task, 'task', 30);
+          task.lastReminderWindow = 30;
+          await task.save();
+        }
       }
     }
   } catch (error) {

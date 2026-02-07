@@ -51,3 +51,13 @@ export const resetPassword = async (token: string, password: string) => {
   const response = await api.post("/auth/reset-password", { token, password });
   return response.data;
 };
+
+export const loginWithGoogle = async (token: string) => {
+  const response = await api.post("/auth/google", { token });
+
+  if (response.data.token) {
+    localStorage.setItem('token', response.data.token);
+  }
+
+  return response.data;
+};

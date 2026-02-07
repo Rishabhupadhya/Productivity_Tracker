@@ -11,6 +11,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import { useUser } from "./contexts/UserContext";
 import AppLayout from "./components/layout/AppLayout";
+import { DateProvider } from "./contexts/DateContext";
+
 
 const ProtectedRoute = memo(({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useUser();
@@ -72,7 +74,9 @@ export default function App() {
         {/* Core App Layout and Protection */}
         <Route element={
           <ProtectedRoute>
-            <AppLayout children={null} />
+            <DateProvider>
+              <AppLayout children={null} />
+            </DateProvider>
           </ProtectedRoute>
         }>
           <Route path="/dashboard" element={<Dashboard />} />

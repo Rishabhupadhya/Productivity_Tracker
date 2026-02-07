@@ -71,8 +71,17 @@ export default function UserMenu() {
     <>
       <div className="user-menu" ref={menuRef}>
         {/* Show XP and Level */}
+        {/* Hide Level/XP on mobile to keep header clean */}
+        <style>{`
+          @media (max-width: 768px) {
+            .user-level-badge {
+              display: none !important;
+            }
+          }
+        `}</style>
+
         {user.level && user.level > 1 && (
-          <div style={{
+          <div className="user-level-badge" style={{
             marginRight: "12px",
             fontSize: "14px",
             color: "var(--accent)",

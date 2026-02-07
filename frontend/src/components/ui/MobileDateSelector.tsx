@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
 import { formatDate } from "../../utils/date";
 import "./MobileDateSelector.css";
+import { useDate } from "../../contexts/DateContext";
 
 interface MobileDateSelectorProps {
   value?: string;
@@ -8,48 +8,32 @@ interface MobileDateSelectorProps {
 }
 
 export default function MobileDateSelector({ value, onChange }: MobileDateSelectorProps) {
-  const [selectedDate, setSelectedDate] = useState(() => {
-    if (value && typeof value === 'string') return value;
-    const today = new Date();
-    return formatDate(today);
-  });
+  const { selectedDate, setSelectedDate } = useDate();
 
-  useEffect(() => {
-    if (value && typeof value === 'string') {
-      setSelectedDate(value);
-    }
-  }, [value]);
+  // Use formatting helper
+  const dateValue = value || formatDate(selectedDate);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newDate = e.target.value;
+    const newDateStr = e.target.value;
+    if (!newDateStr) return;
+
+    const [y, m, d] = newDateStr.split('-').map(Number);
+    const newDate = new Date(y, m - 1, d);
     setSelectedDate(newDate);
 
     if (onChange) {
-      onChange(newDate);
+      onChange(newDateStr);
     }
-
-    window.dispatchEvent(
-      new CustomEvent("date-change", {
-        detail: newDate,
-      })
-    );
   };
 
   const changeDay = (offset: number) => {
     const current = new Date(selectedDate);
     current.setDate(current.getDate() + offset);
-    const newDate = formatDate(current);
-    setSelectedDate(newDate);
+    setSelectedDate(current);
 
     if (onChange) {
-      onChange(newDate);
+      onChange(formatDate(current));
     }
-
-    window.dispatchEvent(
-      new CustomEvent("date-change", {
-        detail: newDate,
-      })
-    );
   };
 
   const formatDisplayDate = (dateStr: string | undefined) => {
@@ -104,11 +88,11 @@ export default function MobileDateSelector({ value, onChange }: MobileDateSelect
       </button>
 
       <div className="date-display">
-        <span className="date-label">{formatDisplayDate(selectedDate)}</span>
+        <span className="date-label">{formatDisplayDate(formatDate(selectedDate))}</span>
         <input
           type="date"
           className="date-input-hidden"
-          value={selectedDate}
+          value={dateValue}
           onChange={handleDateChange}
         />
       </div>

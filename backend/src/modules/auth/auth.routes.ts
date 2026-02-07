@@ -8,7 +8,8 @@ import {
     requestReset,
     reset,
     forgotPasswordValidation,
-    resetPasswordValidation
+    resetPasswordValidation,
+    googleAuth
 } from "./auth.controller";
 import { authRateLimiter } from "../../middleware/rate-limiter.middleware";
 
@@ -17,6 +18,7 @@ const router = Router();
 // Apply strict rate limiting + input validation to prevent brute force attacks
 router.post("/register", authRateLimiter, registerValidation, register);
 router.post("/login", authRateLimiter, loginValidation, login);
+router.post("/google", authRateLimiter, googleAuth);
 router.post("/logout", logout);
 
 // Password Reset Flow

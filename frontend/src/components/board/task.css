@@ -1,68 +1,148 @@
 .task {
-  background: var(--bg-secondary);
-  padding: 12px;
-  border-radius: var(--radius-md);
-  margin-bottom: 10px;
-  border-left: 3px solid var(--accent);
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
   cursor: grab;
-  border: 1px solid var(--border);
-  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s;
 }
 
-.task:hover {
-  border-color: var(--border-hover);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+.task:active {
+  cursor: grabbing;
 }
-
-.task span {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.task.blue { border-color: var(--blue); }
-.task.green { border-color: var(--green); }
-.task.purple { border-color: var(--purple); }
-.task.orange { border-color: var(--orange); }
-
-
 
 .task-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.task h5 {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.4;
+  word-break: break-word;
 }
 
 .task-footer {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
 }
 
 .duration {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.assignee {
-  background: var(--accent);
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
   font-size: 11px;
-  font-weight: 600;
-  color: var(--bg-app);
+  color: var(--text-tertiary);
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 4px;
+  border-radius: 4px;
 }
 
-.delete {
-  background: none;
+.delete-btn {
+  background: transparent;
   border: none;
-  color: var(--text-secondary);
+  color: var(--text-tertiary);
   cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
 }
 
-.delete:hover {
+.task:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
   color: var(--error);
+}
+
+/* Checkbox Styles */
+.checkbox-container {
+  display: flex;
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  height: 16px;
+  width: 16px;
+  background-color: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.checkbox-container:hover .checkmark {
+  border-color: var(--text-secondary);
+}
+
+.checkbox-container input:checked~.checkmark {
+  background-color: var(--success);
+  border-color: var(--success);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input:checked~.checkmark:after {
+  display: block;
+}
+
+.checkbox-container .checkmark:after {
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Team Badge */
+.team-badge {
+  background: var(--accent-primary);
+  color: white;
+  font-size: 9px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  margin-right: 6px;
+  vertical-align: middle;
+  font-weight: 700;
+}
+
+.assignee-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
 }
