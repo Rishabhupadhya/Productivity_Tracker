@@ -46,10 +46,9 @@ export default function Register() {
         {error && <div className="auth-error">{error}</div>}
 
         {/* Google SSO Button */}
-        <GoogleSSOButton 
+        <GoogleSSOButton
           onError={(err) => setError(err)}
           redirectUrl="/dashboard"
-          mode="register"
         />
 
         {/* Divider */}
@@ -98,6 +97,9 @@ export default function Register() {
               className="auth-input"
               required
             />
+            <p className="auth-input-hint">
+              Must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number.
+            </p>
           </div>
 
           <button type="submit" disabled={loading} className="auth-button">
@@ -109,7 +111,7 @@ export default function Register() {
           Already have an account?
           <Link to="/login" className="auth-link">Sign in</Link>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }

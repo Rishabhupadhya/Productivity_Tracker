@@ -33,7 +33,7 @@ export default function GoogleSSOButton({
       // Initialize Google Auth
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: "YOUR_GOOGLE_CLIENT_ID_HERE", // Ideally from env
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "", // Use environment variable
           callback: handleCredentialResponse
         });
 
