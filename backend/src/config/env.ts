@@ -10,7 +10,7 @@ export const env = {
   JWT_EXPIRES_IN: (process.env.JWT_EXPIRES_IN || '7d') as string | number,
   NODE_ENV: process.env.NODE_ENV || "development",
   BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN as string,
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
+  FRONTEND_URL: process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production' ? 'https://momentum12.vercel.app' : 'http://localhost:5173'),
 
   // OAuth Configuration
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,

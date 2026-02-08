@@ -9,12 +9,15 @@ const getBaseUrl = (): string => {
 
 // Helper to safely construct API URL
 const getApiUrl = (): string => {
+  // Use VITE_API_URL if provided (Standard Vercel Env Var)
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+
   if (import.meta.env.PROD) {
-    // If the environment variable is set in Vercel, use it.
-    // Otherwise fallback to the current origin (useful if using proxies/rewrites)
-    return import.meta.env.VITE_API_URL || `${window.location.origin}/api`;
+    // Hardcoded production endpoint based on user's current deployment configuration
+    return 'https://productivity-tracker-jfib.vercel.app/api';
   }
-  return import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
+
+  return 'http://localhost:5002/api';
 };
 
 export const env = {
