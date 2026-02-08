@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { loginWithGoogle } from '../../services/auth.server';
+import { env } from '../../config/env';
 import './googleSSO.css';
 
 interface GoogleSSOButtonProps {
@@ -33,7 +34,7 @@ export default function GoogleSSOButton({
       // Initialize Google Auth
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "", // Use environment variable
+          client_id: env.GOOGLE_CLIENT_ID, // Use centralized env
           callback: handleCredentialResponse
         });
 

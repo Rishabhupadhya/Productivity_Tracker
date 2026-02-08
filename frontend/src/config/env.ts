@@ -19,5 +19,6 @@ const getApiUrl = (): string => {
 
 export const env = {
   API_URL: getApiUrl(),
-  BASE_URL: getBaseUrl()
+  BASE_URL: getBaseUrl(),
+  GOOGLE_CLIENT_ID: import.meta.env.VITE_GOOGLE_CLIENT_ID || ""
 };
